@@ -11,4 +11,14 @@ git commit -m ""
 git push all
 // merge and push
 ------------------------
-test
+| 目录/文件           | 说明                                |
+| --------------- | --------------------------------- |
+| `include/*.h`   | 每个模块一个头文件，所有函数声明清晰分工              |
+| `minishell.h`   | 项目的主头文件，统一 `#include` 各模块头文件      |
+| `libft/`        | 学校要求的 libft，直接复制进来，Makefile 会自动调用 |
+| `src/`          | 项目源代码                             |
+| `src/builtins/` | 实现 `echo`、`cd`、`exit` 等           |
+| `src/parsing/`  | 命令拆分、引号处理、变量替换等                   |
+| `src/exec/`     | 执行命令、fork、pipe、重定向等               |
+| `src/utils/`    | 错误信息打印、内存释放等                      |
+| `Makefile`      | 项目的构建说明                           |

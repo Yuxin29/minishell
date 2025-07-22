@@ -1,0 +1,29 @@
+
+git add .
+git commit -m "Finish: new lexer"
+git push origin lin
+git push myrepo lin
+#push my own
+--------------------
+git checkout main
+git pull origin main
+git merge lin
+git add .
+git commit -m ""
+git push all
+#merge and push to main
+------------------------
+REPL stands for Read-Eval-Print Loop:
+
+Read: Read a line of input from the user.
+
+Eval: Evaluate or process the input
+
+Print: Output/echo the result.
+
+Loop: Repeat this process for the next line, until you encounter EOF (Ctrl-D).
+-------------------------
+Ctrl-C in the terminal sends a SIGINT "interrupt" signal to the current program.
+- Real shells do not quit when you press Ctrl-C while waiting for input, they just clear the line or print a new prompt.
+
+Ctrl-\ sends a SIGQUIT "quit" signal.

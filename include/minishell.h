@@ -5,6 +5,13 @@
 # include "parsing.h"
 # include "exec.h"
 # include "utils.h"
+# include "repl.h"
+# include "signals.h"
+
+# include <stdio.h>
+# include <unistd.h>         //access, access, close, fork
+# include <stdlib.h>         //malloc, free
+# include <fcntl.h>
 
 /*
 External functs allowed .
@@ -42,8 +49,8 @@ tgetnum, tgetstr, tgoto, tputs
 #include <string.h>
 # include <errno.h>
 sigaddset
-#include <signal.h>         //signal, sigaction, 
-# include <sys/wait.h> 
+#include <signal.h>         //signal, sigaction,
+# include <sys/wait.h>
 */
 
 #endif

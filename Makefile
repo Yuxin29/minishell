@@ -17,13 +17,16 @@ SRCS := \
 	$(SRC_DIR)/exec/exec.c \
 	$(SRC_DIR)/parsing/parsing.c \
 	$(SRC_DIR)/utils/utils.c \
+	$(SRC_DIR)/repl/repl.c \
+	$(SRC_DIR)/signals/signals.c
 
 OBJS := $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
 all: $(LIBFT) $(NAME)
 
 $(NAME): $(OBJS) $(LIBFT)
-	$(CC) $(CFLAGS) $(OBJS) $(LIBFT) -o $(NAME)
+	$(CC) $(CFLAGS) $(OBJS) $(LIBFT) -lreadline -o $(NAME)
+#add -lreadline : link readline
 
 $(LIBFT):
 	$(MAKE) all -C $(LIBFT_PATH)
@@ -33,12 +36,12 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	$(CC) $(CFLAGS) $(INCLUDE) -c $< -o $@
 
 clean:
-	rm -rf $(OBJ_DIR)
-	$(MAKE) clean -C $(LIBFT_PATH)
+	@rm -rf $(OBJ_DIR)
+	@$(MAKE) clean -C $(LIBFT_PATH)
 
 fclean: clean
-	rm -f $(NAME)
-	$(MAKE) fclean -C $(LIBFT_PATH)
+	@rm -f $(NAME)
+	@$(MAKE) fclean -C $(LIBFT_PATH)
 
 re: fclean all
 

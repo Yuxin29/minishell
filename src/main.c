@@ -1,7 +1,8 @@
 #include "minishell.h"
-# include <stdio.h>
 
 int main(void)
 {
-    printf("adsf");
+	setup_signals();
+	repl_loop();
+	return (0);
 }

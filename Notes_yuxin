@@ -1,0 +1,22 @@
+git checkout branch-name
+
+//do changes
+
+git add .
+
+git commit -m "changes"
+
+git push origin branch_name
+
+git checkout main
+
+git pull origin main
+
+git merge branch_name
+
+git add .
+
+git commit -m "changes merge to main"
+
+git push origin main
+

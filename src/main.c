@@ -3,5 +3,5 @@
 
 int main(void)
 {
-    printf("adsf");
+    printf("Minishell_start\n");
 }

@@ -1,22 +1,102 @@
-git checkout branch-name
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Notes_yuxin                                        :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: yuwu <marvin@42.fr>                        +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2025/07/22 14:32:05 by yuwu              #+#    #+#              #
+#    Updated: 2025/07/22 14:32:32 by yuwu             ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
 
-//do changes
+//how to work in your branch and push to the main
+	- git checkout branch-name
+	- do changes
+	- git add .
+	- git commit -m "changes"
+	- git push origin branch_name
+----------------------------------------
+	- git checkout main
+	- git pull origin main
+	- git merge branch_name
+	- git add .
+	- git commit -m "changes merge to main"
+	- git push origin main
 
-git add .
 
-git commit -m "changes"
+//a diagram of how the shell works
+** ************************************************************************** **
+main.c         --->  +-----------------------------+
+                     | init env from envp          |
+                     | init signal handlers        |
+                     | shell loop:                 |
+                     |   - readline prompt         |
+                     |   - pass line to parser     |
+                     |   - execute command list    |
+                     |   - clean up & wait         |
+                     | exit: free everything       |
+                     +-----------------------------+
+                              |
+                              v
+lexer.c        --->  +-----------------------------+
+                     | split line into tokens      |
+                     | handle quotes, escapes      |
+                     | classify token types        |
+                     | return token list           |
+                     +-----------------------------+
+                              |
+                              v
+parser.c       --->  +-----------------------------+
+                     | syntax check (pipes, etc.)  |
+                     | build command structures    |
+                     | handle redirections         |
+                     | group commands by pipe      |
+                     | return exec-ready tree      |
+                     +-----------------------------+
+                              |
+                              v
+expander.c    --->   +-----------------------------+
+                     | expand $VARIABLEs           |
+                     | handle $? and special vars  |
+                     | apply quote rules           |
+                     +-----------------------------+
+                              |
+                              v
+executor.c    --->   +-----------------------------+
+                     | for each command:           |
+                     |   - fork child              |
+                     |   - set up redirs & pipes   |
+                     |   - execve or builtin call  |
+                     | parent: wait for children   |
+                     +-----------------------------+
+                              |
+        ----------------------+----------------------
+        |                                          |
+builtins.c    --->  +---------------------+     env.c --->  +-----------------------+
+                    | cd, echo, pwd, etc  |               | env list init & update  |
+                    | exit (in parent)    |               | export/unset logic      |
+                    +---------------------+               +-----------------------+
+                              |
+                              v
+signals.c     --->   +-----------------------------+
+                     | SIGINT: handle Ctrl+C       |
+                     | SIGQUIT: ignore or handle   |
+                     | restore terminal state      |
+                     +-----------------------------+
+                              |
+                              v
+utils.c       --->   +-----------------------------+
+                     | error printing              |
+                     | memory management helpers   |
+                     | free token/cmd/env structs  |
+                     +-----------------------------+
 
-git push origin branch_name
-
-git checkout main
-
-git pull origin main
-
-git merge branch_name
-
-git add .
-
-git commit -m "changes merge to main"
-
-git push origin main
+** Error exit codes:
+    - Syntax error:         exit 2
+    - Command not found:    exit 127
+    - Permission denied:    exit 126
+    - Signal exit (e.g. ^C): appropriate status
+    - Builtin exit:         user-defined exit code
+** ************************************************************************** **
 

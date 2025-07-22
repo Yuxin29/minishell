@@ -1,0 +1,7 @@
+git add .
+git commit -m "Finish: new lexer"
+git push origin lin
+
+
+git checkout main        # 比如 in 是你们的主分支
+git pull origin main

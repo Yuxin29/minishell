@@ -7,32 +7,35 @@ t_token *get_token_list(char *raw_line)
     t_token     *last;
     t_token        *new;
     int          i;
+    int         len;
 
     head = NULL;
     last = NULL;
+    new = NULL;
     i = 0;
-
+    len = 0;
     while (raw_line[i])
     {
         while (raw_line[i] && ft_isspace(raw_line[i]))
             i++;
         if (!raw_line[i])
-            break;
-        new = get_one_new_token(raw_line[i]);
-        if (!new)
+            return (NULL);
+        new = 0;
+        new = get_one_new_token(raw_line[i], len);
+        if (!new)   //malloc inside
             return (free_token_list(head), NULL);
-        if (!head)
+        if (!head)          //if head not initiatedm the new one is the headone, 
             head = new;
-        else
+        else                //otherwise, append the new one to the end of the last one
             last->next = new;
-        last = new;
+        last = new;         //and then, change head
+        i +=len;
     }
     return head;
 }
 
-//char	*ft_substr(char const *s, unsigned int start, size_t len)
-
-t_token    *get_one_new_token(char *raw_line)
+//get one single new_token
+t_token    *get_one_new_token(char *raw_line, int len)
 {
     t_token *new;
     int     i;
@@ -51,9 +54,11 @@ t_token    *get_one_new_token(char *raw_line)
         return (NULL)
     new->t_type = get_token_type(new);
     new->next = NULL;
+    len = ft_strlen(new->str)
     return (new);
 }
 
+//char	*ft_substr(char const *s, unsigned int start, size_t len), malloc inside, need to null check
 //dealing no quote token
 void    token_no_quote(int  i, t_token  *token)
 {

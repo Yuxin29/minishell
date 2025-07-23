@@ -96,36 +96,51 @@ utils.c       --->   +---------------------------------------------+
     - Signal exit (e.g. ^C): appropriate status
     - Builtin exit:         user-defined exit code
 
-================================= a fake pipe t_token =====================================================
-t_token *create_pipe_test_tokens(void)
+================================= a fake t_token and cmd struct =====================================================
+✅ Minimal t_token & t_cmd Mock for Testing
+
+Input example:
+
+echo hello world
+
+🧱 Mock t_token Linked List
+
+t_token *tokens = make_token_list();
+t_token *make_token_list(void)
 {
     t_token *t1 = malloc(sizeof(t_token));
     t_token *t2 = malloc(sizeof(t_token));
     t_token *t3 = malloc(sizeof(t_token));
-    t_token *t4 = malloc(sizeof(t_token));
-    t_token *t5 = malloc(sizeof(t_token));
-
-    t1->value = strdup("echo");
-    t1->type = TOKEN_WORD;
+    t1->str = strdup("echo");
+    t1->t_type = T_WORD;
     t1->next = t2;
-
-    t2->value = strdup("hello");
-    t2->type = TOKEN_WORD;
+    t2->str = strdup("hello");
+    t2->t_type = T_WORD;
     t2->next = t3;
-
-    t3->value = strdup("|");
-    t3->type = TOKEN_PIPE;
-    t3->next = t4;
-
-    t4->value = strdup("grep");
-    t4->type = TOKEN_WORD;
-    t4->next = t5;
-
-    t5->value = strdup("h");
-    t5->type = TOKEN_WORD;
-    t5->next = NULL;
-
+    t3->str = strdup("world");
+    t3->t_type = T_WORD;
+    t3->next = NULL;
     return t1;
+}
+
+🧱 Mock t_cmd Struct
+
+t_cmd *cmd = make_mock_cmd();
+t_cmd *make_mock_cmd(void)
+{
+    t_cmd *cmd = malloc(sizeof(t_cmd));
+    cmd->argv = malloc(sizeof(char *) * 4);
+    cmd->argv[0] = strdup("echo");
+    cmd->argv[1] = strdup("hello");
+    cmd->argv[2] = strdup("world");
+    cmd->argv[3] = NULL;
+
+    cmd->infile = NULL;
+    cmd->outfile = NULL;
+    cmd->append_out = 0;
+    cmd->heredoc_delim = NULL;
+    cmd->next = NULL;
+    return cmd;
 }
 
 =================================concept in parsing=====================================================

@@ -136,3 +136,10 @@ void	*safe_malloc(size_t size)
 		exit_error("malloc failed\n");
 	return (ptr);
 }
+---------------------------------
+int main(void)
+{
+	setup_signals();
+	repl_loop();
+	return (0);
+}

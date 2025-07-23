@@ -1,15 +1,5 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Notes_yuxin                                        :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: yuwu <marvin@42.fr>                        +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2025/07/22 14:32:05 by yuwu              #+#    #+#              #
-#    Updated: 2025/07/22 14:32:32 by yuwu             ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
 
+=================================git collaborations=====================================================
 //how to work in your branch and push to the main
 	- git checkout branch-name
 	- do changes
@@ -25,72 +15,79 @@
 	- git push origin main
 
 
-//a diagram of how the shell works
-** ************************************************************************** **
-main.c         --->  +-----------------------------+
-                     | init env from envp          |
-                     | init signal handlers        |
-                     | shell loop:                 |
-                     |   - readline prompt         |
-                     |   - pass line to parser     |
-                     |   - execute command list    |
-                     |   - clean up & wait         |
-                     | exit: free everything       |
-                     +-----------------------------+
-                              |
-                              v
-lexer.c        --->  +-----------------------------+
-                     | split line into tokens      |
-                     | handle quotes, escapes      |
-                     | classify token types        |
-                     | return token list           |
-                     +-----------------------------+
-                              |
-                              v
-parser.c       --->  +-----------------------------+
-                     | syntax check (pipes, etc.)  |
-                     | build command structures    |
-                     | handle redirections         |
-                     | group commands by pipe      |
-                     | return exec-ready tree      |
-                     +-----------------------------+
-                              |
-                              v
-expander.c    --->   +-----------------------------+
-                     | expand $VARIABLEs           |
-                     | handle $? and special vars  |
-                     | apply quote rules           |
-                     +-----------------------------+
-                              |
-                              v
-executor.c    --->   +-----------------------------+
-                     | for each command:           |
-                     |   - fork child              |
-                     |   - set up redirs & pipes   |
-                     |   - execve or builtin call  |
-                     | parent: wait for children   |
-                     +-----------------------------+
-                              |
+=================================minishell workflows=====================================================
+main.c         --->  +---------------------------------------------+
+👤👤 Shared          | init env from envp                          | -> void init_env(char **envp);
+                     | init signal handlers                        | -> void setup_signals(void);
+                     | shell loop:                                 |
+                     |   - readline prompt                         | -> char *read_input(void);
+                     |   - pass line to parser                     | -> t_cmd *parse_line(char *line);
+                     |   - execute command list                    | -> void execute_commands(t_cmd *cmds, t_env *env);
+                     |   - clean up & wait                         | -> void cleanup_shell(t_cmd *cmds);
+                     | exit: free everything                       | -> void free_everything(t_cmd *cmds, t_env *env);
+                     +---------------------------------------------+
+                                        |
+                                        v
+lexer.c        --->  +---------------------------------------------
+👤 A                 | split line into tokens                      | -> t_token *get_tokens(char *line);
+                     | handle quotes, escapes                      | -> char *extract_quoted(char *line, int *i);
+                     | classify token types                        | -> t_token_type get_token_type(const char *str);
+                     | return token list                           | (same as get_tokens)
+                     +---------------------------------------------+
+                                        |
+                                        v
+parser.c       --->  +---------------------------------------------+
+👤 A                 | syntax check (pipes, etc.)                  | -> int check_syntax(t_token *tokens);
+                     | build command structures                    | -> t_cmd *build_command_list(t_token *tokens);
+                     | handle redirections                         | -> void parse_redirections(t_cmd *cmd, t_token **tokens);
+                     | group commands by pipe                      | -> t_cmd *group_by_pipes(t_token *tokens);
+                     | return exec-ready tree                      | (same as build_command_list)
+                     +---------------------------------------------+
+                                        |
+                                        v
+expander.c    --->   +---------------------------------------------+
+👤 A                 | expand $VARIABLEs                           | -> char *expand_variables(char *str, t_env *env);
+                     | handle $? and special vars                  | -> char *expand_special_vars(char *str, int last_exit);
+                     | apply quote rules                           | -> char *remove_quotes(char *str);
+                     +---------------------------------------------+
+                                        |
+                                        v
+executor.c    --->   +---------------------------------------------+           ------------------------------------------------------->B's work starts to late if A's parsing is not done.
+👤 B                 | for each command:                           |                                                               --->manully make ready token(mock fake token) to B so B can start
+                     |   - fork child                              | -> pid_t fork_and_execute(t_cmd *cmd, t_env *env);
+                     |   - set up redirs & pipes                   | -> void setup_redirections(t_cmd *cmd);
+                     |   - execve or builtin call                  | -> int execute_builtin_or_exec(t_cmd *cmd, t_env *env);
+                     | parent: wait for children                   | -> int wait_for_children(void);
+                     +---------------------------------------------+
+                                        |
         ----------------------+----------------------
-        |                                          |
-builtins.c    --->  +---------------------+     env.c --->  +-----------------------+
-                    | cd, echo, pwd, etc  |               | env list init & update  |
-                    | exit (in parent)    |               | export/unset logic      |
-                    +---------------------+               +-----------------------+
-                              |
-                              v
-signals.c     --->   +-----------------------------+
-                     | SIGINT: handle Ctrl+C       |
-                     | SIGQUIT: ignore or handle   |
-                     | restore terminal state      |
-                     +-----------------------------+
-                              |
-                              v
-utils.c       --->   +-----------------------------+
-                     | error printing              |
-                     | memory management helpers   |
-                     | free token/cmd/env structs  |
-                     +-----------------------------+
+        |                                              |
+builtins.c    --->  +-------------------------------+     env.c --->  +--------------------------------+
+👤 B                | cd, echo, pwd, etc            |  👤 B                | env list init & update          |
+                    |                               |                 | -> t_env *init_env_list(char **envp);
+                    | -> int builtin_cd(char **args, t_env *env); |   | -> void update_env(t_env **env, const char *key, const char *val);
+                    | -> int builtin_echo(char **args);           |   | export/unset logic             |
+                    | -> int builtin_pwd(void);                   |   | -> int builtin_export(char **args, t_env **env);
+                    | exit (in parent)                            |   | -> int builtin_unset(char **args, t_env **env);
+                    | -> int builtin_exit(char **args);           |   | -> char **env_to_envp_array(t_env *env);
+                    +-------------------------------+             +--------------------------------+
+                                        |
+                                        v
+signals.c     --->   +---------------------------------------------+
+👤👤 Shared          | SIGINT: handle Ctrl+C                       | -> void sigint_handler(int signo);
+                     | SIGQUIT: ignore or handle                   | -> void sigquit_handler(int signo);
+                     | restore terminal state                      | -> void restore_terminal_settings(void);
+                     +---------------------------------------------+
+                                        |
+                                        v
+utils.c       --->   +---------------------------------------------+
+👤👤 Shared                      | error printing                  | -> void print_error(const char *msg);
+                     | memory management helpers                   | -> void *safe_malloc(size_t size);
+                     | free token/cmd/env structs                  | -> void free_tokens(t_token *head);
+                     |                                             | -> void free_commands(t_cmd *cmds);
+                     |                                             | -> void free_env(t_env *env);
+                     +---------------------------------------------+
+
 
 ** Error exit codes:
     - Syntax error:         exit 2
@@ -98,5 +95,66 @@ utils.c       --->   +-----------------------------+
     - Permission denied:    exit 126
     - Signal exit (e.g. ^C): appropriate status
     - Builtin exit:         user-defined exit code
-** ************************************************************************** **
 
+================================= a fake t_token and cmd struct =====================================================
+✅ Minimal t_token & t_cmd Mock for Testing
+
+Input example:
+
+echo hello world
+
+🧱 Mock t_token Linked List
+
+t_token *tokens = make_token_list();
+t_token *make_token_list(void)
+{
+    t_token *t1 = malloc(sizeof(t_token));
+    t_token *t2 = malloc(sizeof(t_token));
+    t_token *t3 = malloc(sizeof(t_token));
+    t1->str = strdup("echo");
+    t1->t_type = T_WORD;
+    t1->next = t2;
+    t2->str = strdup("hello");
+    t2->t_type = T_WORD;
+    t2->next = t3;
+    t3->str = strdup("world");
+    t3->t_type = T_WORD;
+    t3->next = NULL;
+    return t1;
+}
+
+🧱 Mock t_cmd Struct
+
+t_cmd *cmd = make_mock_cmd();
+t_cmd *make_mock_cmd(void)
+{
+    t_cmd *cmd = malloc(sizeof(t_cmd));
+    cmd->argv = malloc(sizeof(char *) * 4);
+    cmd->argv[0] = strdup("echo");
+    cmd->argv[1] = strdup("hello");
+    cmd->argv[2] = strdup("world");
+    cmd->argv[3] = NULL;
+
+    cmd->infile = NULL;
+    cmd->outfile = NULL;
+    cmd->append_out = 0;
+    cmd->heredoc_delim = NULL;
+    cmd->next = NULL;
+    return cmd;
+}
+
+=================================concept in parsing=====================================================
+
+prompt: A prompt in a shell is the text displayed to the user that signals it's ready to receive input.
+for example:        -bash       user@hostname:~$ 
+                    -minishell  minishell$ 
+
+lexing and token
+lexing  - a process the analyse the raw line and change it to tokens
+token   - the results of the smallest unit
+
+"  " and '   '
+'single quotes'     literally just a string
+"double quotes"     possibly multiple variables and commands included
+
+=================================other stuff =====================================================

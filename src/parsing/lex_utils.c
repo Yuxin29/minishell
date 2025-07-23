@@ -1,5 +1,4 @@
-#include "parsing.h"
-#include "libft.h"
+#include "minishell.h"
 
 void	get_token_type(t_token *token)
 {
@@ -35,48 +34,6 @@ void    free_token_list(t_token *head)
     }
 }
 
-//below 2 need to be move to utils later
-static char *error_and_return(const char *msg)
-{
-    perror(msg);
-    return (NULL);
-}
-
-void	*safe_malloc(size_t size)
-{
-	void *ptr;
-
-	ptr = malloc(size);
-	if (!ptr)
-		error_and_return("malloc failed\n");
-	return (ptr);
-}
-
-//for testing, delete later
-static void print_token_list(t_token *head)
-{
-    while (head)
-    {
-        printf("[TYPE:%d] ", head->t_type);
-        if (head->quote_type == 1)
-            printf("(SINGLE-QUOTE) ");
-        else if (head->quote_type == 2)
-            printf("(DOUBLE-QUOTE) ");
-        printf("VAL:'%s'\n", head->str ? head->str : "(null)");
-        head = head->next;
-    }
-}
-
-int main(void)
-{
-    char    line[50] = "echo hello world";
-    t_token *result;
-
-    result = get_token_list(line);
-    printf("so far so good\n");
-    print_token_list(result);
-    free_token_list(result);
-}
 /*
 cc -Wall -Wextra -Werror -I./include -I./libft ./src/parsing/lex.c ./src/parsing/lex_utils.c
 // Test 1: Simple Command

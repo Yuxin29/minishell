@@ -1,4 +1,4 @@
-#include "parsing.c"
+#include "parsing.h"
 
 // parser.c
 // syntax check (pipes, etc.)

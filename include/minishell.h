@@ -5,6 +5,7 @@
 # include "parsing.h"
 # include "exec.h"
 # include "utils.h"
+# include "../libft/libft.h"
 
 /*
 External functs allowed .

@@ -15,7 +15,7 @@ SRCS := \
 	$(SRC_DIR)/main.c \
 	$(SRC_DIR)/builtins/builtins.c \
 	$(SRC_DIR)/exec/exec.c \
-	$(SRC_DIR)/parsing/parsing.c \
+	$(SRC_DIR)/parsing/lex.c $(SRC_DIR)/parsing/lex_utils.c \
 	$(SRC_DIR)/utils/utils.c \
 
 OBJS := $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)

@@ -66,9 +66,9 @@ typedef struct s_cmd
 // get raw_line with readline / getnextline, ( then use ft_split), and the put them to t_teken
 t_token		*get_token_list(char *raw_line);
 t_token    *get_one_new_token(char *raw_line, int *len);
-void		token_no_quote(char *raw_line, int  i, t_token  *token);
-void		token_single_quote(char *raw_line, int  i, t_token  *token);
-void		token_double_quote(char *raw_line, int  i, t_token  *token);
+void		token_no_quote(char *raw_line, int  *i, t_token  *token);
+void		token_single_quote(char *raw_line, int  *i, t_token  *token);
+void		token_double_quote(char *raw_line, int  *i, t_token  *token);
 
 // lex_utils.c
 void	get_token_type(t_token *token);

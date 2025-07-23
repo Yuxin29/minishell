@@ -5,7 +5,7 @@
 //#include <readline/history.h>       //add_history		//I dont need this, lin has it in main
 //#include <readline/readline.h>      //readline		//I dont need this, lin has it in main
 # include <stdio.h>                 //readline
-# include <stdlib.h>                //malloc, free
+# include <stdlib.h>                //malloc, free 
 
 typedef enum e_token_type 
 {
@@ -64,15 +64,17 @@ typedef struct s_cmd
 
 // lex.c
 // get raw_line with readline / getnextline, ( then use ft_split), and the put them to t_teken
-t_token		*get_token_list(char *raw_line)
-t_token		*get_one_new_token(char *raw_line);
-void		token_no_quote(int  i, t_token  *token);
-void		token_single_quote(int  i, t_token  *token);
-void		token_double_quote(int  i, t_token  *token)
+t_token		*get_token_list(char *raw_line);
+t_token    *get_one_new_token(char *raw_line, int *len);
+void		token_no_quote(char *raw_line, int  i, t_token  *token);
+void		token_single_quote(char *raw_line, int  i, t_token  *token);
+void		token_double_quote(char *raw_line, int  i, t_token  *token);
 
 // lex_utils.c
 void	get_token_type(t_token *token);
 void    free_token_list(t_token *token);
+//this one moved to utils later
+void	*safe_malloc(size_t size);
 
 // parser.c       
 // syntax check (pipes, etc.)                  

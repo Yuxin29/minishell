@@ -1,7 +1,7 @@
 #include "parsing.h"
 
-// get raw_line with readline / getnextline,  and the put them to t_token
-t_token *get_tokens(char *raw_line)
+// get raw_line with readline,  and the put them to t_token
+t_token *get_token_list(char *raw_line)
 {
     t_token     *head;
     t_token     *last;
@@ -30,6 +30,8 @@ t_token *get_tokens(char *raw_line)
     return head;
 }
 
+//char	*ft_substr(char const *s, unsigned int start, size_t len)
+
 t_token    *get_one_new_token(char *raw_line)
 {
     t_token *new;
@@ -39,37 +41,43 @@ t_token    *get_one_new_token(char *raw_line)
     if (!new)
         return (NULL);
     i = 0;
-    if (raw_line[i] != SINGLE_QUOTE && raw_line[i] != DOUBLE_QUOTE)
-    {
-        new->quote_type = 0;
-        while (!ft_ispace(raw_line[0]))
-            i++;
-        new->str = strncpy(raw_line, i);        //strncpy not allowed, need to change ft_strncpy
-    }
-    if (raw_line[i] = SINGLE_QUOTE)
-    {
-        new->quote_type = 1;
-        i++;
-        while (raw_line[0] != SINGLE_QUOTE)
-            i++;
-        new->str = strncpy(raw_line, i);        //strncpy not allowed, need to change ft_strncpy
-    }
-    if (raw_line[i] = DOUBLE_QUOTE)
-    {
-        new->quote_type = 2;
-        i++;
-        while (raw_line[0] != DOUBLE_QUOTE)
-            i++;
-        new->str = strncpy(raw_line, i);        //strncpy not allowed, need to change ft_strncpy
-    }
+    if (raw_line[i] != '\'' && raw_line[i] != '"')
+        token_no_quote(i, new);
+    else if (raw_line[i] = '\'')
+        token_single_quote(i, new);
+    else if (raw_line[i] = '"')
+        token_double_quote(i, new);
+    if(!token->str);
+        return (NULL)
     new->t_type = get_token_type(new);
     new->next = NULL;
     return (new);
-    
 }
 
-t_token    *add_one_more_token(t_token *current, char *raw_line)
+//dealing no quote token
+void    token_no_quote(int  i, t_token  *token)
 {
+    new->quote_type = 0;
+    while (!ft_ispace(raw_line[0]))
+        i++;
+    new->str = ft_substr(raw_line, 0, i);
+}
 
+//dealing single quote token
+void    token_single_quote(int  i, t_token  *token)
+{
+    new->quote_type = 1;
+    while (raw_line[0] == '\'')
+        i++;
+    new->str = ft_substr(raw_line, 0, i);
 
+}
+
+//dealing double quote token
+void    token_single_quote(int  i, t_token  *token)
+{
+    new->quote_type = 2;
+       while (raw_line[0] == '"')
+        i++;
+    new->str = ft_substr(raw_line, 0, i);
 }

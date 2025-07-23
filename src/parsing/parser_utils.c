@@ -1,6 +1,7 @@
 #include "parsing.h"
 
-void helper(void)
+//free a linked list of t_cmd
+void    free_cmd_list(t_cmd *cmd);
 {
 
 

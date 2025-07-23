@@ -1,17 +1,11 @@
 #ifndef PARSING_H
 # define PARSING_H
 
-/*
-readline            - get a line from a user with editing       get a line from a user with editing
-*/
-
-#include <readline/history.h>       //add_history
-#include <readline/readline.h>      //readline
+//readline            - get a line from a user with editing       get a line from a user with editing
+//#include <readline/history.h>       //add_history		//I dont need this, lin has it in main
+//#include <readline/readline.h>      //readline		//I dont need this, lin has it in main
 # include <stdio.h>                 //readline
 # include <stdlib.h>                //malloc, free
-
-#define SINGLE_QUOTE '''
-#define DOUBLE_QUOTE '"'
 
 typedef enum e_token_type 
 {
@@ -41,30 +35,40 @@ typedef struct s_cmd
     char            *heredoc_delim; // For '<<' heredoc
     struct s_cmd    *next;          // Next command in a pipeline
 }                   t_cmd;
-//Parsing: - Taking the token list, 
-// 			-Understanding the structure of the command, 
+//Parsing: - Taking the token list and Understanding the structure of the command, 
 // 			- Grouping tokens into command nodes, pipes, redirections, etc,
-// 			- Building a tree or linked list of command objects (t_cmd)
+// 			- Building a linked list of command objects (t_cmd)
 
-//for example
+//====================================for example====================================
 //echo "hello world" > file.txt | cat -e
 //[TOKEN: echo]	[TOKEN: "hello world"]	[TOKEN: >]	[TOKEN: file.txt]   [TOKEN: |] 	[TOKEN: cat]  	[TOKEN: -e] 
 //T_WORD	  				T_WORD		T_REDIRECT_OUT		 T_WORD			  T_PIPE	   T_WORD		  T_WORD
-
+//--------------------------------------------------------------------------------------
 //t_cmd *cmd_list = cmd1;
 //cmd1:
-//  argv:        ["echo", "hello world"]
-//  outfile:     "file.txt"
-//  next:        cmd2 →
+//argv:        ["echo", "hello world", NULL]
+//infile:      NULL
+//outfile:     "file.txt"
+//append_out:  0
+//heredoc_delim: NULL
+//next:        -> cmd2
+//-----------------------------------------------
 //cmd2:
-//  argv:        ["cat", "-e"]
-//  next:        NULL
+//argv:        ["cat", "-e", NULL]
+//infile:      NULL
+//outfile:     NULL
+//append_out:  0
+//heredoc_delim: NULL
+//next:        NULL
+//--------------------------------------------------------------------------------------
 
 // lex.c
 // get raw_line with readline / getnextline, ( then use ft_split), and the put them to t_teken
-t_token    *get_tokens(char *raw_line);
-t_token    *get_one_new_token(char *raw_line);
-t_token    *add_one_more_token(t_token *current, char *raw_line);
+t_token		*get_token_list(char *raw_line)
+t_token		*get_one_new_token(char *raw_line);
+void		token_no_quote(int  i, t_token  *token);
+void		token_single_quote(int  i, t_token  *token);
+void		token_double_quote(int  i, t_token  *token)
 
 // lex_utils.c
 void	get_token_type(t_token *token);
@@ -81,6 +85,6 @@ void	parse_redirections(t_cmd *cmd, t_token **tokens);
 t_cmd	*group_by_pipes(t_token *tokens);
 
 // parser_utils.c
-           
+void    free_cmd_list(t_cmd *cmd);
 
 #endif

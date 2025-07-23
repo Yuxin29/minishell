@@ -70,13 +70,10 @@ void		token_double_quote(char *raw_line, int  *i, t_token  *token);
 
 // lex_utils.c
 void	get_token_type(t_token *token);
-void    free_token_list(t_token *token);
-//this one moved to utils later
-void	*safe_malloc(size_t size);
+void    free_token_list(t_token *token_head)
+void	*safe_malloc(size_t size);  //FIXME: this one moved to utils later
 
 // parser.c       
-// syntax check (pipes, etc.)                  
-int		check_syntax(t_token *tokens);
 // build command structures                    
 t_cmd	*build_command_list(t_token *tokens);
 // handle redirections                        
@@ -85,6 +82,8 @@ void	parse_redirections(t_cmd *cmd, t_token **tokens);
 t_cmd	*group_by_pipes(t_token *tokens);
 
 // parser_utils.c
-void    free_cmd_list(t_cmd *cmd);
+// syntax check (pipes, etc.)                  
+int		check_syntax(t_token *tokens);
+void    free_cmd_list(t_cmd *cmd_head);
 
 #endif

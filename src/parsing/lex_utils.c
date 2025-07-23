@@ -15,3 +15,10 @@ void	get_token_type(t_token *token)
     else (token->str = '|')
         token->t_type = T_WORD;
 }
+
+//free the whole linked list
+void    free_token_list(t_token *token)
+{
+
+
+}

@@ -27,7 +27,8 @@ typedef struct      s_token
 {
     char            *str;
     t_token_type    t_type;
-    struct s_token  *next;
+    int				quote_type;		//0: no quote; 1: single quote; 2: double quote
+	struct s_token  *next;
 }                   t_token;
 //Lexing: get a raw line and change it to a linked list of minimal unit(tokens)
 
@@ -50,24 +51,7 @@ typedef struct s_cmd
 //[TOKEN: echo]	[TOKEN: "hello world"]	[TOKEN: >]	[TOKEN: file.txt]   [TOKEN: |] 	[TOKEN: cat]  	[TOKEN: -e] 
 //T_WORD	  				T_WORD		T_REDIRECT_OUT		 T_WORD			  T_PIPE	   T_WORD		  T_WORD
 
-//t_cmd *cmd1 = malloc(sizeof(t_cmd));
-//cmd1->argv          = {"echo", "hello world", NULL};  // argv for execve
-//cmd1->infile        = NULL;
-//cmd1->outfile       = "file.txt";                     // because of >
-//cmd1->append_out    = 0;                              // not >>
-//cmd1->heredoc_delim = NULL;
-//cmd1->next          = cmd2; 
-//                           // points to next cmd
-//t_cmd *cmd2 = malloc(sizeof(t_cmd));
-//cmd2->argv          = {"cat", "-e", NULL};
-//cmd2->infile        = NULL;                           // no input redir
-//cmd2->outfile       = NULL;
-//cmd2->append_out    = 0;
-//cmd2->heredoc_delim = NULL;
-//cmd2->next          = NULL;                           // end of pipeline
-
 //t_cmd *cmd_list = cmd1;
-
 //cmd1:
 //  argv:        ["echo", "hello world"]
 //  outfile:     "file.txt"
@@ -81,11 +65,10 @@ typedef struct s_cmd
 t_token    *get_tokens(char *raw_line);
 t_token    *get_one_new_token(char *raw_line);
 t_token    *add_one_more_token(t_token *current, char *raw_line);
-void        deal_single_quotes(char *raw_line);
-void        deal_double_quotes(char *raw_line);
 
 // lex_utils.c
 void	get_token_type(t_token *token);
+void    free_token_list(t_token *token);
 
 // parser.c       
 // syntax check (pipes, etc.)                  

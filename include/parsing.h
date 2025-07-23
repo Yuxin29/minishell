@@ -4,8 +4,6 @@
 //readline            - get a line from a user with editing       get a line from a user with editing
 //#include <readline/history.h>       //add_history		//I dont need this, lin has it in main
 //#include <readline/readline.h>      //readline		//I dont need this, lin has it in main
-# include <stdio.h>                 //readline
-# include <stdlib.h>                //malloc, free 
 
 typedef enum e_token_type 
 {

@@ -17,6 +17,8 @@ SRCS := \
 	$(SRC_DIR)/exec/exec.c \
 	$(SRC_DIR)/parsing/lex.c $(SRC_DIR)/parsing/lex_utils.c \
 	$(SRC_DIR)/utils/utils.c \
+	$(SRC_DIR)/repl/repl.c \
+	$(SRC_DIR)/signals/signals.c
 
 OBJS := $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 

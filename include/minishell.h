@@ -6,6 +6,13 @@
 # include "exec.h"
 # include "utils.h"
 # include "../libft/libft.h"
+# include "repl.h"
+# include "signals.h"
+
+# include <unistd.h>         //access, access, close, fork
+# include <stdlib.h>         //malloc, free
+# include <fcntl.h>
+# include <stdio.h>                 //readline
 
 /*
 External functs allowed .

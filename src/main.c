@@ -10,6 +10,20 @@ int	main(void)
 	return (0);
 }*/
 
+//for testing, delete later
+static void print_token_list(t_token *head)
+{
+    while (head)
+    {
+        printf("[TYPE:%d] ", head->t_type);
+        if (head->quote_type == 1)
+            printf("(SINGLE-QUOTE) ");
+        else if (head->quote_type == 2)
+            printf("(DOUBLE-QUOTE) ");
+        printf("VAL:'%s'\n", head->str ? head->str : "(null)");
+        head = head->next;
+    }
+}
 
 // For testing, delete later
 static void print_cmd_list(t_cmd *head)

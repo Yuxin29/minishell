@@ -97,6 +97,8 @@ void	token_single_quote(char *raw_line, int  *i, t_token  *token)
     while (raw_line[*i] && raw_line[*i] != '\'')
         (*i)++;
     token->str = ft_strndup(&raw_line[start], *i - start);
+    if (!token->str)
+        return ;
     if (raw_line[*i] == '\'')
         (*i)++;
 }
@@ -112,6 +114,8 @@ void	token_double_quote(char *raw_line, int  *i, t_token  *token)
     while (raw_line[*i] && raw_line[*i] != '"')
         (*i)++;
     token->str = ft_strndup(&raw_line[start], *i - start);
+    if (!token->str)
+        return ;
     if (raw_line[*i] == '"')
         (*i)++;
 }

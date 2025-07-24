@@ -143,3 +143,8 @@ int main(void)
 	repl_loop();
 	return (0);
 }
+------------------------
+three issue:
+1\safe malloc, fixed
+2\strndup, fixed
+3\tokenizer issue: the contents inside quotes are not being captured as a single token. Instead, they’re being split up or including stray quote characters.

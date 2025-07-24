@@ -1,3 +1,4 @@
+#include "parsing.h"
 #include "minishell.h"
 
 // get raw_line with readline,  and the put them to t_token
@@ -14,6 +15,8 @@ t_token *get_token_list(char *raw_line)
     new = NULL;
     i = 0;
     len = 0;
+    if (check_quotes_closed(raw_line))
+        return (NULL);
     while (raw_line[i])
     {
         while (raw_line[i] != '\0' && ft_isspace(raw_line[i]) != 0)
@@ -84,6 +87,7 @@ void    token_single_quote(char *raw_line, int  *i, t_token  *token)
 {
     int start;
 
+    (*i)++;
     start = *i;
     token->quote_type = 1;
     while (raw_line[*i] && raw_line[*i] != '\'')
@@ -98,8 +102,9 @@ void    token_double_quote(char *raw_line, int  *i, t_token  *token)
 {
     int start;
 
+    (*i)++; 
     start = *i;
-    token->quote_type = 1;
+    token->quote_type = 2;
     while (raw_line[*i] && raw_line[*i] != '"')
         (*i)++;
     token->str = ft_strndup(&raw_line[start], *i - start);

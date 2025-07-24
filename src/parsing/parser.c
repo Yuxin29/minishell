@@ -1,4 +1,5 @@
 #include "parsing.h"
+#include "minishell.h"
 
 //to find / recognize a cmd, we need to find a pipe
 //basically, before the pipe is a cmd, after it is pipe.
@@ -10,14 +11,15 @@ t_cmd *build_command_list(t_token *token_head)
     t_cmd   *cmd_head;
     t_cmd   *cmd_current;
     t_cmd   *cmd_last;
-    int     i;
-    int     len;
 
-    if (check_syntax(token_head))
-        return (NULL);     //first precheck if the token list is valid or have syntax errors
+    printf("so far so good 1\n");
+    //if (check_syntax(token_head))
+    //    return (NULL);     //first precheck if the token list is valid or have syntax errors
+    printf("so far so good 1\n");
     cmd_head = NULL;
     cmd_current = NULL;
     cmd_last = NULL;
+    printf("so far so good 2\n");
     while (token_head && token_head->next)
     {
         cmd_current = safe_malloc(sizeof(t_cmd));
@@ -27,67 +29,67 @@ t_cmd *build_command_list(t_token *token_head)
         else
             cmd_last->next = cmd_current;
         cmd_last = cmd_current;
+        printf("so far so good 2\n");
         while (token_head->t_type != 1) 
         {    
             if (token_head->t_type == 0)
-            {
-                i = 0;
-                while (token_head-next->t_type == 0)  //this whole package should go to get_argv helper
-                {
-                    //**argv needs malloc first, how do I know how many *av to mallocn, need a helper here
-                    len = count_argv(token_head);
-                    cmd_head->argv = safe_malloc(siof(char *) * len);
-                    while (i < len)
-                    {
-                        cmd_head->argv[i] = ft_strndup(token_head->str, ft_strlen(token_head->str));
-                        if (!cmd_head->argv) //we should write a safe strdup here
-                        {
-                            free(cmd_current);
-                            return (NULL);
-                        }
-                        token_head =  token_head->next;
-                        i++;
-                    } 
-                } 
-            }
-            if (token_head->t_type == 2 || token_head->t_type == 5)    //redirections, need another helpers
-                parse_redirections(cmd, token_head);
+                token_head = parse_argv(cmd_current, token_head);
+            else if (token_head->t_type >= 2)    //redirections, need another helpers
+                token_head = parse_redirections(cmd_current, token_head);
             token_head =  token_head->next;
         }
         if (token_head->t_type == 1)    //hit the pipe, this should be the end of this cmd
-            cmd_head->next = cmd_new;
+            token_head =  token_hssead->next;
     }
-    return cmd_head
+    return (cmd_head);
 }
 
 // handle redirections
 // for redirection, I feel dfficult becaust I need to check next token to know if this token str is a infile or outfile
-void parse_redirections(t_cmd *cmd, t_token *tokens)
+t_token *parse_redirections(t_cmd *cmd, t_token *tokens)
 {
-    if (token_head->next->t_type == 2 && token_head->t_type == 0)
+    t_token *next;
+
+    next = tokens->next;
+    if (tokens->t_type == 2)
+        cmd->infile = ft_strndup(next->str, ft_strlen(next->str));
+    if (tokens->t_type == 3)
     {
-        cmd_head->infile = ft_strndup(token_head->str, ft_strlen(token_head->str));
-        if (!cmd_head->argv)
-        {
-            return (NULL);  //we should write a safe strdup here
-            i++;
-        }
+        cmd->outfile = ft_strndup(next->str, ft_strlen(next->str));
+        cmd->append_out = 0;
     }
-    if ((token_head->next->t_type == 3 || token_head->next->t_type == 4) && token_head->t_type == 0)
+    if (tokens->t_type == 4)
     {
-        cmd_head->outfile = ft_strndup(token_head->next->str, ft_strlen(token_head->next->str));
-        if (!cmd_head->argv)
-        {
-            return (NULL);  //we should write a safe strdup here
-            i++;
-        }
+        cmd->outfile = ft_strndup(next->str, ft_strlen(next->str));
+        cmd->append_out = 1;
     }
+    if (tokens->t_type == 5)
+        cmd->heredoc_delim = ft_strndup(next->str, ft_strlen(next->str));
+    //all the ft_strndup needs to be null checked, should we do a safe string dup
+    return (next->next);
 }
-
-// group commands by pipe
-//do I need it or not???
-t_cmd *group_by_pipes(t_token *tokens)
+//handle normal word_tokens, string and strings
+t_token *parse_argv(t_cmd *cmd, t_token *tokens)
 {
-
-
+    int i;
+    int len;
+    
+    i = 0;
+    while (tokens->next->t_type == 0)  //this whole package should go to get_argv helper
+    {
+        len = count_argv(tokens);
+        cmd->argv = safe_malloc(sizeof(char *) * len);
+        while (i < len)
+        {
+            cmd->argv[i] = ft_strndup(tokens->str, ft_strlen(tokens->str));
+            if (!cmd->argv)
+            {
+                free(cmd);
+                return (NULL);
+            }
+            tokens =  tokens->next;
+            i++;
+        } 
+    }
+    return (tokens);
 }

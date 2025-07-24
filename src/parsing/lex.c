@@ -1,3 +1,4 @@
+#include "parsing.h"
 #include "minishell.h"
 
 // get raw_line with readline,  and the put them to t_token
@@ -9,31 +10,33 @@ t_token *get_token_list(char *raw_line)
 	int		i;
 	int		len;
 
-	head = NULL;
-	last = NULL;
-	new = NULL;
-	i = 0;
-	len = 0;
-	while (raw_line[i])
-	{
-		while (raw_line[i] != '\0' && ft_isspace(raw_line[i]) != 0)
-			i++;
-		if (!raw_line[i])
-			break ;
-		new = get_one_new_token(&raw_line[i], &len);
-		if (!new)
-		{
-			free_token_list(head);
-			return (NULL);
-		}
-		if (!head)
-			head = new;
-		else
-			last->next = new;
-		last = new;
-		i += len;
-	}
-	return head;
+    head = NULL;
+    last = NULL;
+    new = NULL;
+    i = 0;
+    len = 0;
+    if (check_quotes_closed(raw_line))
+        return (NULL);
+    while (raw_line[i])
+    {
+        while (raw_line[i] != '\0' && ft_isspace(raw_line[i]) != 0)
+            i++;
+        if (!raw_line[i])
+            break ;
+        new = get_one_new_token(&raw_line[i], &len);
+        if (!new)
+        {
+            free_token_list(head);
+            return (NULL);
+        }
+        if (!head)
+            head = new;
+        else
+            last->next = new;
+        last = new;
+        i += len;
+    }
+    return head;
 }
 //if head not initiatedm the new one is the headone,
 //otherwise, append the new one to the end of the last one
@@ -88,15 +91,14 @@ void	token_single_quote(char *raw_line, int  *i, t_token  *token)
 {
 	int	start;
 
-	start = *i;
-	token->quote_type = 1;
-	while (raw_line[*i] && raw_line[*i] != '\'')
-		(*i)++;
-	token->str = ft_strndup(&raw_line[start], *i - start);
-	if (!token->str) //!
-		return ;
-	if (raw_line[*i] == '\'')
-		(*i)++;
+    (*i)++;
+    start = *i;
+    token->quote_type = 1;
+    while (raw_line[*i] && raw_line[*i] != '\'')
+        (*i)++;
+    token->str = ft_strndup(&raw_line[start], *i - start);
+    if (raw_line[*i] == '\'')
+        (*i)++;
 }
 
 //dealing double quote token
@@ -104,13 +106,12 @@ void	token_double_quote(char *raw_line, int  *i, t_token  *token)
 {
 	int start;
 
-	start = *i;
-	token->quote_type = 1;
-	while (raw_line[*i] && raw_line[*i] != '"')
-		(*i)++;
-	token->str = ft_strndup(&raw_line[start], *i - start);
-	if (!token->str) //!
-		return ;
-	if (raw_line[*i] == '"')
-		(*i)++;
+    (*i)++; 
+    start = *i;
+    token->quote_type = 2;
+    while (raw_line[*i] && raw_line[*i] != '"')
+        (*i)++;
+    token->str = ft_strndup(&raw_line[start], *i - start);
+    if (raw_line[*i] == '"')
+        (*i)++;
 }

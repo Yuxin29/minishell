@@ -1,5 +1,15 @@
+#include "parsing.h"
 #include "minishell.h"
 
+//precheck validity of the raw_line
+//return 1 on errors and 1 on okei
+int check_quotes_closed(char *raw_line)
+{
+    if (!raw_line || !*raw_line)
+        return (1);
+    //other errors, like quotes not closed
+    return (0);
+}
 void	get_token_type(t_token *token)
 {
     const char *tmp;
@@ -35,7 +45,7 @@ void    free_token_list(t_token *token_head)
 }
 
 /*
-cc -Wall -Wextra -Werror -I./include -I./libft ./src/parsing/lex.c ./src/parsing/lex_utils.c
+======================================testing script=============================================
 // Test 1: Simple Command
 Input: echo hello world
 Expected:

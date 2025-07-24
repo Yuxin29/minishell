@@ -4,17 +4,21 @@
 //readline            - get a line from a user with editing       get a line from a user with editing
 //#include <readline/history.h>       //add_history		//I dont need this, lin has it in main
 //#include <readline/readline.h>      //readline		//I dont need this, lin has it in main
-#include <stdlib.h>
-# include <stdlib.h>
+
+# include <unistd.h>         //access, access, close, fork
+# include <stdlib.h>         //malloc, free
+# include <fcntl.h>
+# include <stdio.h>
+
 
 typedef enum e_token_type
 {
 	T_WORD,             // 0    // "string" :   string, a cmd, a arguement
 	T_PIPE,             // 1    // |        :   pipe
-	T_REDIRECT_IN,      // 2    // <        :   input redirection
-	T_REDIRECT_OUT,     // 3    // >        :   output redrection
-	T_APPEND,           // 4    // >>       :   output appen
-	T_HEREDOC,          // 5    // <<       :   heredoc input
+	T_REDIRECT_IN,      // 2    // <        :   input redirection   :   Reads from a file
+	T_REDIRECT_OUT,     // 3    // >        :   output redrection   :   Writes to a file, replacing its contents.
+	T_APPEND,           // 4    // >>       :   output appen        :   Writes to a file, but appends at the end.
+	T_HEREDOC,          // 5    // <<       :   heredoc input       :   Feeds inline text as stdin.
 }	t_token_type;
 
 typedef struct      s_token
@@ -86,7 +90,20 @@ void	parse_redirections(t_cmd *cmd, t_token **tokens);
 // group commands by pipe
 t_cmd	*group_by_pipes(t_token *tokens);
 
+void    free_token_list(t_token *token_head);
+int     check_quotes_closed(char *raw_line);
+void	*safe_malloc(size_t size);  //FIXME: this one moved to utils later
+
+// parser.c                         
+t_cmd	*build_command_list(t_token *tokens);                    
+t_token *parse_redirections(t_cmd *cmd, t_token *tokens);
+t_token    *parse_argv(t_cmd *cmd, t_token *tokens);
+
+
 // parser_utils.c
-void    free_cmd_list(t_cmd *cmd);
+// syntax check (pipes, etc.)                  
+int		check_syntax(t_token *tokens);
+int     count_argv(t_token *start);
+void    free_cmd_list(t_cmd *cmd_head);
 
 #endif

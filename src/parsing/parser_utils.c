@@ -20,6 +20,23 @@ int check_syntax(t_token *token_head)
     }*/
     return (0);
 }
+//this counts word-type tokens
+void get_argc(t_token   *start);
+{
+
+
+}
+
+int count_argv(t_token *start)
+{
+    int count = 0;
+    while (start && start->t_type == 0)
+    {
+        count++;
+        start = start->next;
+    }
+    return count;
+}
 
 //free a linked list of t_cmd
 void    free_cmd_list(t_cmd *cmd_head);

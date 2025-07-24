@@ -77,9 +77,7 @@ void	*safe_malloc(size_t size);  //FIXME: this one moved to utils later
 // build command structures                    
 t_cmd	*build_command_list(t_token *tokens);
 // handle redirections                        
-void	parse_redirections(t_cmd *cmd, t_token **tokens);
-// group commands by pipe                      
-t_cmd	*group_by_pipes(t_token *tokens);
+void	parse_redirections(t_cmd *cmd, t_token *tokens);
 
 // parser_utils.c
 // syntax check (pipes, etc.)                  

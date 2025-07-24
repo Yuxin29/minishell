@@ -4,6 +4,8 @@
 //for testing, delete later
 static void print_token_list(t_token *head)
 {
+    if (!head)
+        printf("token empty\n");
     while (head)
     {
         printf("[TYPE:%d] ", head->t_type);
@@ -22,6 +24,8 @@ static void print_cmd_list(t_cmd *head)
     int i = 0;
     int cmd_num = 1;
 
+    if (!head)
+        printf("cmd empty\n");
     while (head)
     {
         printf("=== Command %d ===\n", cmd_num++);
@@ -41,7 +45,7 @@ static void print_cmd_list(t_cmd *head)
         else
             printf("argv: (null)\n");
 
-        // Print input redirection
+        // Print input redicheck_quotes_closedrection
         if (head->infile)
             printf("infile: '%s'\n", head->infile);
 
@@ -63,8 +67,10 @@ static void print_cmd_list(t_cmd *head)
 int main(void)
 {
     //char    line[] = "cat < input.txt | grep foo > out.txt | echo \"hello world\" 'again' >> out2.txt";
+    char    line[] = "cat < input.txt | grep foo > out.txt | echo \"hello world 'again' >> out2.txt";
     //char    line[] = "echo hello world";
-    char    line[] = "cat << heredoc >> out";
+    //char    line[] = "cat << heredoc >> out";
+    //char    line[] = "   cat";  //error here in cmd
     t_token *tokens;
     t_cmd   *cmds;
 
@@ -79,7 +85,7 @@ int main(void)
 }
 
 /*
-======================================testing script=============================================
+======================================testing case for token and cmd list =============================================
 // Test 1: Simple Command
 Input: echo hello world
 Expected:

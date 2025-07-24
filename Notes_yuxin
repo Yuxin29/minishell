@@ -157,4 +157,19 @@ token   - the results of the smallest unit
 'single quotes'     literally just a string
 "double quotes"     possibly multiple variables and commands included
 
-=================================other stuff =====================================================
+=================================to tell lin on Friday  =====================================================
+
+in lex_utils.c, we are prechecking if quotes are closed or not
+//in case of the quotes not close, the screen is blicking because it thinks that the cmd is not finished
+mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ cat < input.txt | grep foo > out.txt | echo "hello world 'again' >> out2.txt
+> ^C
+mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ cat < input.txt | grep foo > out.txt | echo "hello world
+> "
+hello world
+
+bash: input.txt: No such file or directory
+
+| cat Makefile
+this syntax error is reported before change token to cmd list
+cat Makefile or Cati makefile
+the cmd existence and file access if reported after parsing

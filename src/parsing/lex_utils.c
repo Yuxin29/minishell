@@ -3,13 +3,42 @@
 
 //precheck validity of the raw_line
 //return 1 on errors and 1 on okei
+//in case of the quotes not close, the screen is blicking because it thinks that the cmd is not finished
 int check_quotes_closed(char *raw_line)
 {
-    if (!raw_line || !*raw_line)
+    int i;
+    
+    i = 0;
+    if (!raw_line || !raw_line[i])
         return (1);
     //other errors, like quotes not closed
+    while (ft_isspace(raw_line[i]))     //handle line with ouly space and also skip all space if there are solid chars
+        i++;
+    if (!raw_line || !raw_line[i])
+        return (1);
+    while (raw_line[i])
+    {
+        if (raw_line[i] == '"')
+        {
+            i++;
+            while (raw_line[i] && raw_line[i] != '"')
+                i++;
+            if (!raw_line[i]) // closing quote not found
+                return (1);
+        }
+        else if (raw_line[i] == '\'')
+        {
+            i++;
+            while (raw_line[i] && raw_line[i] != '\'')
+                i++;
+            if (!raw_line[i]) // closing quote not found
+                return (1);
+        }
+        i++;
+    }
     return (0);
 }
+
 void	get_token_type(t_token *token)
 {
     const char *tmp;
@@ -43,57 +72,3 @@ void    free_token_list(t_token *token_head)
         token_head = tmp;
     }
 }
-
-/*
-======================================testing script=============================================
-// Test 1: Simple Command
-Input: echo hello world
-Expected:
-[TOKEN_WORD:echo][TOKEN_WORD:hello][TOKEN_WORD:world]
-
-// Test 2: Pipe and Redirection
-Input: cat < file | grep foo > out.txt
-Expected:
-[TOKEN_WORD:cat][TOKEN_REDIR_IN:<][TOKEN_WORD:file][TOKEN_PIPE:|]
-[TOKEN_WORD:grep][TOKEN_WORD:foo][TOKEN_REDIR_OUT:>][TOKEN_WORD:out.txt]
-
-// Test 3: Strings Quoted with Single/Double Quotes
-Input: echo "hello world" 'foo bar'
-Expected:[TOKEN_WORD:echo][TOKEN_WORD:hello world:quoted=2][TOKEN_WORD:foo bar:quoted=1]
-
-// Test 4: Operators Inside Quotes
-Input: echo "a|b" | grep "c>d"
-Expected:
-[TOKEN_WORD:echo][TOKEN_WORD:a|b:quoted=2][TOKEN_PIPE:|]
-[TOKEN_WORD:grep][TOKEN_WORD:c>d:quoted=2]
-
-// Test 5: Escaped Characters
-Input: echo \"hello\"
-Expected:
-[TOKEN_WORD:echo][TOKEN_WORD:"hello"]
-
-// Test 6: Multiple Consecutive Operators
-Input: cat << heredoc >> out
-Expected:
-[TOKEN_WORD:cat][TOKEN_HEREDOC:<<][TOKEN_WORD:heredoc]
-[TOKEN_REDIR_APPEND:>>][TOKEN_WORD:out]
-
-// Test 7: Only Spaces
-Input: " "
-Expected:
-[TOKEN_WORD: :quoted=2]
-
-// Test 8: Empty String
-Input: (empty)
-Expected:
-(NULL or empty list)
-
-// Test 9: Unclosed Quotes
-Input: echo "hello world
-Expected: Error or TOKEN_UNKNOWN (lexer should detect the error)
-
-// Test 10: Token Containing Special Characters
-Input: echo ab\$c
-Expected:[TOKEN_WORD:echo][TOKEN_WORD:ab$c]
-(The lexer should correctly interpret the escaped character)
-*/

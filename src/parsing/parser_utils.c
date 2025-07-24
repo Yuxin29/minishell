@@ -13,11 +13,19 @@ int check_syntax(t_token *token_head)
         return (1);
     while (token_head)
     {
-        // no word after ">, <, >>, << "
+        // no word after ">, <, >>, << " and //Pipe directly after redirection (e.g., cat < | wc) and         // Redirection followed by another redirection (e.g., cat < > file)
+        if (token_head->t_type >= 2)
+        {
+            if (!token_head->next || token_head->next->t_type != 0)
+                return (1);
+        }
         // Two pipes in a row (e.g., ls || cat)
-        //Pipe directly after redirection (e.g., cat < | wc)
-        // Redirection followed by another redirection (e.g., cat < > file)
-        //. Empty command between pipes (e.g., ls | | wc)
+        if (token_head->t_type >= 1)
+        {
+            if (token_head->next->t_type == 1)
+                return (1);
+        }
+        //. Empty command between pipes (e.g., ls | | wc), this one is difficult, maybe I should check it in the main part of parsing??
         token_head = token_head->next;
     }
     //Ends with a pipe

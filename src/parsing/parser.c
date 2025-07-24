@@ -12,14 +12,11 @@ t_cmd *build_command_list(t_token *token_head)
     t_cmd   *cmd_current;
     t_cmd   *cmd_last;
 
-    printf("so far so good 1\n");
     //if (check_syntax(token_head))
     //    return (NULL);     //first precheck if the token list is valid or have syntax errors
-    printf("so far so good 1\n");
     cmd_head = NULL;
     cmd_current = NULL;
     cmd_last = NULL;
-    printf("so far so good 2\n");
     while (token_head && token_head->next)
     {
         cmd_current = safe_malloc(sizeof(t_cmd));
@@ -29,18 +26,22 @@ t_cmd *build_command_list(t_token *token_head)
         else
             cmd_last->next = cmd_current;
         cmd_last = cmd_current;
-        printf("so far so good 2\n");
-        while (token_head->t_type != 1) 
+        while (token_head && token_head->next && token_head->t_type != 1) 
         {    
+            printf("so far so good 1\n");
             if (token_head->t_type == 0)
+            {
                 token_head = parse_argv(cmd_current, token_head);
+                printf("so far so good 2\n");
+            }
             else if (token_head->t_type >= 2)    //redirections, need another helpers
                 token_head = parse_redirections(cmd_current, token_head);
-            token_head =  token_head->next;
         }
-        if (token_head->t_type == 1)    //hit the pipe, this should be the end of this cmd
-            token_head =  token_hssead->next;
+        if (token_head && token_head->t_type == 1)    //hit the pipe, this should be the end of this cmd
+            token_head = token_head->next;
+        printf("so far so good 3\n");
     }
+    printf("so far so good 4\n");
     return (cmd_head);
 }
 
@@ -50,6 +51,8 @@ t_token *parse_redirections(t_cmd *cmd, t_token *tokens)
 {
     t_token *next;
 
+    if (!tokens || !tokens->next)
+        return NULL;
     next = tokens->next;
     if (tokens->t_type == 2)
         cmd->infile = ft_strndup(next->str, ft_strlen(next->str));
@@ -74,22 +77,24 @@ t_token *parse_argv(t_cmd *cmd, t_token *tokens)
     int i;
     int len;
     
+    if (!tokens)
+        return NULL;
+    //if (!cmd->argv)
+        //return NULL;
     i = 0;
-    while (tokens->next->t_type == 0)  //this whole package should go to get_argv helper
-    {
-        len = count_argv(tokens);
-        cmd->argv = safe_malloc(sizeof(char *) * len);
-        while (i < len)
+    len = count_argv(tokens);
+    cmd->argv = safe_malloc(sizeof(char *) * (len + 1));
+    while (i < len && tokens && tokens->t_type == 0)
+    {   
+        cmd->argv[i] = ft_strndup(tokens->str, ft_strlen(tokens->str));
+        if (!cmd->argv[i])
         {
-            cmd->argv[i] = ft_strndup(tokens->str, ft_strlen(tokens->str));
-            if (!cmd->argv)
-            {
-                free(cmd);
-                return (NULL);
-            }
-            tokens =  tokens->next;
-            i++;
-        } 
-    }
+            //free(cmd);
+            return (NULL);
+        }
+        tokens = tokens->next;
+        i++;
+    } 
+    cmd->argv[i] = NULL;
     return (tokens);
 }

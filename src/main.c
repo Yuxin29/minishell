@@ -62,7 +62,9 @@ static void print_cmd_list(t_cmd *head)
 
 int main(void)
 {
-    char    line[] = "cat < input.txt | grep foo > out.txt | echo \"hello world\" 'again' >> out2.txt";
+    //char    line[] = "cat < input.txt | grep foo > out.txt | echo \"hello world\" 'again' >> out2.txt";
+    //char    line[] = "echo hello world";
+    char    line[] = "cat << heredoc >> out";
     t_token *tokens;
     t_cmd   *cmds;
 

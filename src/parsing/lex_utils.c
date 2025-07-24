@@ -20,17 +20,17 @@ void	get_token_type(t_token *token)
 }
 
 //free the whole linked list
-void    free_token_list(t_token *head)
+void    free_token_list(t_token *token_head)
 {
     t_token *tmp;
 
-    while(head)
+    while(token_head)
     {
-        tmp = head->next;
-        if (head->str)
-            free(head->str);
-        free(head);
-        head = tmp;
+        tmp = token_head->next;
+        if (token_head->str)
+            free(token_head->str);
+        free(token_head);
+        token_head = tmp;
     }
 }
 

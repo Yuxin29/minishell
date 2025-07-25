@@ -26,8 +26,8 @@ t_cmd *build_command_list(t_token *token_head)
         else
             cmd_last->next = cmd_current;
         cmd_last = cmd_current;
-        while (token_head && token_head->next && token_head->t_type != 1) 
-        {    
+        while (token_head && token_head->next && token_head->t_type != 1)
+        {
             printf("so far so good 1\n");
             if (token_head->t_type == 0)
             {
@@ -76,7 +76,7 @@ t_token *parse_argv(t_cmd *cmd, t_token *tokens)
 {
     int i;
     int len;
-    
+
     if (!tokens)
         return NULL;
     //if (!cmd->argv)
@@ -85,7 +85,7 @@ t_token *parse_argv(t_cmd *cmd, t_token *tokens)
     len = count_argv(tokens);
     cmd->argv = safe_malloc(sizeof(char *) * (len + 1));
     while (i < len && tokens && tokens->t_type == 0)
-    {   
+    {
         cmd->argv[i] = ft_strndup(tokens->str, ft_strlen(tokens->str));
         if (!cmd->argv[i])
         {
@@ -94,7 +94,7 @@ t_token *parse_argv(t_cmd *cmd, t_token *tokens)
         }
         tokens = tokens->next;
         i++;
-    } 
+    }
     cmd->argv[i] = NULL;
     return (tokens);
 }

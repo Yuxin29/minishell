@@ -11,7 +11,7 @@
 # include <stdio.h>
 
 //Lexing: get a raw line and change it to a linked list of minimal unit(tokens)
-typedef enum e_token_type 
+typedef enum e_token_type
 {
 	T_WORD,             // 0    // "string" :   string, a cmd, a arguement
 	T_PIPE,             // 1    // |        :   pipe
@@ -29,7 +29,7 @@ typedef struct      s_token
 	struct s_token  *next;
 }                   t_token;
 
-//Parsing: - Taking the token list and Understanding the structure of the command, 
+//Parsing: - Taking the token list and Understanding the structure of the command,
 // 			- Grouping tokens into command nodes, pipes, redirections, etc,
 // 			- Building a linked list of command objects (t_cmd)
 typedef struct s_cmd
@@ -54,18 +54,17 @@ void		token_double_quote(char *raw_line, int  *i, t_token  *token);
 void         check_raw_line_syntax(char *raw_line);
 void        free_token_list(t_token *token_head);
 void        get_token_type(t_token *token);
->>>>>>> 8662d478ee9cd2daac2c1abe584dfde451a0a458
 
-// parser.c        
-//change token_list to command list and free the original tokens                 
+// parser.c
+//change token_list to command list and free the original tokens
 t_cmd       *build_command_list(t_token *tokens);
-t_token        *get_one_new_cmd(t_token    *token_head, t_cmd *cmd_current);          
+t_token        *get_one_new_cmd(t_token    *token_head, t_cmd *cmd_current);
 t_token     *parse_redirections(t_cmd *cmd, t_token *tokens);
 t_token     *parse_argv(t_cmd *cmd, t_token *tokens);
 
 
 // parser_utils.c
-// syntax check (pipes, etc.)                  
+// syntax check (pipes, etc.)
 void         check_token_syntax(t_token *tokens);
 void        free_cmd_list(t_cmd *cmd_head);
 void        check_strndup(char *str, t_cmd *cmd, t_token *tokens);

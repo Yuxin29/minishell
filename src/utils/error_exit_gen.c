@@ -1,10 +1,10 @@
 #include "minishell.h"
 
 //below 2 need to be move to utils later
-static char *error_and_return(const char *msg)
+void	*error_and_return(const char *msg)
 {
     perror(msg);
-    return (NULL);
+    exit(EXIT_FAILURE);
 }
 
 void	*safe_malloc(size_t size)

@@ -9,9 +9,11 @@ int	main(void)
 	return (0);
 }*/
 
-//for testing, delete later
+//for testing lexing, delete later
 static void print_token_list(t_token *head)
 {
+    if (!head)
+        printf("token empty\n");
     while (head)
     {
         printf("[TYPE:%d] ", head->t_type);
@@ -24,16 +26,17 @@ static void print_token_list(t_token *head)
     }
 }
 
-// For testing, delete later
+// For testing parsing, delete later
 static void print_cmd_list(t_cmd *head)
 {
     int i = 0;
     int cmd_num = 1;
 
+    if (!head)
+        printf("cmd empty\n");
     while (head)
     {
         printf("=== Command %d ===\n", cmd_num++);
-
         // Print argv
         if (head->argv)
         {
@@ -48,46 +51,52 @@ static void print_cmd_list(t_cmd *head)
         }
         else
             printf("argv: (null)\n");
-
-        // Print input redirection
+        // Print input redicheck_quotes_closedrection
         if (head->infile)
             printf("infile: '%s'\n", head->infile);
-
         // Print output redirection
         if (head->outfile)
         {
             printf("outfile: '%s'\n", head->outfile);
             printf("append_out: %s\n", head->append_out ? "yes" : "no");
         }
-
         // Print heredoc delimiter
         if (head->heredoc_delim)
             printf("heredoc_delim: '%s'\n", head->heredoc_delim);
-
         head = head->next;
     }
 }
 
 int main(void)
 {
+    //syntax error plays:
     //char    line[] = "cat < input.txt | grep foo > out.txt | echo \"hello world\" 'again' >> out2.txt";
-    //char    line[] = "echo hello world";
-    char    line[] = "cat << heredoc >> out";
+    //char    line[] = "cat < input.txt | grep foo > out.txt | echo \"hello world 'again' >> out2.txt";
+    //char    line[] = "| ";
+    //char    line[] = "   cat";  //error here in cmd
+
+    //char    line[] = "echo hello world";                      //test1         Simple Command
+    //char    line[] = "cat < file | grep foo > out.txt";       //test2       Pipe and Redirection
+    //char    line[] = "echo \"hello world\" 'foo bar'";        //test3        echo "hello world" 'foo bar'
+    //char    line[] = "echo \"a|b\" | grep \"c>d\"";           //test4             Operators Inside Quotes
+    char    line[] = "echo \"hello\"";                          //test5             Escaped Characters
     t_token *tokens;
     t_cmd   *cmds;
 
     tokens = get_token_list(line);
     printf("🧱 Tokens:\n");
-    print_token_list(tokens);          // Your existing token debug
+    print_token_list(tokens);
+
     cmds = build_command_list(tokens);
     printf("\n🔧 Commands:\n");
-    print_cmd_list(cmds);              // New printer
+    print_cmd_list(cmds);
+    
     free_token_list(tokens);
     free_cmd_list(cmds);               // You’ll need to write this helper to free everything
 }
 
 /*
-======================================testing script=============================================
+======================================testing case for token and cmd list =============================================
 // Test 1: Simple Command
 Input: echo hello world
 Expected:

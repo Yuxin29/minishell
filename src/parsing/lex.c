@@ -15,8 +15,7 @@ t_token *get_token_list(char *raw_line)
     new = NULL;
     i = 0;
     len = 0;
-    if (check_quotes_closed(raw_line))
-        return (NULL);
+    check_raw_line_syntax(raw_line);
     while (raw_line[i])
     {
         while (raw_line[i] != '\0' && ft_isspace(raw_line[i]) != 0)
@@ -48,26 +47,26 @@ t_token	*get_one_new_token(char *raw_line, int *len)
 	t_token	*new;
 	int		i;
 
-	new = malloc(sizeof(t_token) * 1); //!
-	if (!new)
-		return (NULL);
-	i = 0;
-	if (raw_line[i] != '\'' && raw_line[i] != '"')
-		token_no_quote(raw_line, &i, new);
-	else if (raw_line[i] == '\'')
-		token_single_quote(raw_line, &i, new);
-	else if (raw_line[i] == '"')
-		token_double_quote(raw_line, &i, new);
-	if(!new->str)
-	{
-		free(new);
-		return (NULL);
-	}
-	//new->t_type = get_token_type(new);
-	get_token_type(new);
-	new->next = NULL;
-	*len = i;
-	return (new);
+    new = malloc(sizeof(t_token) * 1);
+    if (!new)
+        return (NULL);
+    i = 0;
+    if (raw_line[i] != '\'' && raw_line[i] != '"')
+        token_no_quote(raw_line, &i, new);
+    else if (raw_line[i] == '\'')
+        token_single_quote(raw_line, &i, new);
+    else if (raw_line[i] == '"')
+        token_double_quote(raw_line, &i, new);
+    if(!new->str)
+    {
+        free(new);
+        return (NULL);
+    }
+    //new->t_type = get_token_type(new);
+    get_token_type(new);
+    new->next = NULL;
+    *len = i;
+    return (new);
 }
 
 //char	*ft_substr(char const *s, unsigned int start, size_t len),

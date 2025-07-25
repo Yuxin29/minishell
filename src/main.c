@@ -14,9 +14,4 @@
 //     free_token_list(result);
 // }
 
-int	main(void)
-{
-	setup_signals();
-	repl_loop();
-	return (0);
-}
+

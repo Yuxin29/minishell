@@ -61,20 +61,28 @@ static void print_cmd_list(t_cmd *head)
 
 int main(void)
 {
+    //syntax error plays:
     //char    line[] = "cat < input.txt | grep foo > out.txt | echo \"hello world\" 'again' >> out2.txt";
     //char    line[] = "cat < input.txt | grep foo > out.txt | echo \"hello world 'again' >> out2.txt";
-    //char    line[] = "echo hello world";
     //char    line[] = "| ";
-    char    line[] = "   cat";  //error here in cmd
+    //char    line[] = "   cat";  //error here in cmd
+
+    //char    line[] = "echo hello world";                      //test1         Simple Command
+    //char    line[] = "cat < file | grep foo > out.txt";       //test2       Pipe and Redirection
+    //char    line[] = "echo \"hello world\" 'foo bar'";        //test3        echo "hello world" 'foo bar'
+    //char    line[] = "echo \"a|b\" | grep \"c>d\"";           //test4             Operators Inside Quotes
+    char    line[] = "echo \"hello\"";                          //test5             Escaped Characters
     t_token *tokens;
     t_cmd   *cmds;
 
     tokens = get_token_list(line);
     printf("🧱 Tokens:\n");
-    print_token_list(tokens);          // Your existing token debug
+    print_token_list(tokens);
+
     cmds = build_command_list(tokens);
     printf("\n🔧 Commands:\n");
-    print_cmd_list(cmds);              // New printer
+    print_cmd_list(cmds);
+    
     free_token_list(tokens);
     free_cmd_list(cmds);               // You’ll need to write this helper to free everything
 }

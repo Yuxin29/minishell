@@ -15,8 +15,7 @@ t_token *get_token_list(char *raw_line)
     new = NULL;
     i = 0;
     len = 0;
-    if (check_quotes_closed(raw_line))
-        return (NULL);
+    check_raw_line_syntax(raw_line);
     while (raw_line[i])
     {
         while (raw_line[i] != '\0' && ft_isspace(raw_line[i]) != 0)
@@ -48,7 +47,9 @@ t_token    *get_one_new_token(char *raw_line, int *len)
     t_token *new;
     int     i;
 
-    new = safe_malloc(sizeof(t_token) * 1);
+    new = malloc(sizeof(t_token) * 1);
+    if (!new)
+        return (NULL);
     i = 0;
     if (raw_line[i] != '\'' && raw_line[i] != '"')
         token_no_quote(raw_line, &i, new);

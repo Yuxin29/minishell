@@ -1,7 +1,7 @@
 #include "minishell.h"
 # include <stdio.h>
 
-//for testing, delete later
+//for testing lexing, delete later
 static void print_token_list(t_token *head)
 {
     if (!head)
@@ -18,7 +18,7 @@ static void print_token_list(t_token *head)
     }
 }
 
-// For testing, delete later
+// For testing parsing, delete later
 static void print_cmd_list(t_cmd *head)
 {
     int i = 0;
@@ -29,7 +29,6 @@ static void print_cmd_list(t_cmd *head)
     while (head)
     {
         printf("=== Command %d ===\n", cmd_num++);
-
         // Print argv
         if (head->argv)
         {
@@ -44,22 +43,18 @@ static void print_cmd_list(t_cmd *head)
         }
         else
             printf("argv: (null)\n");
-
         // Print input redicheck_quotes_closedrection
         if (head->infile)
             printf("infile: '%s'\n", head->infile);
-
         // Print output redirection
         if (head->outfile)
         {
             printf("outfile: '%s'\n", head->outfile);
             printf("append_out: %s\n", head->append_out ? "yes" : "no");
         }
-
         // Print heredoc delimiter
         if (head->heredoc_delim)
             printf("heredoc_delim: '%s'\n", head->heredoc_delim);
-
         head = head->next;
     }
 }
@@ -67,10 +62,10 @@ static void print_cmd_list(t_cmd *head)
 int main(void)
 {
     //char    line[] = "cat < input.txt | grep foo > out.txt | echo \"hello world\" 'again' >> out2.txt";
-    char    line[] = "cat < input.txt | grep foo > out.txt | echo \"hello world 'again' >> out2.txt";
+    //char    line[] = "cat < input.txt | grep foo > out.txt | echo \"hello world 'again' >> out2.txt";
     //char    line[] = "echo hello world";
-    //char    line[] = "cat << heredoc >> out";
-    //char    line[] = "   cat";  //error here in cmd
+    //char    line[] = "| ";
+    char    line[] = "   cat";  //error here in cmd
     t_token *tokens;
     t_cmd   *cmds;
 

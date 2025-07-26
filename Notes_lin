@@ -213,3 +213,5 @@ Checking if a command string matches something (no error from a system call)
 
 User input validation errors
 ----------
+!!
+check error and free in execute_cmd and in main after this function 

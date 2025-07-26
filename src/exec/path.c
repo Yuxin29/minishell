@@ -6,6 +6,9 @@ static char	*find_path_in_envp(char **envp)
 
 	if(!envp)
 		return (NULL);
+	// path_value = getenv("PATH");
+	// if (!path_value)
+	// 	return NULL;
 	while(*envp) //get path
 	{
 		if (ft_strncmp(*envp, "PATH=", 5) == 0) //
@@ -25,7 +28,7 @@ static char	*match_cmd_in_path(char **paths, char *cmd)
 	char	*com_path;
 
 	i = 0;
-	while(paths[i]) //join cmd to different dir to check if the cmd is there and can run
+	while(paths[i])
 	{
 		joinslash = ft_strjoin(paths[i], "/");
 		if (!joinslash)

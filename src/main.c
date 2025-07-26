@@ -7,8 +7,6 @@
 // 	return (0);
 // }
 
-#include "minishell.h"
-
 int main(int argc, char **argv, char **envp)
 {
 	t_exec_path exec_cmd;
@@ -44,9 +42,13 @@ int main(int argc, char **argv, char **envp)
 				exit(127);
 			}
 			printf("%s\n", exec_cmd.cmd_path);
+			if (execute_cmd(&exec_cmd) == -1)
+			{
+				//free, close??
+			}
 			free(exec_cmd.cmd_path);
 			free_cmd_list(exec_cmd.whole_cmd);
 		}
-		return (0);
 	}
+	return (0);
 }

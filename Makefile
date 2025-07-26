@@ -29,22 +29,22 @@ OBJS := $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 all: $(LIBFT) $(NAME)
 
 $(NAME): $(OBJS) $(LIBFT)
-	$(CC) $(CFLAGS) $(OBJS) $(LIBFT) -lreadline -o $(NAME)
+	@$(CC) $(CFLAGS) $(OBJS) $(LIBFT) -lreadline -o $(NAME)
 
 $(LIBFT):
-	$(MAKE) all -C $(LIBFT_PATH)
+	@$(MAKE) all -C $(LIBFT_PATH)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
-	mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) $(INCLUDE) -c $< -o $@
+	@mkdir -p $(dir $@)
+	@$(CC) $(CFLAGS) $(INCLUDE) -c $< -o $@
 
 clean:
-	rm -rf $(OBJ_DIR)
-	$(MAKE) clean -C $(LIBFT_PATH)
+	@rm -rf $(OBJ_DIR)
+	@$(MAKE) clean -C $(LIBFT_PATH)
 
 fclean: clean
-	rm -f $(NAME)
-	$(MAKE) fclean -C $(LIBFT_PATH)
+	@rm -f $(NAME)
+	@$(MAKE) fclean -C $(LIBFT_PATH)
 
 re: fclean all
 

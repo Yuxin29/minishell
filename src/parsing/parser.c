@@ -27,18 +27,18 @@ t_cmd   *build_command_list(t_token *token_head)
         token_head = get_one_new_cmd(token_head, cmd_current);
         while (token_head && token_head->next && token_head->t_type != 1)
         {
-            printf("so far so good 1\n");
+            //printf("so far so good 1\n");
             if (token_head->t_type == 0)
             {
                 token_head = parse_argv(cmd_current, token_head);
-                printf("so far so good 2\n");
+                //printf("so far so good 2\n");
             }
             else if (token_head->t_type >= 2)    //redirections, need another helpers
                 token_head = parse_redirections(cmd_current, token_head);
         }
         if (token_head && token_head->t_type == 1)    //hit the pipe, this should be the end of this cmd
             token_head = token_head->next;
-        printf("so far so good 3\n");
+        //printf("so far so good 3\n");
     }
     free_token_list(token_head);
     return (cmd_head);

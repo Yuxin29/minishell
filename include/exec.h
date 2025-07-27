@@ -1,6 +1,8 @@
 #ifndef EXEC_H
 # define EXEC_H
 
+# include <sys/wait.h>
+
 typedef struct s_exec_path
 {
 	t_cmd	*whole_cmd;

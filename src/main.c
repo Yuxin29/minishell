@@ -1,7 +1,8 @@
 #include "minishell.h"
 # include <stdio.h>
 
-char *test_lines[] = {
+char *test_lines[] = 
+{
     // ✅ Valid test cases
 
     // Test 1: Simple Command
@@ -49,52 +50,90 @@ char *test_lines[] = {
     // Test 15: Redirection then command
     "> out.txt echo hello",
 
-    // Test 17: Spaces only
+    // Test 16: Spaces only
     "        ",
 
-    // Test 18: Empty string
+    // Test 17: Empty string
     "",
 //==========================================================================
     // ❌ Syntax error test cases (unclosed quotes, invalid input)
 
-    // ❌ Test 1: Unclosed double quote
+    // ❌ Test 18: Unclosed double quote
     "echo \"hello world",
 
-    // ❌ Test 2: Unclosed single quote
+    // ❌ Test 19: Unclosed single quote
     "echo 'hello world",
 
-    // ❌ Test 3: Unclosed single quote
-    "echo 'hello world",
-
-    // ❌ Test 4: Unclosed double quote
-    "echo \"hello world",
-
-    // ❌ Test 5: Mixed quote unclosed
+    // ❌ Test 20: Mixed quote unclosed
     "echo 'hello \"world",
 
-    // ❌ Test 6: Quote opens then escapes
-    "echo \"hello",
-
-    // ❌ Test 7: Complex nesting with unclosed
+    // ❌ Test 21: Complex nesting with unclosed
     "echo 'this is \"broken",
 
-    // ❌ Test 7: Only quote
+    // ❌ Test 22: Only quote
     "'",
 
-    // ❌ Test 8: Backslash (not required by subject)
+    // ❌ Test 23: Backslash (not required by subject)
     "echo hello\\world",
 
-    // ❌ Test 9: Semicolon (not required)
+    // ❌ Test 24: Semicolon (not required)
     "echo hello; echo world",
 
-    // ❌ Test 10: Mix of unsupported and supported
+    // ❌ Test 25: Mix of unsupported and supported
     "cat file.txt \\; echo done",
 
-    // ❌ Test 11: Escaped quotes (not required)
-    "echo \\\"hello\\\"",
-
-    // Test 16: Pipe at beginning
+    // ❌ Test 26: Escaped quotes (not required)
+    "echo \\\"hello\\\"",   
+//==========================================================================
+    // ❌ after lexing
+    // Test 27: Pipe at beginning
     "| cat file.txt",
+    
+    //Test 28: Pipe at end (missing RHS)
+    "cat file.txt |",
+
+    // ❌  Test 29: Multiple pipes in a row
+    "cat file.txt || grep hello",
+
+    // ❌  Test 30: Redirection without target
+    "cat <",
+
+    // ❌  Test 31: Multiple redirections without file
+    "cat <<",
+
+    // ❌  Test 32: Redirection to pipe
+    "cat > | grep hi",
+
+    // ❌  Test 33: Consecutive redirection and pipe
+    "cat <| grep",
+
+    // ❌  Test 34: Output redirection with no command
+    "> file.txt",
+
+    // ❌  Test 35: Pipe followed by redirection
+    "| > file.txt",
+
+    // ❌  Test 36: Invalid token between redirection
+    "cat > | file.txt",
+
+    // ❌  Test 37: Empty input
+    "",
+
+    // ❌   Test 38: Only pipe
+    "|",
+
+    // ❌   Test 39: Multiple redirection symbols in argument
+    "cat >>> file.txt",
+
+    // ❌   Test 40: Redirection with special character
+    "cat > ; file.txt",
+
+    // ❌   Test 41: Pipe inside quotes (should not be parsed as pipe)
+    "echo 'this | is literal'",
+    //    ✅ This one is valid if quotes are handled properly, but good to test that the lexer/parser does not misinterpret it.
+
+    // ❌   Test 42: Incomplete heredoc
+    "cat << EOF",
 
     NULL
 };
@@ -127,7 +166,10 @@ static void print_cmd_list(t_cmd *head)
     int cmd_num = 1;
 
     if (!head)
+    {
         printf("cmd empty\n");
+        return ;
+    }    
     while (head)
     {
         printf("====== Command %d ======\n", cmd_num++);
@@ -161,30 +203,54 @@ static void print_cmd_list(t_cmd *head)
     }
 }
 
-static void show_real_bash(const char *input)
+#include <string.h>
+
+// Helper to sanitize input by escaping redirection chars
+static void sanitize_input(const char *input, char *out, size_t out_size)
 {
-    char command[2048];
-    int status;
-
-    // Prepare bash command to check syntax only (-n)
-    snprintf(command, sizeof(command),
-        "bash -n -c '%s' 2>/dev/null", input);
-
-    status = system(command);
-
-    if (WIFEXITED(status))
+    size_t j = 0;
+    for (size_t i = 0; input[i] && j + 2 < out_size; i++)
     {
-        int code = WEXITSTATUS(status);
-        if (code == 0)
-            printf("Syntax OK (Bash Exit Status: %d)\n", code);
+        if (input[i] == '<' || input[i] == '>' || input[i] == '|')
+        {
+            // Escape with backslash to prevent redirection execution
+            out[j++] = '\\';
+            out[j++] = input[i];
+        }
         else
-            printf("Syntax Error (Bash Exit Status: %d)\n", code);
+        {
+            out[j++] = input[i];
+        }
     }
-    else
-    {
-        printf("🐚 Bash did not exit normally\n");
-    }
+    out[j] = '\0';
 }
+
+static void show_real_bash_tokens(const char *input)
+{
+    char command[4096];
+    char sanitized[2048];
+
+    sanitize_input(input, sanitized, sizeof(sanitized));
+
+    snprintf(command, sizeof(command),
+        "bash -c 'set -- %s; i=1; for arg in \"$@\"; do echo \"$i: [$arg]\"; i=$((i+1)); done'",
+        sanitized);
+
+    FILE *fp = popen(command, "r");
+    if (!fp)
+    {
+        perror("popen");
+        return;
+    }
+
+    printf("🐚 Real Bash Tokens:\n");
+    char line[512];
+    while (fgets(line, sizeof(line), fp))
+        printf("%s", line);
+
+    pclose(fp);
+}
+
 
 int main(void)
 {
@@ -202,16 +268,18 @@ int main(void)
               printf("tokens empty\n");
         else
             print_token_list(tokens);
-        show_real_bash(test_lines[i]);
+        show_real_bash_tokens(test_lines[i]);
         printf("━━━━━━━━━━━━━━━━\n");
         cmds = build_command_list(tokens);
-        printf("\n🔧 Commands:\n");
         if (!cmds)
             printf("cmd empty\n");
         else
+        {
+            printf("\n🔧 Commands:\n");
             print_cmd_list(cmds);
-        free_token_list(tokens);
-        free_cmd_list(cmds);
+            free_token_list(tokens);
+            free_cmd_list(cmds);
+        }
         i++;
     }
     return (0);

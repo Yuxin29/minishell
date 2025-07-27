@@ -50,7 +50,7 @@ void		token_single_quote(char *raw_line, int  *i, t_token  *token);
 void		token_double_quote(char *raw_line, int  *i, t_token  *token);
 
 // lex_utils.c
-void         check_raw_line_syntax(char *raw_line);
+int         check_raw_line_syntax(char *raw_line);
 void        free_token_list(t_token *token_head);
 void        get_token_type(t_token *token);
 
@@ -63,7 +63,7 @@ t_token     *parse_argv(t_cmd *cmd, t_token *tokens);
 
 // parser_utils.c
 // syntax check (pipes, etc.)                  
-void         check_token_syntax(t_token *tokens);
+int         check_token_syntax(t_token *tokens);
 void        free_cmd_list(t_cmd *cmd_head);
 void        check_strndup(char *str, t_cmd *cmd, t_token *tokens);
 int         count_argv(t_token *start);

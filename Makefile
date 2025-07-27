@@ -15,12 +15,8 @@ SRCS := \
 	$(SRC_DIR)/main.c \
 	$(SRC_DIR)/builtins/builtins.c \
 	$(SRC_DIR)/exec/exec.c \
-	$(SRC_DIR)/parsing/lex.c \
-	$(SRC_DIR)/parsing/lex_utils.c \
-	$(SRC_DIR)/parsing/parser.c \
-	$(SRC_DIR)/parsing/parser_utils.c \
-	$(SRC_DIR)/utils/error_exit_gen.c \
-	$(SRC_DIR)/utils/pre_parsing_error_exit.c \
+	$(wildcard $(SRC_DIR)/parsing/*.c) \
+	$(wildcard $(SRC_DIR)/utils/*.c) \
 	$(SRC_DIR)/repl/repl.c \
 	$(SRC_DIR)/signals/signals.c
 

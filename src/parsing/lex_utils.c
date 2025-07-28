@@ -44,9 +44,9 @@ void	get_token_type(t_token *token)
         token->t_type = T_REDIRECT_IN;
     else if (ft_strncmp(tmp, ">", 2) == 0)
         token->t_type = T_REDIRECT_OUT;
-    else if (ft_strncmp(tmp, "<<", 3) == 0)
-        token->t_type = T_APPEND;
     else if (ft_strncmp(tmp, ">>", 3) == 0)
+        token->t_type = T_APPEND;
+    else if (ft_strncmp(tmp, "<<", 3) == 0)
         token->t_type = T_HEREDOC;
     else
         token->t_type = T_WORD;

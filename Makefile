@@ -14,7 +14,7 @@ INCLUDE := -I include
 SRCS := \
 	$(SRC_DIR)/main.c \
 	$(SRC_DIR)/builtins/builtins.c \
-	$(SRC_DIR)/exec/exec.c \
+	$(wildcard $(SRC_DIR)/exec/*.c) \
 	$(wildcard $(SRC_DIR)/parsing/*.c) \
 	$(wildcard $(SRC_DIR)/utils/*.c) \
 	$(SRC_DIR)/repl/repl.c \

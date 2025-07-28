@@ -37,15 +37,15 @@ t_token *get_token_list(char *raw_line)
     }
     return head;
 }
-//if head not initiatedm the new one is the headone, 
+//if head not initiatedm the new one is the headone,
 //otherwise, append the new one to the end of the last one
 //and then, change head
 
 //get one single new_token
-t_token    *get_one_new_token(char *raw_line, int *len)
+t_token	*get_one_new_token(char *raw_line, int *len)
 {
-    t_token *new;
-    int     i;
+	t_token	*new;
+	int		i;
 
     new = malloc(sizeof(t_token) * 1);
     if (!new)
@@ -68,25 +68,26 @@ t_token    *get_one_new_token(char *raw_line, int *len)
     return (new);
 }
 
-//char	*ft_substr(char const *s, unsigned int start, size_t len), 
+//char	*ft_substr(char const *s, unsigned int start, size_t len),
 // malloc inside, need to null check
 //dealing no quote token
-void    token_no_quote(char *raw_line, int  *i, t_token  *token)
+void	token_no_quote(char *raw_line, int  *i, t_token  *token)
 {
-    int start;
+	int start;
 
-    start = *i;
-    token->quote_type = 0;
-    while (raw_line[*i] && !ft_isspace(raw_line[*i]))
+	start = *i;
+	token->quote_type = 0;
+	while (raw_line[*i] && !ft_isspace(raw_line[*i]))
 		(*i)++;
-    token->str = ft_strndup(&raw_line[start], *i - start);
-    return;
+	token->str = ft_strndup(&raw_line[start], *i - start);
+	if (!token->str) //!
+		return ;
 }
 
 //dealing single quote token
-void    token_single_quote(char *raw_line, int  *i, t_token  *token)
+void	token_single_quote(char *raw_line, int  *i, t_token  *token)
 {
-    int start;
+	int	start;
 
     (*i)++;
     start = *i;
@@ -94,12 +95,14 @@ void    token_single_quote(char *raw_line, int  *i, t_token  *token)
     while (raw_line[*i] && raw_line[*i] != '\'')
 		(*i)++;
     token->str = ft_strndup(&raw_line[start], *i - start);
+    if (!token->str)
+        return ;
     if (raw_line[*i] == '\'')
 		(*i)++;
 }
 
 //dealing double quote token
-void    token_double_quote(char *raw_line, int  *i, t_token  *token)
+void	token_double_quote(char *raw_line, int  *i, t_token  *token)
 {
 	int start;
 
@@ -107,8 +110,10 @@ void    token_double_quote(char *raw_line, int  *i, t_token  *token)
 	start = *i;
 	token->quote_type = 2;
     while (raw_line[*i] && raw_line[*i] != '"')
-		(*i)++;
-	token->str = ft_strndup(&raw_line[start], *i - start);
-	if (raw_line[*i] == '"')
-		(*i)++;
+        (*i)++;
+    token->str = ft_strndup(&raw_line[start], *i - start);
+    if (!token->str)
+        return ;
+    if (raw_line[*i] == '"')
+        (*i)++;
 }

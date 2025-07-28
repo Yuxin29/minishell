@@ -80,51 +80,10 @@ Expected:[TOKEN_WORD:echo][TOKEN_WORD:ab$c]
 (The lexer should correctly interpret the escaped character)
 -----------------------------"
 
-void    free_token_list(t_token head);
-{
-    t_token tmp;
-
-    while(head)
-    {
-        tmp = head->next;
-        if (head->str)
-            free(head->str);
-        free(head)
-        head = tmp;
-    }
-}
-
-
-void print_token_list(t_token *head)
-{
-    while (head)
-    {
-        printf("[TYPE:%d] ", head->t_type);
-        if (head->quote_type == 1)
-            printf("(SINGLE-QUOTE) ");
-        else if (head->quote_type == 2)
-            printf("(DOUBLE-QUOTE) ");
-        printf("VAL:'%s'\n", head->str ? head->str : "(null)");
-        head = head->next;
-    }
-}
----------------------------------
-handle error
-
 void exit_error(const char *msg)
 {
     perror(msg);
     exit(EXIT_FAILURE);
-}
-
-char *safe_ft_strdup(const char *s)
-{
-    char *tmp;
-
-	tmp = ft_strdup(s);
-    if (!tmp)
-        exit_error("ft_strdup failed\n");
-    return (tmp);
 }
 
 void	*safe_malloc(size_t size)
@@ -143,3 +102,116 @@ int main(void)
 	repl_loop();
 	return (0);
 }
+------------------------
+three issue:
+1\safe malloc, fixed
+2\strndup, fixed
+3\tokenizer issue: the contents inside quotes are not being captured as a single token. Instead, they’re being split up or including stray quote characters.
+---------------------
+
+void print_redirects(t_redirect *redir)
+{
+    while (redir)
+    {
+        printf("  Redirect: type=%d, file=%s\n", redir->type, redir->filename);
+        redir = redir->next;
+    }
+}
+
+void print_cmd_list(t_cmd *cmd)
+{
+    int i, j = 0;
+    while (cmd)
+    {
+        printf("=== Command #%d ===\n", ++j);
+        printf("  argv:");
+        for (i = 0; cmd->argv && cmd->argv[i]; i++)
+            printf(" '%s'", cmd->argv[i]);
+        printf("\n");
+        print_redirects(cmd->redirects);
+        cmd = cmd->next;
+    }
+}
+-----------------
+static void	print_token_list(t_token *token_list)
+{
+	int i = 0;
+	while (token_list)
+	{
+		printf("Token %d: %s (type=%d) (quoted=%d)\n", i, token_list->str, token_list->t_type, token_list->quote_type);
+		token_list = token_list->next;
+		i++;
+	}
+}
+
+void	repl_loop(void)
+{
+	char	*line;
+	t_token	*token_list;
+
+	while(1)
+	{
+		line = readline("minishell$ "); //should free line
+		if (!line) //Ctrl+D
+		{
+			printf("exit\n");
+			break ;
+		}
+		if(*line)
+		{
+			add_history(line); //no need to care about the history memory
+			token_list = get_token_list(line);
+			printf("You enter: %s\n", line);
+			print_token_list(token_list);
+			free_token_list(token_list);
+			free(line);
+		}
+	}
+}
+
+int	main(void)
+{
+	setup_signals();
+	repl_loop();
+	return (0);
+}
+-------------
+Edge Case Table for Parser Error Testing
+
+`	ls`	Starts with pipe
+`ls		wc`
+`ls	`	Ends with pipe
+ls >	Redirection with no target	Syntax error
+ls <	Redirection with no target	Syntax error
+cat < > out.txt	Redirection missing filename	Syntax error
+ls > < out.txt	Multiple redirects with missing target	Syntax error
+echo "foo	Unclosed quote	Syntax error or unterminated error
+echo 'foo	Unclosed quote	Syntax error or unterminated error
+`ls >	wc`	Redirect, then pipe, missing filename
+`ls <	wc`	Input redirect, then pipe, no filename
+`` (empty input)	Blank line	Do nothing / no command
+cat <<	Heredoc with no delimiter	Syntax error
+cat << EOF (unterminated heredoc in script mode)	Heredoc with missing content	Error or warning
+ls > > out.txt	Two > with no filename in between	Syntax error
+ls < in.txt >	Redirect out with missing filename	Syntax error
+ls "foo	Unclosed double quote	Syntax error
+ls 'foo	Unclosed single quote	Syntax error
+----------------------------
+✅ When should you use perror?
+File open/read/write errors (e.g., fopen, open, read, write fail)
+
+Memory allocation failures (malloc, calloc, etc.)
+
+System call failures (like fork, pipe, dup2, execve, etc.)
+
+Any library/system function documented to set errno on failure
+
+❌ When should you NOT use perror?
+Logic errors in your own code that have nothing to do with system/library calls
+
+Checking if a command string matches something (no error from a system call)
+
+User input validation errors
+----------
+!!
+check error and free in execute_cmd and in main after this function 

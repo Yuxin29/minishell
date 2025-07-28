@@ -5,8 +5,10 @@
 //after parsing, we got already cmd list.
 //we check here if there are redirections symbles here in each cmd.
 
-void        check_and_apply_redirections(t_cmd *cmd);
+void        check_and_apply_redirections(t_cmd *cmd)
 {
+    int fd;
+    
     if (cmd->infile)
     {
         fd = open(cmd->infile, O_RDONLY);
@@ -21,21 +23,20 @@ void        check_and_apply_redirections(t_cmd *cmd);
     if (cmd->outfile)
     {
         if(cmd->append_out == 1) //append
-            fd = open(cmd->outfile, O_WRONLY | O_CREAT | O_APPEND);
+            fd = open(cmd->outfile, O_WRONLY | O_CREAT | O_APPEND, 0644);
         else if (cmd->append_out == 0)
-            fd = open(cmd->outfile, O_WRONLY | O_CREAT | O_TRUNC);
+            fd = open(cmd->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
         if (fd < 0)
         {
-            perror(cmd->outfile)
+            perror(cmd->outfile);
             exit(1);
         }
-        dup2(fd, STOUT_FILENO);
+        dup2(fd, STDOUT_FILENO);
 		close(fd);
     }
 }
 
-
-void        check_and_apply_heredocs(t_cmd *cmd_list);
+void        check_and_apply_heredocs(t_cmd *cmd_list)
 {
     while (cmd_list && cmd_list->next)
     {

@@ -80,7 +80,7 @@ t_token *parse_argv(t_cmd *cmd, t_token *tokens)
 {
     int i;
     int len;
-    
+
     if (!tokens)
         return NULL;
     i = 0;
@@ -93,12 +93,12 @@ t_token *parse_argv(t_cmd *cmd, t_token *tokens)
         error_and_return("malloc failed");
     }
     while (i < len && tokens && tokens->t_type == 0)
-    {   
+    {
         cmd->argv[i] = ft_strndup(tokens->str, ft_strlen(tokens->str));
         check_strndup(cmd->argv[i], cmd,  tokens);
         tokens = tokens->next;
         i++;
-    } 
+    }
     cmd->argv[i] = NULL;
     return (tokens);
 }

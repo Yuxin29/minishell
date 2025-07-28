@@ -5,6 +5,8 @@ void    errmsg_exit(char *msg, int status)
 {
     if (msg)
         printf("%s\n", msg);
+    printf("🔴 Exit Status: %d\n", status); //delete later
+    longjmp(g_jmpbuf, 1);//delete later
     exit(status);
 }
 
@@ -15,7 +17,9 @@ void    free_errmsg_exit(t_token *tokens, char *msg, int status)
         free_token_list(tokens);
     if (msg)
         printf("%s\n", msg);
-    exit(status);
+    printf("🔴 Exit Status: %d\n", status);//delete later
+    longjmp(g_jmpbuf, 1);//delete later
+    exit (status);
 }
 
 //pre_parsing_error_exit.c
@@ -27,5 +31,7 @@ void    free_tc_errmsg_exit(t_token *tokens, t_cmd *cmds, char *msg, int status)
         free_cmd_list(cmds);
     if (msg)
         printf("%s\n", msg);
-    exit(status);
+    printf("🔴 Exit Status: %d\n", status);//delete later
+    longjmp(g_jmpbuf, 1);//delete later
+    exit (status);
 }

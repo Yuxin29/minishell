@@ -148,3 +148,10 @@ bash: input.txt: No such file or directory
 this syntax error is reported before change token to cmd list
 cat Makefile or Cati makefile
 the cmd existence and file access if reported after parsing
+
+
+
+Phase	        Checks file existence?	         Errors?
+Lexing	        ❌ No	                        Only syntax / quoting issues
+Parsing	        ❌ No	                        Only invalid structure, like `
+Execution	    ✅ Yes	                        File not found, command not found, etc.

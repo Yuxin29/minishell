@@ -58,16 +58,26 @@ void        get_token_type(t_token *token);
 // parser.c
 //change token_list to command list and free the original tokens
 t_cmd       *build_command_list(t_token *tokens);
-t_token        *get_one_new_cmd(t_token    *token_head, t_cmd *cmd_current);
+t_token     *get_one_new_cmd(t_token    *token_head, t_cmd *cmd_current);          
 t_token     *parse_redirections(t_cmd *cmd, t_token *tokens);
 t_token     *parse_argv(t_cmd *cmd, t_token *tokens);
 
 
-// parser_utils.c
-// syntax check (pipes, etc.)
-void         check_token_syntax(t_token *tokens);
+// parser_utils.c                
+void        check_token_syntax(t_token *tokens);
 void        free_cmd_list(t_cmd *cmd_head);
 void        check_strndup(char *str, t_cmd *cmd, t_token *tokens);
 int         count_argv(t_token *start);
+
+//redirections.c
+//after parsing, we got already cmd list.
+//we check here if there are redirections symbles here in each cmd.
+//there could be multiple heredocs within one line
+//so here we repeatedly check all the cmds in this linked list
+void        check_and_apply_heredocs(t_cmd *cmd_list);
+//we check here if there are redirections symbles here in each cmd.
+//we check a single cmd inside the child, once per cmd.
+void        check_and_apply_redirections(t_cmd *cmd);
+
 
 #endif

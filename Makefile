@@ -19,6 +19,7 @@ SRCS := \
 	$(SRC_DIR)/parsing/lex_utils.c \
 	$(SRC_DIR)/parsing/parser.c \
 	$(SRC_DIR)/parsing/parser_utils.c \
+	$(SRC_DIR)/parsing/redirections.c \
 	$(SRC_DIR)/utils/error_exit_gen.c \
 	$(SRC_DIR)/utils/pre_parsing_error_exit.c \
 	$(SRC_DIR)/repl/repl.c \

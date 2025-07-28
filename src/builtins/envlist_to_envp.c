@@ -2,7 +2,7 @@
 
 static int	count_size(t_env *head)
 {
-	t_env *cur;
+	t_env	*cur;
 	int		count;
 
 	cur = head;

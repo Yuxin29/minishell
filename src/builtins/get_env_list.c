@@ -24,7 +24,7 @@ static void	split_env(char *str, char **key, char **value)
 	*value = ft_strdup(eq + 1);
 	if (!*value)
 	{
-		free(key);
+		free(*key);
 		return ;
 	}
 }
@@ -38,7 +38,7 @@ t_env	*env_new_node(char *key, char *value)
 		return (NULL);
 	node->key = ft_strdup(key);
 	if (!node->key)
-		return (NULL);
+		return (free(node), NULL);
 	node->value = ft_strdup(value);
 	if (!node->value)
 	{

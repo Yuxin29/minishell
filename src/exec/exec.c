@@ -6,7 +6,7 @@ int	execute_cmd(t_exec_path *cmd)
 	int		status;
 
 	if (is_builtin(cmd->whole_cmd->argv[0]))
-		execute_builtin(cmd->whole_cmd->argv, cmd->envp);
+		return (execute_builtin(cmd->whole_cmd->argv, cmd->envp)); //modify
 	else
 	{
 		pid = fork();
@@ -29,5 +29,4 @@ int	execute_cmd(t_exec_path *cmd)
 			return (-1);
 		}
 	}
-
 }

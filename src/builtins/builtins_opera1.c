@@ -39,14 +39,14 @@ int	ft_echo(char **argv)
 
 	flag = 0;
 	i = 1;
-	if (argv[i] && ft_strcmp(argv[0], "echo") == 0)
+	if (argv[i] && ft_strcmp(argv[1], "-n") == 0)
 	{
 		flag = 1; //echo -n world
 		i++;
 	}
 	while (argv[i])
 	{
-		printf("%s\n", argv[i]);
+		printf("%s", argv[i]);
 		if (argv[i + 1])
 			printf(" ");
 		i++;

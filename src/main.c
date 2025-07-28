@@ -1,5 +1,7 @@
 #include "minishell.h"
 # include <stdio.h>
+#include <setjmp.h> //delete later
+jmp_buf g_jmpbuf;//delete later
 
 char *test_lines[] = 
 {
@@ -262,6 +264,12 @@ int main(void)
     {
         printf("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
         printf("Test %d: %s\n", i + 1, test_lines[i]);
+        if (setjmp(g_jmpbuf) != 0)
+        {
+            printf("cmd empty\n");
+            i++;
+            continue;
+        }
         tokens = get_token_list(test_lines[i]);
         printf("🧱 Tokens:\n");
         if (!tokens)

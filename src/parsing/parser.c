@@ -10,8 +10,7 @@ t_cmd   *build_command_list(t_token *token_head)
 	t_cmd   *cmd_current;
 	t_cmd   *cmd_last;
 
-	if (check_token_syntax(token_head))
-		return NULL;
+	check_token_syntax(token_head);
 	cmd_head = NULL;
 	cmd_current = NULL;
 	cmd_last = NULL;

@@ -4,13 +4,13 @@
 //precheck validity of the raw_line
 //return 1 on errors and 1 on okei
 //in case of the quotes not close, the screen is blicking because it thinks that the cmd is not finished
-int check_raw_line_syntax(char *raw_line)
+void check_raw_line_syntax(char *raw_line)
 {
     int i;
     
     i = 0;
     if (!raw_line || !raw_line[i])
-        return (0);
+        return ;
     while (raw_line[i])
     {
         if (raw_line[i] == '"')
@@ -19,7 +19,7 @@ int check_raw_line_syntax(char *raw_line)
             while (raw_line[i] && raw_line[i] != '"')
                 i++;
             if (!raw_line[i])
-                return (errmsg_exit("minishell: syntax error: unclosed double quotes", 2));
+                errmsg_exit("minishell: syntax error: unclosed double quotes", 2);
         }
         else if (raw_line[i] == '\'')
         {
@@ -27,11 +27,10 @@ int check_raw_line_syntax(char *raw_line)
             while (raw_line[i] && raw_line[i] != '\'')
                 i++;
             if (!raw_line[i])
-                return (errmsg_exit("minishell: syntax error: unclosed double quotes", 2));
+                errmsg_exit("minishell: syntax error: unclosed double quotes", 2);
         }
         i++;
     }
-    return (0);
 }
 
 void	get_token_type(t_token *token)

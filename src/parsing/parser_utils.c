@@ -7,37 +7,36 @@
 // after redirections it can not be followed by pipe or redirectiosn
 // after pipe, it can not be followed by pipe or redirections
 // if it is a word without quotes, it can not contain special character 
-int check_token_syntax(t_token *token_head)
+void check_token_syntax(t_token *token_head)
 {
 	t_token *head;
 
 	head = token_head;
 	if (!token_head)
-		return (2);
+		return ;
 	if (token_head->t_type == 1)
-		return (free_errmsg_exit(head, "minishell: syntax error near unexpected token `|'", 2));
+		free_errmsg_exit(head, "minishell: syntax error near unexpected token `|'", 2);
 	while (token_head && token_head->next)
 	{
 		if (token_head->t_type >= 2)
 		{
 			if (token_head->next->t_type >= 1)
-				return (free_errmsg_exit(head, "minishell: syntax error near unexpected redirections tokens", 2));
+				free_errmsg_exit(head, "minishell: syntax error near unexpected redirections tokens", 2);
 		}
 		if (token_head->t_type == 1)
 		{
 			if (token_head->next->t_type >= 1)
-				return (free_errmsg_exit(head, "minishell: syntax error near unexpected token `|'", 2));
+				free_errmsg_exit(head, "minishell: syntax error near unexpected token `|'", 2);
 		}
 		if (token_head->t_type == 0 && token_head->quote_type == 0)
 		{
 			if (ft_strchr((const char *)token_head->str, ';') || ft_strchr((const char *)token_head->str, '\''))
-				return (free_errmsg_exit(head, "minishell: syntax error: special characters", 2));
+				free_errmsg_exit(head, "minishell: syntax error: special characters", 2);
 		}
 		token_head = token_head->next;
 	}
 	if (token_head->t_type == 1)
-		return (free_errmsg_exit(head, "minishell: syntax error near unexpected token `|'", 2));
-	return (0);
+		free_errmsg_exit(head, "minishell: syntax error near unexpected token `|'", 2);
 }
 
 //used in parse_argv, for malloc str of strs

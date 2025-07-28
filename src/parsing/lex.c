@@ -15,9 +15,7 @@ t_token *get_token_list(char *raw_line)
 	new = NULL;
 	i = 0;
 	len = 0;
-	int check = check_raw_line_syntax(raw_line);
-	if (check)
-		return (NULL);
+	check_raw_line_syntax(raw_line);
 	while (raw_line[i])
 	{
 		while (raw_line[i] != '\0' && ft_isspace(raw_line[i]) != 0)

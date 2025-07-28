@@ -19,7 +19,7 @@ LIBFT00_SRC := ft_bzero.c ft_isalnum.c ft_isalpha.c ft_isascii.c ft_isdigit.c \
 		ft_lstnew_bonus.c ft_lstadd_front_bonus.c ft_lstsize_bonus.c \
 		ft_lstlast_bonus.c ft_lstadd_back_bonus.c ft_lstdelone_bonus.c \
 		ft_lstclear_bonus.c ft_lstiter_bonus.c ft_lstmap_bonus.c ft_free_arr.c \
-		ft_isspace.c ft_strndup.c \
+		ft_isspace.c ft_strndup.c ft_strcmp.c\
 
 FT_PRINTF_SRC := ft_printf.c write_char.c write_str.c write_int.c \
 		write_uint_base.c write_pointer.c

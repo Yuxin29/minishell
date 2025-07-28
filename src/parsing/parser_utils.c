@@ -59,7 +59,7 @@ void    check_strndup(char *str, t_cmd *cmd, t_token *tokens)
 	{
 		free_token_list(tokens);
 		free_cmd_list(cmd);
-		error_and_return("malloc failed");
+		error_and_return("malloc failed", NULL);
 	}
 }
 

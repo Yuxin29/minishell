@@ -323,6 +323,7 @@ int main(int argc, char **argv, char **envp)
 			free(line);
 
 			exec_cmd.whole_cmd = build_command_list(token_list);
+            check_and_apply_heredocs(exec_cmd.whole_cmd); //yuxin added, check for heredocs first
 			//check null
 			free_token_list(token_list);
 

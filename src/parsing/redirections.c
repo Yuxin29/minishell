@@ -36,29 +36,49 @@ void        check_and_apply_redirections(t_cmd *cmd)
     }
 }
 
+/* 
+#include <stdio.h>
+tmpfile - create a temporary file
+FILE *tmpfile(void);
+
+#include <stdio.h>
+mkstemp - create a unique temporary file
+int mkstemp(char *template);
+The  mkstemp() function generates a unique temporary filename from template, 
+creates and opens the file, and returns an open file  descriptor for the file.
+*/
+
 void        check_and_apply_heredocs(t_cmd *cmd_list)
 {
-    while (cmd_list && cmd_list->next)
+    char    tmp_path[] = "/tmp/.heredoc_XXXXXX";
+    int     fd;
+    char    *line;
+
+    while (cmd_list)
     {
         if (cmd_list->heredoc_delim)
         {
-            //Create a unique temporary file path to store heredoc input.
-
-            //Open the temporary file for writing, handle errors if any.
-
-            //Repeatedly prompt the user for input lines (e.g., with readline("> ")).
-
-            //Stop reading when user inputs a line exactly matching the heredoc delimiter.
-
-            //Write all lines except the delimiter into the temporary file.
-
-            //Close the file.
-
-            //Update the command’s infile field to the temporary file path, replacing any previous infile.
-
-            //Free and clear heredoc_delim since it's no longer needed.
-
-            //Move to the next command until all heredocs processed.
+            fd = mkstemp(tmp_path);
+            if (fd < 0)
+            {
+                free_cmd_list(cmd_list);
+                perror(cmd_list->heredoc_delim);
+                exit(1);
+            }
+            while (1)
+            {
+                line = readline("minishell: heredoc> ");
+                if (!line || ft_strncmp(line, cmd_list->heredoc_delim, ft_strlen(cmd_list->heredoc_delim)) == 0)//Stop reading when user inputs a line exactly matching the heredoc delimiter.
+                {
+                    free(line);
+                    break;
+                }
+                write(fd, line, ft_strlen(line));            //Write all lines except the delimiter into the temporary file.
+                write(fd, "\n", 1);             //Update the command’s infile field to the temporary file path, replacing any previous infile.
+                free(line);
+            }
+            close(fd);
+            cmd_list->infile = ft_strdup(tmp_path);  // Update infile to temp path
         }
         cmd_list = cmd_list->next;
     }

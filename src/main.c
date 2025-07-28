@@ -189,7 +189,10 @@ static void print_cmd_list(t_cmd *head)
             while (head->argv[i])
             {
                 printf("'%s' ", head->argv[i]);
-                i++;
+                i++;oken *head)
+{
+    if (!head)
+    {
             }
             printf("\n");
         }
@@ -246,6 +249,9 @@ static void show_real_bash_tokens(const char *input)
 
     FILE *fp = popen(command, "r");
     if (!fp)
+    {oken *head)
+{
+    if (!head)
     {
         perror("popen");
         return;
@@ -305,10 +311,12 @@ int main(int argc, char **argv, char **envp)
 	t_exec_path exec_cmd;
 	char	*line;
 	t_token	*token_list;
-
+    
 	(void)argc;
 	(void)argv;
+    //t_env *env_list; //yuxin added
 
+    //env_list = init_env(envp); //yuxin added, maybe lin should write this one? related more to envi management
 	while (1)
 	{
 		line = readline("minishell$ ");
@@ -321,6 +329,7 @@ int main(int argc, char **argv, char **envp)
 			token_list = get_token_list(line);
 			//check null
 			free(line);
+            //scan_all_tokens(token_list, env_list); //yuxin added, this for for checking and change $var, not ready yet
 
 			exec_cmd.whole_cmd = build_command_list(token_list);
             check_and_apply_heredocs(exec_cmd.whole_cmd); //yuxin added, check for heredocs first

@@ -49,7 +49,7 @@ creates and opens the file, and returns an open file  descriptor for the file.
 
 void        check_and_apply_heredocs(t_cmd *cmd_list)
 {
-	char	tmp_path[] = "/tmp/.heredoc_XXXXXX";
+	char	tmp_path[] = "/tmp/.heredoc_XXXXXX";  //what happens if the are pipes or multiple commands, is the tmp file reused, does the mkstemp happen at the same time and same path, or with an first and second order
 	int		fd;
 	char	*line;
 

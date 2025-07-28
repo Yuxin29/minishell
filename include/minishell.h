@@ -54,4 +54,7 @@ sigaddset
 # include <sys/wait.h>
 */
 
+#include <setjmp.h> //delete later
+extern jmp_buf g_jmpbuf;//delete later
+
 #endif

@@ -6,69 +6,55 @@
 //if no pipe, then this is a single cmd
 t_cmd   *build_command_list(t_token *token_head)
 {
-    t_cmd   *cmd_head;
-    t_cmd   *cmd_current;
-    t_cmd   *cmd_last;
+	t_cmd   *cmd_head;
+	t_cmd   *cmd_current;
+	t_cmd   *cmd_last;
 
-    check_token_syntax(token_head);
-    cmd_head = NULL;
-    cmd_current = NULL;
-    cmd_last = NULL;
-    while (token_head)
-    {
-        cmd_current = safe_malloc(sizeof(t_cmd));
-        ft_bzero(cmd_current, sizeof(t_cmd));
-        if (!cmd_head)
-            cmd_head = cmd_current;
-        else
-            cmd_last->next = cmd_current;
-        cmd_last = cmd_current;
-
-        token_head = get_one_new_cmd(token_head, cmd_current);
-        while (token_head && token_head->next && token_head->t_type != 1)
-        {
-            //printf("so far so good 1\n");
-            if (token_head->t_type == 0)
-            {
-                token_head = parse_argv(cmd_current, token_head);
-                //printf("so far so good 2\n");
-            }
-            else if (token_head->t_type >= 2)    //redirections, need another helpers
-                token_head = parse_redirections(cmd_current, token_head);
-        }
-        if (token_head && token_head->t_type == 1)    //hit the pipe, this should be the end of this cmd
-            token_head = token_head->next;
-        //printf("so far so good 3\n");
-    }
-    free_token_list(token_head);
-    return (cmd_head);
+	check_token_syntax(token_head);
+	cmd_head = NULL;
+	cmd_current = NULL;
+	cmd_last = NULL;
+	while (token_head)
+	{
+		cmd_current = safe_malloc(sizeof(t_cmd));
+		ft_bzero(cmd_current, sizeof(t_cmd));
+		if (!cmd_head)
+			cmd_head = cmd_current;
+		else
+			cmd_last->next = cmd_current;
+		cmd_last = cmd_current;
+		token_head = get_one_new_cmd(token_head, cmd_current);
+		if (!token_head)
+			break;
+	}
+	return (cmd_head);
 }
 
 //generate on single cmd struct
 t_token *get_one_new_cmd(t_token *token_head, t_cmd *cmd_current)
 {
-    while (token_head && token_head->t_type != 1)
-    {
-        if (token_head->t_type == 0)
-            token_head = parse_argv(cmd_current, token_head);
-        else if (token_head->t_type >= 2)
-            token_head = parse_redirections(cmd_current, token_head);
-    }
-    if (token_head && token_head->t_type == 1)
-        token_head = token_head->next;
-    return (token_head);
+	while (token_head && token_head->t_type != 1) 
+	{    
+		if (token_head->t_type == 0)
+			token_head = parse_argv(cmd_current, token_head);
+		else if (token_head->t_type >= 2)
+			token_head = parse_redirections(cmd_current, token_head);
+	}
+	if (token_head && token_head->t_type == 1)
+		token_head = token_head->next;
+	return (token_head);
 }
 
 // handle redirections
 t_token *parse_redirections(t_cmd *cmd, t_token *tokens)
 {
-    t_token *next;
+	t_token *next;
 
-    if (!tokens || !tokens->next)
-        return (NULL);
-    next = tokens->next;
-    if (tokens->t_type == 2)
-    {
+	if (!tokens || !tokens->next)
+		return (NULL);
+	next = tokens->next;
+	if (tokens->t_type == 2)
+	{
         cmd->infile = ft_strndup(next->str, ft_strlen(next->str));
         check_strndup(cmd->infile, cmd,  tokens);
     }

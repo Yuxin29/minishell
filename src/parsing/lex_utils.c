@@ -11,7 +11,6 @@ void check_raw_line_syntax(char *raw_line)
     i = 0;
     if (!raw_line || !raw_line[i])
         return ;
-
     while (raw_line[i])
     {
         if (raw_line[i] == '"')
@@ -19,15 +18,17 @@ void check_raw_line_syntax(char *raw_line)
             i++;
             while (raw_line[i] && raw_line[i] != '"')
                 i++;
+            if (!raw_line[i])
+                errmsg_exit("minishell: syntax error: unclosed double quotes", 2);
         }
         else if (raw_line[i] == '\'')
         {
             i++;
             while (raw_line[i] && raw_line[i] != '\'')
                 i++;
+            if (!raw_line[i])
+                errmsg_exit("minishell: syntax error: unclosed double quotes", 2);
         }
-        if (!raw_line[i])
-            errmsg_exit("minishell: syntax error: unclosed quotes", 2);
         i++;
     }
 }
@@ -43,9 +44,9 @@ void	get_token_type(t_token *token)
         token->t_type = T_REDIRECT_IN;
     else if (ft_strncmp(tmp, ">", 2) == 0)
         token->t_type = T_REDIRECT_OUT;
-    else if (ft_strncmp(tmp, "<<", 3) == 0)
-        token->t_type = T_APPEND;
     else if (ft_strncmp(tmp, ">>", 3) == 0)
+        token->t_type = T_APPEND;
+    else if (ft_strncmp(tmp, "<<", 3) == 0)
         token->t_type = T_HEREDOC;
     else
         token->t_type = T_WORD;
@@ -56,6 +57,8 @@ void    free_token_list(t_token *token_head)
 {
     t_token *tmp;
 
+    if (!token_head)
+        return ;
     while(token_head)
     {
         tmp = token_head->next;

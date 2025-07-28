@@ -356,6 +356,7 @@ int main(int argc, char **argv, char **envp)
 			if (!exec_cmd.cmd_path)
 			{
 				printf("minishell: %s : command not found\n", exec_cmd.whole_cmd->argv[0]); //can't use printf to print error message
+				ft_free_arr(exec_cmd.envp);
 				free_cmd_list(exec_cmd.whole_cmd);
 				exit(127);
 			}
@@ -364,9 +365,9 @@ int main(int argc, char **argv, char **envp)
 			{
 				//free, close??
 			}
-			free(exec_cmd.cmd_path);
 			ft_free_arr(exec_cmd.envp);
 			free_cmd_list(exec_cmd.whole_cmd);
+			free(exec_cmd.cmd_path);
 		}
 	}
 	return (0);

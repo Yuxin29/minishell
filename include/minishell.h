@@ -50,8 +50,8 @@ tgetnum, tgetstr, tgoto, tputs
 #include <string.h>
 # include <errno.h>
 sigaddset
-#include <signal.h>         //signal, sigaction, 
-# include <sys/wait.h> 
+#include <signal.h>         //signal, sigaction,
+# include <sys/wait.h>
 */
 
 #endif

@@ -44,7 +44,7 @@ int count_argv(t_token *start)
 {
 	int count;
 
-    count = 0;
+	count = 0;
 	while (start && start->t_type == 0)
 	{
 		count++;
@@ -69,18 +69,18 @@ void    free_cmd_list(t_cmd *cmd_head)
 	t_cmd   *tmp;
 
 	if (!cmd_head)
-        return ;
+		return ;
 	while(cmd_head)
 	{
 		tmp = cmd_head->next;
 		if (cmd_head->argv)
 			ft_free_arr(cmd_head->argv);
 		if (cmd_head->infile)
-            free(cmd_head->infile);
+			free(cmd_head->infile);
 		if (cmd_head->outfile)
-            free(cmd_head->outfile);
+			free(cmd_head->outfile);
 		if (cmd_head->heredoc_delim)
-            free(cmd_head->heredoc_delim);   
+			free(cmd_head->heredoc_delim);   
 		free(cmd_head);
 		cmd_head = tmp;
 	}

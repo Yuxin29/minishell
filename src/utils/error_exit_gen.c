@@ -1,12 +1,10 @@
 #include "minishell.h"
 
-//below 2 need to be move to utils later
 void	error_and_return(const char *msg, t_exec_path *cmd_and_path)
 {
-    perror(msg);
-	//need to free every thing here
+	perror(msg);
 	free_t_exec_path(cmd_and_path);
-    exit(EXIT_FAILURE);
+	exit(EXIT_FAILURE);
 }
 
 void	free_t_exec_path(t_exec_path *cmd_and_path)
@@ -21,4 +19,3 @@ void	free_t_exec_path(t_exec_path *cmd_and_path)
 			ft_free_arr(cmd_and_path->envp);
 	}
 }
-

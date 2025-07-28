@@ -10,22 +10,19 @@ typedef struct	s_env
 	struct s_env	*next;
 }	t_env;
 
-// typedef struct	s_env_list
-// {
-// 	t_env_node	*head;
-// 	t_env_node	*tail;
-// 	int			size;
-// }	t_env_list;
+int		is_builtin(char *cmd);
+int		execute_builtin(char **argv, char **envp);
 
-int	is_builtin(char *cmd);
-int	execute_builtin(char **argv, char **envp);
-
-int	ft_echo(char **argv);
-int	ft_cd(char **argv, char **envp);
-int	ft_pwd(void);
+int		ft_echo(char **argv);
+int		ft_cd(char **argv, char **envp);
+int		ft_pwd(void);
 // int	ft_export(char **argv, t_env **env);
 // int	ft_unset(char **argv, t_env **env);
 // int	ft_env(t_env *env);
 // int	ft_exit(char **argv, t_env *env);
+
+char	**env_list_to_envp(t_env *head);
+t_env	*env_list_init(char **envp);
+void	free_env_list(t_env *head);
 
 #endif

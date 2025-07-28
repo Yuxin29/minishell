@@ -1,10 +1,10 @@
 #include "minishell.h"
 
-void	split_env(char *str, char **key, char **value)
+static void	split_env(char *str, char **key, char **value)
 {
 	char *eq;
 
-	eq = ft_strchr(str, "=");
+	eq = ft_strchr(str, '=');
 	if (!eq)
 	{
 		*key = ft_strdup(str);
@@ -13,11 +13,12 @@ void	split_env(char *str, char **key, char **value)
 		*value = ft_strdup(""); // FOO
 		if (!*value)
 		{
-			free(key);
+			free(*key);
 			return ;
 		}
+		return ;
 	}
-	*key = ft_strndup(eq, eq - str);
+	*key = ft_strndup(str, eq - str);
 	if (!*key)
 		return ;
 	*value = ft_strdup(eq + 1);
@@ -85,4 +86,22 @@ t_env	*env_list_init(char **envp)
 		i++;
 	}
 	return (head);
+}
+
+void	free_env_list(t_env *head)
+{
+	t_env	*cur;
+	t_env	*next;
+
+	if (!head)
+		return ;
+	cur = head;
+	while(cur)
+	{
+		next = cur->next;
+		free(cur->key);
+		free(cur->value);
+		free(cur);
+		cur = next;
+	}
 }

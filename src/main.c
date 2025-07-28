@@ -302,9 +302,10 @@ int main(void)
 
 int main(int argc, char **argv, char **envp)
 {
-	t_exec_path exec_cmd;
-	char	*line;
-	t_token	*token_list;
+	char		*line;
+	t_token		*token_list;
+	t_env		*env_list;
+	t_exec_path	exec_cmd;
 
 	(void)argc;
 	(void)argv;
@@ -319,14 +320,38 @@ int main(int argc, char **argv, char **envp)
 			add_history(line); //no need to care about the history memory
 
 			token_list = get_token_list(line);
-			//check null
 			free(line);
+			if (!token_list)
+			{
+				ft_putstr_fd("Error: get token list failed\n", 2);
+				exit(EXIT_FAILURE);
+			}
 
 			exec_cmd.whole_cmd = build_command_list(token_list);
-			//check null
 			free_token_list(token_list);
+			if (!exec_cmd.whole_cmd )
+			{
+				ft_putstr_fd("Error: build command list failed\n", 2);
+				exit(EXIT_FAILURE);
+			}
 
-			exec_cmd.envp = envp;
+			env_list = env_list_init(envp);
+			if (!env_list)
+			{
+				ft_putstr_fd("Error: env list initialized failed\n", 2);
+				exit(EXIT_FAILURE);
+			}
+
+
+			exec_cmd.envp = env_list_to_envp(env_list);
+			free_env_list(env_list);
+			if (!exec_cmd.envp)
+			{
+				ft_putstr_fd("Error: env list initialized failed\n", 2);
+				exit(EXIT_FAILURE);
+			}
+
+			//exec_cmd.envp = envp;
 			exec_cmd.cmd_path = get_cmd_path(exec_cmd.whole_cmd->argv[0], exec_cmd.envp);
 			if (!exec_cmd.cmd_path)
 			{
@@ -334,11 +359,13 @@ int main(int argc, char **argv, char **envp)
 				free_cmd_list(exec_cmd.whole_cmd);
 				exit(127);
 			}
+
 			if (execute_cmd(&exec_cmd) == -1)
 			{
 				//free, close??
 			}
 			free(exec_cmd.cmd_path);
+			ft_free_arr(exec_cmd.envp);
 			free_cmd_list(exec_cmd.whole_cmd);
 		}
 	}

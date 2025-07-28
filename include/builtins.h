@@ -10,6 +10,13 @@ typedef struct	s_env
 	struct s_env	*next;
 }	t_env;
 
+// typedef struct	s_env_list
+// {
+// 	t_env_node	*head;
+// 	t_env_node	*tail;
+// 	int			size;
+// }	t_env_list;
+
 int	is_builtin(char *cmd);
 int	execute_builtin(char **argv, char **envp);
 

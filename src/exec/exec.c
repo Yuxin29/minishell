@@ -16,7 +16,6 @@ int	execute_cmd(t_exec_path *cmd)
 		pid = fork();
 		if (pid == 0)
 		{
-
 			check_and_apply_redirections(cmd->whole_cmd); //added by yuxin
 			execve(cmd->cmd_path, cmd->whole_cmd->argv, cmd->envp);
 			//free close??

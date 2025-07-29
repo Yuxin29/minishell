@@ -25,7 +25,7 @@ int	execute_cmd(t_exec_path *cmd)
 		else if (pid > 0)
 		{
 			waitpid(pid, &status, 0);
-			return (WEXITSTATUS(status));
+				return (WEXITSTATUS(status));
 		}
 		else
 		{

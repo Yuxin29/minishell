@@ -10,20 +10,7 @@ typedef struct s_exec_path
 	char	**envp;
 }	t_exec_path;
 
-typedef struct	s_env
-{
-	char			*key;
-	char			*value;
-	struct s_env	*next;
-}	t_env;
-
 char	*get_cmd_path(char *cmd, char **envp);
 int		execute_cmd(t_exec_path *cmd);
-
-//yuxin wrote here: to be added
-//env.c
-//this is needed in builtin: export and expander for tokens;
-t_env	*init_env(char **envp);
-void free_env_list(t_env *env)
 
 #endif

@@ -13,7 +13,7 @@ INCLUDE := -I include
 # Sources
 SRCS := \
 	$(SRC_DIR)/main.c \
-	$(SRC_DIR)/builtins/builtins_opera1.c \
+	$(SRC_DIR)/builtins/builtins_opera1.c $(SRC_DIR)/builtins/get_env_list.c $(SRC_DIR)/builtins/envlist_to_envp.c \
 	$(SRC_DIR)/exec/exec.c $(SRC_DIR)/exec/get_path.c \
 	$(SRC_DIR)/parsing/lex.c \
 	$(SRC_DIR)/parsing/lex_utils.c \

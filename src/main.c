@@ -5,8 +5,8 @@
 #include <setjmp.h> //delete later
 jmp_buf g_jmpbuf;//delete later
 
-/* 
-char *test_lines[] = 
+/*
+char *test_lines[] =
 {
     // ✅ Valid test cases
 
@@ -88,12 +88,12 @@ char *test_lines[] =
     "cat file.txt \\; echo done",
 
     // ❌ Test 26: Escaped quotes (not required)
-    "echo \\\"hello\\\"",   
+    "echo \\\"hello\\\"",
 //==========================================================================
     // ❌ after lexing
     // Test 27: Pipe at beginning
     "| cat file.txt",
-    
+
     //Test 28: Pipe at end (missing RHS)
     "cat file.txt |",
 
@@ -177,7 +177,7 @@ static void print_cmd_list(t_cmd *head)
     {
         printf("cmd empty\n");
         return ;
-    }    
+    }
     while (head)
     {
         printf("====== Command %d ======\n", cmd_num++);
@@ -307,16 +307,14 @@ int main(void)
 */
 
 int main(int argc, char **argv, char **envp)
-{ 
-	t_exec_path exec_cmd;
-	char	*line;
-	t_token	*token_list;
-    
+{
+	char		*line;
+	t_token		*token_list;
+	t_env		*env_list;
+	t_exec_path	exec_cmd;
+
 	(void)argc;
 	(void)argv;
-    //t_env *env_list; //yuxin added
-
-    //env_list = init_env(envp); //yuxin added, maybe lin should write this one? related more to envi management
 	while (1)
 	{
 		line = readline("minishell$ ");
@@ -326,30 +324,58 @@ int main(int argc, char **argv, char **envp)
 		{
 			add_history(line); //no need to care about the history memory
 
+			env_list = env_list_init(envp);
+			if (!env_list)
+			{
+				free(line);
+				ft_putstr_fd("Error: env list initialized failed\n", 2);
+				exit(EXIT_FAILURE);
+			}
+
+			exec_cmd.envp = env_list_to_envp(env_list);
+			free_env_list(env_list);
+			if (!exec_cmd.envp)
+			{
+				free(line);
+				ft_putstr_fd("Error: env list initialized failed\n", 2);
+				exit(EXIT_FAILURE);
+			}
+
 			token_list = get_token_list(line);
-			//check null
 			free(line);
-            //scan_all_tokens(token_list, env_list); //yuxin added, this for for checking and change $var, not ready yet
+			if (!token_list)
+			{
+				ft_free_arr(exec_cmd.envp);
+				ft_putstr_fd("Error: get token list failed\n", 2);
+				exit(EXIT_FAILURE);
+			}
+            expand_all_tokens(token_list, exec_cmd);
 
 			exec_cmd.whole_cmd = build_command_list(token_list);
-            check_and_apply_heredocs(exec_cmd.whole_cmd); //yuxin added, check for heredocs first
-			//check null
 			free_token_list(token_list);
+			if (!exec_cmd.whole_cmd )
+			{
+				ft_free_arr(exec_cmd.envp);
+				ft_putstr_fd("Error: build command list failed\n", 2);
+				exit(EXIT_FAILURE);
+			}
 
-			exec_cmd.envp = envp;
 			exec_cmd.cmd_path = get_cmd_path(exec_cmd.whole_cmd->argv[0], exec_cmd.envp);
 			if (!exec_cmd.cmd_path)
 			{
 				printf("minishell: %s : command not found\n", exec_cmd.whole_cmd->argv[0]); //can't use printf to print error message
+				ft_free_arr(exec_cmd.envp);
 				free_cmd_list(exec_cmd.whole_cmd);
 				exit(127);
 			}
+
 			if (execute_cmd(&exec_cmd) == -1)
 			{
 				//free, close??
 			}
-			free(exec_cmd.cmd_path);
+			ft_free_arr(exec_cmd.envp);
 			free_cmd_list(exec_cmd.whole_cmd);
+			free(exec_cmd.cmd_path);
 		}
 	}
 	return (0);

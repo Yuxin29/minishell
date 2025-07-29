@@ -1,20 +1,28 @@
 #ifndef BUILTINS_H
 # define BUILTINS_H
 
-
 # define PATH_MAX 4096
 
-int	is_builtin(char *cmd);
-int	execute_builtin(char **argv, char **envp);
+typedef struct	s_env
+{
+	char			*key;
+	char			*value;
+	struct s_env	*next;
+}	t_env;
 
+int		is_builtin(char *cmd);
+int		execute_builtin(char **argv, char **envp);
 
-int	ft_echo(char **argv);
-int ft_cd(char **argv, char **envp);
-int	ft_pwd(void);
+int		ft_echo(char **argv);
+int		ft_cd(char **argv, char **envp);
+int		ft_pwd(void);
 // int	ft_export(char **argv, t_env **env);
 // int	ft_unset(char **argv, t_env **env);
 // int	ft_env(t_env *env);
-//int	ft_exit(char **argv, t_env *env);
+// int	ft_exit(char **argv, t_env *env);
 
+char	**env_list_to_envp(t_env *head);
+t_env	*env_list_init(char **envp);
+void	free_env_list(t_env *head);
 
 #endif

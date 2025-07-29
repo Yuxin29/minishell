@@ -1,48 +1,45 @@
 #include "parsing.h"
 #include "minishell.h"
 
-//
-static char *get_var_name(t_token *token, int i)
-{
-    char *name;
-
-    name = ft_strndup(token_list->str[i], ft_strlen(token->str - 1));
-    if (!name)
-    {
-        perror("malloc");
-        exit (1);
-    }
-    return (name);
-}
-
-//call this after getting the to
-static char *expand_variables(t_token *token, char *name, char **envp)
+static char *expand_variables(char *, char **envp)
 {
     int j;
-    char       *value;
-    char        *key;
-    char        *new_value;
+    char **split;
+    char    *new_value;
 
     j = 0;
     while (envp[j])
     {
-        value = ft_strchr(envp[i], '='); //null // malloc check
-        key = ft_strncpy(envp, ft_strlen(envp[j]) - ft_strlen(key)); //null / malloc check
-        if (ft_strncmp(key, ft_strlen(key), name) == 0)
-            new_value = ft_substr();
+        split = ft_split(envp, '=');
+        //null chck
+        if (ft_strncmp(split[0], strs, ft_strlen(split[0])) == 0)
+        {
+            new_value = ft_strdup(split[1]);
+            ft_free_arr(split);
+            return (new_value);
+        }
         j++;
-        free (value);
-        free (key);
+        ft_free_arr(split);
     }
-    return (new_value);
+    return (NULL);
 }
 
+/*
+typedef struct s_exec_path
+{
+	t_cmd	*whole_cmd;
+	char	*cmd_path;
+	char	**envp;
+}	t_exec_path;
+exec_cmd.envp
+*/
 //call this after getting the tokens
 //go through all tokens and check all word without single quotes
-void scan_all_tokens(t_token *token_list, t_env *env_list)
+//Here I already got the updated, newest array of strings in the exec_cmd.envp
+void expand_all_tokens(t_token *token_list, t_exec_path exec_cmd);
 {
 	int i;
-    char *name
+    char *value;
 
 	while (token_list)
 	{
@@ -54,8 +51,9 @@ void scan_all_tokens(t_token *token_list, t_env *env_list)
                 if (token_list->str[i] == '$')
                 {
                     i++;
-                    name = get_var_name(token_list, i);
-                    token_list->str = expand_variables(token_list, name, env);
+                    value = expand_variables(token_list->str[i], exec_cmd.envp);
+                    if (value)
+                        token_list->str[i] = ft_strdup(value);
                 }
                 i++;
             }

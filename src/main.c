@@ -319,10 +319,28 @@ int main(int argc, char **argv, char **envp)
 		{
 			add_history(line); //no need to care about the history memory
 
+			env_list = env_list_init(envp);
+			if (!env_list)
+			{
+				free(line);
+				ft_putstr_fd("Error: env list initialized failed\n", 2);
+				exit(EXIT_FAILURE);
+			}
+
+			exec_cmd.envp = env_list_to_envp(env_list);
+			free_env_list(env_list);
+			if (!exec_cmd.envp)
+			{
+				free(line);
+				ft_putstr_fd("Error: env list initialized failed\n", 2);
+				exit(EXIT_FAILURE);
+			}
+
 			token_list = get_token_list(line);
 			free(line);
 			if (!token_list)
 			{
+				ft_free_arr(exec_cmd.envp);
 				ft_putstr_fd("Error: get token list failed\n", 2);
 				exit(EXIT_FAILURE);
 			}
@@ -331,25 +349,24 @@ int main(int argc, char **argv, char **envp)
 			free_token_list(token_list);
 			if (!exec_cmd.whole_cmd )
 			{
+				ft_free_arr(exec_cmd.envp);
 				ft_putstr_fd("Error: build command list failed\n", 2);
 				exit(EXIT_FAILURE);
 			}
 
-			env_list = env_list_init(envp);
-			if (!env_list)
-			{
-				ft_putstr_fd("Error: env list initialized failed\n", 2);
-				exit(EXIT_FAILURE);
-			}
-
-
-			exec_cmd.envp = env_list_to_envp(env_list);
-			free_env_list(env_list);
-			if (!exec_cmd.envp)
-			{
-				ft_putstr_fd("Error: env list initialized failed\n", 2);
-				exit(EXIT_FAILURE);
-			}
+			// env_list = env_list_init(envp);
+			// if (!env_list)
+			// {
+			// 	ft_putstr_fd("Error: env list initialized failed\n", 2);
+			// 	exit(EXIT_FAILURE);
+			// }
+			// exec_cmd.envp = env_list_to_envp(env_list);
+			// free_env_list(env_list);
+			// if (!exec_cmd.envp)
+			// {
+			// 	ft_putstr_fd("Error: env list initialized failed\n", 2);
+			// 	exit(EXIT_FAILURE);
+			// }
 
 			//exec_cmd.envp = envp;
 			exec_cmd.cmd_path = get_cmd_path(exec_cmd.whole_cmd->argv[0], exec_cmd.envp);

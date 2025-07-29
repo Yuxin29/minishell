@@ -13,22 +13,22 @@ int	is_builtin(char *cmd)
 				|| ft_strcmp(cmd, "exit") == 0);
 }
 
-int	execute_builtin(char **argv, char **envp)
+int	execute_builtin_cmd(char **argv, t_env **env)
 {
 	if (ft_strcmp(argv[0], "echo") == 0)
 		return (ft_echo(argv));
 	if (ft_strcmp(argv[0], "cd") == 0)
-		return (ft_cd(argv, envp));
+		return (ft_cd(argv));
 	if (ft_strcmp(argv[0], "pwd") == 0)
 		return (ft_pwd());
-	// else if (ft_strcmp(argv[0], "export") == 0)
-	// 	ft_export(argv, envp);
-	// else if (ft_strcmp(argv[0], "unset") == 0)
-	// 	ft_unset(argv, envp);
-	// else if (ft_strcmp(argv[0], "env") == 0)
-	// 	ft_env(*envp);
-	// else if (ft_strcmp(argv[0], "exit") == 0)
-	// 	ft_exit(argv, *envp);
+	//if (ft_strcmp(argv[0], "export") == 0)
+		//return (ft_export(argv, envp));
+	// if (ft_strcmp(argv[0], "unset") == 0)
+	//	return (ft_unset(argv, envp);
+	if (ft_strcmp(argv[0], "env") == 0)
+		return (ft_env(*env));
+	// if (ft_strcmp(argv[0], "exit") == 0)
+	// 	return (ft_exit(argv, *envp));
 	return (0);
 }
 
@@ -56,9 +56,8 @@ int	ft_echo(char **argv)
 	return (0);
 }
 
-int ft_cd(char **argv, char **envp)
+int ft_cd(char **argv)
 {
-	(void)envp;
 	if (!argv[1])
 	{
 		ft_putstr_fd("cd :missing arguments\n", 2);

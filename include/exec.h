@@ -11,6 +11,6 @@ typedef struct s_exec_path
 }	t_exec_path;
 
 char	*get_cmd_path(char *cmd, char **envp);
-int		execute_cmd(t_exec_path *cmd);
+int		execute_internal_cmd(t_exec_path *cmd);
 
 #endif

@@ -4,7 +4,6 @@
 
 #include <setjmp.h> //delete later
 jmp_buf g_jmpbuf;//delete later
-
 /*
 char *test_lines[] =
 {
@@ -260,6 +259,7 @@ static void show_real_bash_tokens(const char *input)
 }
 
 
+
 int main(void)
 {
     t_token *tokens;
@@ -297,8 +297,7 @@ int main(void)
         i++;
     }
     return (0);
-}
-*/
+} */
 
 int main(int argc, char **argv, char **envp)
 {
@@ -347,18 +346,19 @@ int main(int argc, char **argv, char **envp)
 				exit(EXIT_FAILURE);
 			}
 
+            expand_all_tokens(token_list, exec_cmd);
+
 			//convert token list to command list
 			exec_cmd.whole_cmd = build_command_list(token_list);
 			free_token_list(token_list);
-			if (!exec_cmd.whole_cmd )
+			if (!exec_cmd.whole_cmd)
 			{
 				free_env_list(env_list);
 				ft_free_arr(exec_cmd.envp);
 				ft_putstr_fd("Error: build command list failed\n", 2);
 				exit(EXIT_FAILURE);
 			}
-
-			//printf("cmd: '%s'\n", exec_cmd.whole_cmd->argv[0]);
+			check_and_apply_heredocs(exec_cmd.whole_cmd);
 
 			//if bulitin, no need to find cmd_path, just execute(need to deal with other things in it)
 			if (is_builtin(exec_cmd.whole_cmd->argv[0]))
@@ -391,12 +391,13 @@ int main(int argc, char **argv, char **envp)
 				}
 			}
 
-			free_env_list(env_list);
+			//free_env_list(env_list);
 			ft_free_arr(exec_cmd.envp);
 			free_cmd_list(exec_cmd.whole_cmd);
 			if (exec_cmd.cmd_path)
 				free(exec_cmd.cmd_path);
 		}
 	}
+	free_env_list(env_list);
 	return (0);
 }

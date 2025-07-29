@@ -16,6 +16,7 @@ int	execute_internal_cmd(t_exec_path *cmd)
 	if (pid == 0)
 	{
 		check_and_apply_redirections(cmd->whole_cmd); //added by yuxin
+		//check_and_apply_heredocs(cmd->whole_cmd);
 		execve(cmd->cmd_path, cmd->whole_cmd->argv, cmd->envp);
 		//free close??
 		perror("execve");

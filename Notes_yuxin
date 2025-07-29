@@ -52,8 +52,8 @@ expander.c    --->   +---------------------------------------------+
                      +---------------------------------------------+
                                         |
                                         v
-executor.c    --->   +---------------------------------------------+           ------------------------------------------------------->B's work starts to late if A's parsing is not done.
-👤 B                 | for each command:                           |                                                               --->manully make ready token(mock fake token) to B so B can start
+executor.c    --->   +---------------------------------------------+          
+👤 B                 | for each command:                           |                                                       
                      |   - fork child                              | -> pid_t fork_and_execute(t_cmd *cmd, t_env *env);
                      |   - set up redirs & pipes                   | -> void setup_redirections(t_cmd *cmd);
                      |   - execve or builtin call                  | -> int execute_builtin_or_exec(t_cmd *cmd, t_env *env);
@@ -149,9 +149,21 @@ this syntax error is reported before change token to cmd list
 cat Makefile or Cati makefile
 the cmd existence and file access if reported after parsing
 
-
-
 Phase	        Checks file existence?	         Errors?
 Lexing	        ❌ No	                        Only syntax / quoting issues
 Parsing	        ❌ No	                        Only invalid structure, like `
 Execution	    ✅ Yes	                        File not found, command not found, etc.
+
+=================================about environment variables =====================================================
+how to set env_variables, in bash eg:
+export VAR=value
+//do we need to achieve this export in shell as well?
+
+EDGE CASES AND TESTS
+Input                   Expected Output
+"Hello $USER"	        "Hello alice"
+'Hello $USER'	        'Hello $USER'
+"Path is $PATH/bin"	    "Path is /usr/bin:/bin/bin"
+"$"	                    "" (empty string or preserved as literal)
+"$UNDEFINED"	        ""
+"Mix$VAR1and$VAR2"	    "Mixval1andval2"

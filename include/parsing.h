@@ -9,6 +9,7 @@
 # include <stdlib.h>         //malloc, free
 # include <fcntl.h>
 # include <stdio.h>
+# include "exec.h"
 
 //Lexing: get a raw line and change it to a linked list of minimal unit(tokens)
 typedef enum e_token_type
@@ -79,5 +80,11 @@ void        check_and_apply_heredocs(t_cmd *cmd_list);
 //we check a single cmd inside the child, once per cmd.
 void        check_and_apply_redirections(t_cmd *cmd);
 
+//expander.c >...... this one should be called after lexing, 
+//check the t_word without quotes or with double quotes, when it starts with $ and if it exits
+//void scan_all_tokens(t_token *token_list, t_env *env_list);
+//char *expand_variables(const char *str, t_env *env);
+//char *get_env_value(t_env *env, const char *key);
+void expand_all_tokens(t_token *token_list, t_exec_path exec_cmd);
 
 #endif

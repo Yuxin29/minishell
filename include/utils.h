@@ -1,9 +1,16 @@
 #ifndef UTILS_H
 # define UTILS_H
 
+# include "parsing.h"
+# include "minishell.h"
+
+typedef struct s_cmd t_cmd; 
+typedef struct s_token t_token; 
+typedef struct s_exec_path t_exec_path; 
+
 //error_exit_gen.c
-void	*error_and_return(const char *msg);
-void	*safe_malloc(size_t size);
+void	error_and_return(const char *msg, t_exec_path *cmd_and_path);
+void	free_t_exec_path(t_exec_path *cmd_and_path);
 
 //pre_parsing_error_exit.c
 void    errmsg_exit(char *msg, int status);

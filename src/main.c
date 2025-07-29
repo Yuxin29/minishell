@@ -4,7 +4,6 @@
 
 #include <setjmp.h> //delete later
 jmp_buf g_jmpbuf;//delete later
-
 /*
 char *test_lines[] =
 {
@@ -177,7 +176,7 @@ static void print_cmd_list(t_cmd *head)
     {
         printf("cmd empty\n");
         return ;
-    }
+    }    
     while (head)
     {
         printf("====== Command %d ======\n", cmd_num++);
@@ -189,10 +188,7 @@ static void print_cmd_list(t_cmd *head)
             while (head->argv[i])
             {
                 printf("'%s' ", head->argv[i]);
-                i++;oken *head)
-{
-    if (!head)
-    {
+                i++;
             }
             printf("\n");
         }
@@ -249,9 +245,6 @@ static void show_real_bash_tokens(const char *input)
 
     FILE *fp = popen(command, "r");
     if (!fp)
-    {oken *head)
-{
-    if (!head)
     {
         perror("popen");
         return;
@@ -264,6 +257,7 @@ static void show_real_bash_tokens(const char *input)
 
     pclose(fp);
 }
+
 
 
 int main(void)
@@ -303,8 +297,7 @@ int main(void)
         i++;
     }
     return (0);
-}
-*/
+} */
 
 int main(int argc, char **argv, char **envp)
 {

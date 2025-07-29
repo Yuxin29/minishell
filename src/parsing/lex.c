@@ -4,11 +4,14 @@
 // loop through raw_line and build token list
 t_token	*get_token_list(char *raw_line)
 {
-	t_token	*head = NULL;
-	t_token	*last = NULL;
+	t_token	*head;
+	t_token	*last;
 	t_token	*new;
-	int		i = 0;
+	int		i;
 
+    head = NULL;
+    last = NULL;
+    i = 0;
 	check_raw_line_syntax(raw_line);
 	while (raw_line[i])
 	{
@@ -31,18 +34,21 @@ t_token	*get_token_list(char *raw_line)
 // merge quoted/unquoted fragments into one token
 t_token	*build_token_from_next_word(char *line, int *i)
 {
-	char	*temp = NULL;
+	char	*temp;
 	char	*part;
 	t_token	*token;
+    int		start;
 
-    if (line[*i] == '<' || line[*i] == '>' || line[*i] == '|')
+    temp = NULL;
+    if (line[*i] == '<' || line[*i] == '>' || line[*i] == '|')//take out later
 	{
-		int	start = (*i)++;
-		if (line[start] == '>' && line[*i] == '>') // >>
+		start = (*i)++;
+		if (line[start] == '>' && line[*i] == '>')
 			(*i)++;
 		part = ft_strndup(&line[start], *i - start);
 		token = malloc(sizeof(t_token));
-		if (!token || !(token->str = ft_strdup(part)))
+        token->str = ft_strdup(part);
+		if (!token || !(token->str))
 			return (free(part), free(token), NULL);
 		free(part);
 		token->quote_type = 0;
@@ -50,7 +56,7 @@ t_token	*build_token_from_next_word(char *line, int *i)
 		get_token_type(token);
 		return (token);
 	}
-	while (line[*i] && !ft_isspace(line[*i]) && line[*i] != '<' && line[*i] != '>' && line[*i] != '|') 
+	while (line[*i] && !ft_isspace(line[*i]) && line[*i] != '<' && line[*i] != '>' && line[*i] != '|') //take out later
 	{
 		part = NULL;
 		if (line[*i] == '\'')
@@ -64,7 +70,8 @@ t_token	*build_token_from_next_word(char *line, int *i)
 		temp = ft_strjoin_free(temp, part);
 	}
 	token = malloc(sizeof(t_token));
-	if (!token || !(token->str = ft_strdup(temp)))
+    token->str = ft_strdup(temp);
+	if (!token || !(token->str))
 		return (free(temp), free(token), NULL);
 	free(temp);
 	token->quote_type = 0;
@@ -75,26 +82,32 @@ t_token	*build_token_from_next_word(char *line, int *i)
 
 char *get_quoted_part(char *s, int *i, char quote)
 {
-	int	start = ++(*i);
+	int		start;
+    char	*part;
+
+    start = ++(*i);
 	while (s[*i] && s[*i] != quote)
 		(*i)++;
-	char *part = ft_strndup(&s[start], *i - start);
+	part = ft_strndup(&s[start], *i - start);
 	if (s[*i] == quote)
 		(*i)++;
-	return part;
+	return (part);
 }
 
 char *get_unquoted_part(char *s, int *i)
 {
-	int	start = *i;
-	while (s[*i] && !ft_isspace(s[*i]) && s[*i] != '\'' && s[*i] != '"' && s[*i] != '<' && s[*i] != '>' && s[*i] != '|')
+	int	start;
+
+    start = *i;
+	while (s[*i] && !ft_isspace(s[*i]) && s[*i] != '\'' 
+        && s[*i] != '"' && s[*i] != '<' && s[*i] != '>' && s[*i] != '|')
 		(*i)++;
-	return ft_strndup(&s[start], *i - start);
+	return (ft_strndup(&s[start], *i - start));
 }
 
 char *ft_strjoin_free(char *s1, char *s2)
 {
-	char *joined;
+	char	*joined;
 
 	if (!s1)
 		joined = ft_strjoin("", s2);
@@ -102,7 +115,7 @@ char *ft_strjoin_free(char *s1, char *s2)
 		joined = ft_strjoin(s1, s2);
 	free(s1);
 	free(s2);
-	return joined;
+	return (joined);
 }
 
 /*

@@ -37,9 +37,9 @@ static char	*change_value_part(char *str, int i, char *value)
         && ((ft_isalnum(str[i + var_len]) || str[i + var_len] == '_')))
 		var_len++;
 	before = ft_substr(str, 0, i - 1); // everything before the $
-	after = ft_strdup(str + i + var_len); // after the variable name // need to malloc check
-	temp = ft_strjoin(before, value); // need to malloc check
-	result = ft_strjoin(temp, after); // need to malloc check
+	after = ft_strdup(str + i + var_len); // //null check to do
+	temp = ft_strjoin(before, value); // //null check to do
+	result = ft_strjoin(temp, after); // //null check to do
 	free (temp);
 	free (before);
 	free (after);
@@ -72,7 +72,7 @@ void	expand_all_tokens(t_token *token_list, t_exec_path exec_cmd)
 			i = 0;
 			while (token_list->str[i])
 			{
-				if (token_list->str[i] == '$')
+				if (token_list->str[i] == '$') //find it
 				{
 					i++;
 					var_name = ft_substr(token_list->str, i, ft_strlen(&token_list->str[i]));

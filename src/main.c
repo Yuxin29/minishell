@@ -346,7 +346,7 @@ int main(int argc, char **argv, char **envp)
 
 			exec_cmd.whole_cmd = build_command_list(token_list);
 			free_token_list(token_list);
-			if (!exec_cmd.whole_cmd )
+			if (!exec_cmd.whole_cmd)
 			{
 				ft_free_arr(exec_cmd.envp);
 				ft_putstr_fd("Error: build command list failed\n", 2);

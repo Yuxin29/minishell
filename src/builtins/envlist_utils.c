@@ -22,10 +22,38 @@ void	set_env(t_env **env, char *key, char *value)
 	*env = new_node;
 }
 
-// void	unset_env(t_env **env, char *key)
-// {
-// 	t_env *cur;
-// 	t_env *
+void	unset_env(t_env **env, char *key)
+{
+	t_env *cur;
+	t_env *pre;
 
-// 	cur = *env;
-// }
+	cur = *env;
+	pre = NULL;
+	while(cur)
+	{
+		if (ft_strcmp(cur->key, key) == 0)
+		{
+			if (!pre)
+				*env = cur->next;
+			else
+				pre->next = cur->next;
+			free(cur->key);
+			free(cur->value);
+			free(cur);
+			return ;
+		}
+		pre = cur;
+		cur = cur->next;
+	}
+}
+
+char	*get_env(t_env *env, char *key)
+{
+	while (env)
+	{
+		if (ft_strcmp(env->key, key) == 0)
+			return (env->value);
+		env = env->next;
+	}
+	return (NULL);
+}

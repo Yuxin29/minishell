@@ -21,14 +21,14 @@ int	execute_builtin_cmd(char **argv, t_env **env)
 		return (ft_cd(argv));
 	if (ft_strcmp(argv[0], "pwd") == 0)
 		return (ft_pwd());
-	//if (ft_strcmp(argv[0], "export") == 0)
-		//return (ft_export(argv, envp));
-	// if (ft_strcmp(argv[0], "unset") == 0)
-	//	return (ft_unset(argv, envp);
+	if (ft_strcmp(argv[0], "export") == 0)
+		return (ft_export(argv, env));
+	if (ft_strcmp(argv[0], "unset") == 0)
+		return (ft_unset(argv, env));
 	if (ft_strcmp(argv[0], "env") == 0)
 		return (ft_env(*env));
 	// if (ft_strcmp(argv[0], "exit") == 0)
-	// 	return (ft_exit(argv, *envp));
+	// 	return (ft_exit(argv, *env));
 	return (0);
 }
 

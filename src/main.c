@@ -48,7 +48,7 @@ int main(int argc, char **argv, char **envp)
 				exit(EXIT_FAILURE);
 			}
 
-            expand_all_tokens(token_list, exec_cmd);
+			expand_all_tokens(token_list, exec_cmd);
 
 			//convert token list to command list
 			exec_cmd.whole_cmd = build_command_list(token_list);

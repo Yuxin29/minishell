@@ -4,7 +4,7 @@
 
 #include <setjmp.h> //delete later
 jmp_buf g_jmpbuf;//delete later
-/*
+
 char *test_lines[] =
 {
     // ✅ Valid test cases
@@ -297,8 +297,8 @@ int main(void)
         i++;
     }
     return (0);
-} */
-
+}
+/*
 int main(int argc, char **argv, char **envp)
 {
 	t_env		*env_list;
@@ -400,4 +400,4 @@ int main(int argc, char **argv, char **envp)
 	}
 	free_env_list(env_list);
 	return (0);
-}
+}*/

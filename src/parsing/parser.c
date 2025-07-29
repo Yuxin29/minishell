@@ -26,8 +26,11 @@ t_cmd	*build_command_list(t_token *token_head)
 			cmd_last->next = cmd_current;
 		cmd_last = cmd_current;
 		token_head = get_one_new_cmd(token_head, cmd_current);
-		if (!token_head)
-			break ;
+        if (!token_head && !cmd_current->argv)
+        {
+            free_cmd_list(cmd_head);
+            return (NULL);
+        }
 	}
 	return (cmd_head);
 }
@@ -52,8 +55,6 @@ t_token	*parse_redirections(t_cmd *cmd, t_token *tokens)
 {
 	t_token	*next;
 
-	if (!tokens || !tokens->next)
-		return (NULL);
 	next = tokens->next;
 	if (tokens->t_type == 2)
 	{

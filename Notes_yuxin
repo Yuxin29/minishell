@@ -167,3 +167,33 @@ Input                   Expected Output
 "$"	                    "" (empty string or preserved as literal)
 "$UNDEFINED"	        ""
 "Mix$VAR1and$VAR2"	    "Mixval1andval2"
+
+how to set env_variables, in bash eg:
+export VAR=value
+//do we need to achieve this export in shell as well? tes
+
+EDGE CASES AND TESTS
+Input                   Expected Output
+"Hello $USER"	        "Hello alice"
+'Hello $USER'	        'Hello $USER'
+"Path is $PATH/bin"	    "Path is /usr/bin:/bin/bin"
+"$"	                    "" (empty string or preserved as literal)
+"$UNDEFINED"	        ""
+"Mix$VAR1and$VAR2"	    "Mixval1andval2"
+
+=================================weird testing case=====================================================
+//about quotes and #USER
+
+echo "yuxin $USER '$USER' "user" kk,"
+echo "hello "yuxin" wi"
+echo 'hello 'yuxin' wi'
+echo "hello 'yuxin' wi"
+echo 'hello "yuxin" wi'
+
+//about redirection
+< infile            bash: infile: No such file or directory, fake excution
+cat <               bash: syntax error near unexpected token 'newline', exit during parsing stage
+
+//cmds without empty space in between
+echo$USER           bash: echomikko: command not found
+cat<Makefile        bash: solid, same as cat < Makefile

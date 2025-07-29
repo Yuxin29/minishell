@@ -11,7 +11,8 @@ int	execute_internal_cmd(t_exec_path *cmd)
 	// 	//check_and_apply_redirections(cmd->whole_cmd); //added by yuxin
 	// 	return (execute_builtin(cmd->whole_cmd->argv, env)); //modify
 	// }
-
+	if (!cmd || !cmd->whole_cmd || !cmd->whole_cmd->argv || !cmd->whole_cmd->argv[0]) //yuxing added
+		return (0);
 	pid = fork();
 	if (pid == 0)
 	{
@@ -33,5 +34,4 @@ int	execute_internal_cmd(t_exec_path *cmd)
 		perror("fork");
 		return (-1);
 	}
-
 }

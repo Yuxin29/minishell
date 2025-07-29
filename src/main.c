@@ -1,10 +1,113 @@
 #include "minishell.h"
 #include "parsing.h"
 
-
 #include <setjmp.h> //delete later
 jmp_buf g_jmpbuf;//delete later
 
+int main(int argc, char **argv, char **envp)
+{
+	t_env		*env_list;
+	char		*line;
+	t_token		*token_list;
+	t_exec_path	exec_cmd;
+
+	(void)argc;
+	(void)argv;
+
+	env_list = env_list_init(envp);
+	if (!env_list)
+	{
+		ft_putstr_fd("Error: env list initialized failed\n", 2);
+		exit(EXIT_FAILURE);
+	}
+	while (1)
+	{
+		line = readline("minishell$ ");
+		if (!line) //Ctrl+D
+			break ;
+		if(*line)
+		{
+			add_history(line); //no need to care about the history memory
+
+			//convert list to envp array
+			exec_cmd.envp = env_list_to_envp(env_list);
+			//free_env_list(env_list);
+			if (!exec_cmd.envp)
+			{
+				free(line);
+				free_env_list(env_list);
+				ft_putstr_fd("Error: env list initialized failed\n", 2);
+				exit(EXIT_FAILURE);
+			}
+
+			//convert line token list
+			token_list = get_token_list(line);
+			free(line);
+			if (!token_list)
+			{
+				free_env_list(env_list);
+				ft_free_arr(exec_cmd.envp);
+				ft_putstr_fd("Error: get token list failed\n", 2);
+				exit(EXIT_FAILURE);
+			}
+
+            expand_all_tokens(token_list, exec_cmd);
+
+			//convert token list to command list
+			exec_cmd.whole_cmd = build_command_list(token_list);
+			free_token_list(token_list);
+			if (!exec_cmd.whole_cmd)
+			{
+				free_env_list(env_list);
+				ft_free_arr(exec_cmd.envp);
+				ft_putstr_fd("Error: build command list failed\n", 2);
+				exit(EXIT_FAILURE);
+			}
+			check_and_apply_heredocs(exec_cmd.whole_cmd);
+
+			//if bulitin, no need to find cmd_path, just execute(need to deal with other things in it)
+			if (is_builtin(exec_cmd.whole_cmd->argv[0]))
+			{
+				exec_cmd.cmd_path = NULL;
+				//check_and_apply_redirections(cmd->whole_cmd);
+				if (execute_builtin_cmd(exec_cmd.whole_cmd->argv, &env_list) == 0) //modify
+				{
+					//free??
+				}
+			}
+
+			//if internal cmd, get cmd_path first
+			else
+			{
+				exec_cmd.cmd_path = get_cmd_path(exec_cmd.whole_cmd->argv[0], exec_cmd.envp);
+				if (!exec_cmd.cmd_path)
+				{
+					printf("minishell: %s : command not found\n", exec_cmd.whole_cmd->argv[0]); //can't use printf to print error message
+					free_env_list(env_list);
+					ft_free_arr(exec_cmd.envp);
+					free_cmd_list(exec_cmd.whole_cmd);
+					exit(127);
+				}
+
+				// and execute internal cmd
+				if (execute_internal_cmd(&exec_cmd) == -1)
+				{
+					//free, close??
+				}
+			}
+
+			//free_env_list(env_list);
+			ft_free_arr(exec_cmd.envp);
+			free_cmd_list(exec_cmd.whole_cmd);
+			if (exec_cmd.cmd_path)
+				free(exec_cmd.cmd_path);
+		}
+	}
+	free_env_list(env_list);
+	return (0);
+}
+
+/* 
 char *test_lines[] =
 {
     // ✅ Valid test cases
@@ -144,6 +247,17 @@ char *test_lines[] =
 
     NULL
 };
+
+//other weird testing case:
+//about quotes and #USER
+echo "yuxin $USER '$USER' "user" kk,"
+echo "hello "yuxin" wi"
+echo 'hello 'yuxin' wi'
+echo "hello 'yuxin' wi"
+echo 'hello "yuxin" wi'
+//about redirection
+< infile            bash: infile: No such file or directory, fake excution
+cat <               bash: syntax error near unexpected token 'newline', 应在解析阶段提示语法错误并退出
 
 //for testing lexing, delete later
 static void print_token_list(t_token *head)
@@ -298,106 +412,5 @@ int main(void)
     }
     return (0);
 }
-/*
-int main(int argc, char **argv, char **envp)
-{
-	t_env		*env_list;
-	char		*line;
-	t_token		*token_list;
-	t_exec_path	exec_cmd;
 
-	(void)argc;
-	(void)argv;
-
-	env_list = env_list_init(envp);
-	if (!env_list)
-	{
-		ft_putstr_fd("Error: env list initialized failed\n", 2);
-		exit(EXIT_FAILURE);
-	}
-	while (1)
-	{
-		line = readline("minishell$ ");
-		if (!line) //Ctrl+D
-			break ;
-		if(*line)
-		{
-			add_history(line); //no need to care about the history memory
-
-			//convert list to envp array
-			exec_cmd.envp = env_list_to_envp(env_list);
-			//free_env_list(env_list);
-			if (!exec_cmd.envp)
-			{
-				free(line);
-				free_env_list(env_list);
-				ft_putstr_fd("Error: env list initialized failed\n", 2);
-				exit(EXIT_FAILURE);
-			}
-
-			//convert line token list
-			token_list = get_token_list(line);
-			free(line);
-			if (!token_list)
-			{
-				free_env_list(env_list);
-				ft_free_arr(exec_cmd.envp);
-				ft_putstr_fd("Error: get token list failed\n", 2);
-				exit(EXIT_FAILURE);
-			}
-
-            expand_all_tokens(token_list, exec_cmd);
-
-			//convert token list to command list
-			exec_cmd.whole_cmd = build_command_list(token_list);
-			free_token_list(token_list);
-			if (!exec_cmd.whole_cmd)
-			{
-				free_env_list(env_list);
-				ft_free_arr(exec_cmd.envp);
-				ft_putstr_fd("Error: build command list failed\n", 2);
-				exit(EXIT_FAILURE);
-			}
-			check_and_apply_heredocs(exec_cmd.whole_cmd);
-
-			//if bulitin, no need to find cmd_path, just execute(need to deal with other things in it)
-			if (is_builtin(exec_cmd.whole_cmd->argv[0]))
-			{
-				exec_cmd.cmd_path = NULL;
-				//check_and_apply_redirections(cmd->whole_cmd);
-				if (execute_builtin_cmd(exec_cmd.whole_cmd->argv, &env_list) == 0) //modify
-				{
-					//free??
-				}
-			}
-
-			//if internal cmd, get cmd_path first
-			else
-			{
-				exec_cmd.cmd_path = get_cmd_path(exec_cmd.whole_cmd->argv[0], exec_cmd.envp);
-				if (!exec_cmd.cmd_path)
-				{
-					printf("minishell: %s : command not found\n", exec_cmd.whole_cmd->argv[0]); //can't use printf to print error message
-					free_env_list(env_list);
-					ft_free_arr(exec_cmd.envp);
-					free_cmd_list(exec_cmd.whole_cmd);
-					exit(127);
-				}
-
-				// and execute internal cmd
-				if (execute_internal_cmd(&exec_cmd) == -1)
-				{
-					//free, close??
-				}
-			}
-
-			//free_env_list(env_list);
-			ft_free_arr(exec_cmd.envp);
-			free_cmd_list(exec_cmd.whole_cmd);
-			if (exec_cmd.cmd_path)
-				free(exec_cmd.cmd_path);
-		}
-	}
-	free_env_list(env_list);
-	return (0);
-}*/
+*/

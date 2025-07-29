@@ -45,11 +45,16 @@ typedef struct s_cmd
 
 // lex.c
 // get raw_line with readline / getnextline, and the put them to t_token
-t_token     *get_token_list(char *raw_line);
-t_token    *get_one_new_token(char *raw_line, int *len);
-void		token_no_quote(char *raw_line, int  *i, t_token  *token);
-void		token_single_quote(char *raw_line, int  *i, t_token  *token);
-void		token_double_quote(char *raw_line, int  *i, t_token  *token);
+//t_token     *get_token_list(char *raw_line);
+//t_token    *get_one_new_token(char *raw_line, int *len);
+//void		token_no_quote(char *raw_line, int  *i, t_token  *token);
+//void		token_single_quote(char *raw_line, int  *i, t_token  *token);
+//void		token_double_quote(char *raw_line, int  *i, t_token  *token);
+t_token	*get_token_list(char *raw_line);
+t_token	*build_token_from_next_word(char *line, int *i);
+char *get_quoted_part(char *s, int *i, char quote);
+char *get_unquoted_part(char *s, int *i);
+char *ft_strjoin_free(char *s1, char *s2);
 
 // lex_utils.c
 void         check_raw_line_syntax(char *raw_line);

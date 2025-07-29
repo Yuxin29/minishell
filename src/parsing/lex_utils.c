@@ -27,7 +27,7 @@ void	check_raw_line_syntax(char *raw_line)
 			while (raw_line[i] && raw_line[i] != '\'')
 				i++;
 			if (!raw_line[i])
-				errmsg_exit("minishell: syntax error: unclosed double quotes", 2);
+				errmsg_exit("minishell: syntax error: unclosed single quotes", 2);
 		}
 		i++;
 	}

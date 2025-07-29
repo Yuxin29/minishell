@@ -26,4 +26,7 @@ char	**env_list_to_envp(t_env *head);
 t_env	*env_list_init(char **envp);
 void	free_env_list(t_env *head);
 
+// void	set_env(t_env **env, char *key, char *value);
+// void	unset_env(t_env **env, char *key, char *value)
+
 #endif

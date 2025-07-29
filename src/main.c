@@ -358,7 +358,7 @@ int main(int argc, char **argv, char **envp)
 				exit(EXIT_FAILURE);
 			}
 
-			printf("cmd: '%s'\n", exec_cmd.whole_cmd->argv[0]);
+			//printf("cmd: '%s'\n", exec_cmd.whole_cmd->argv[0]);
 
 			//if bulitin, no need to find cmd_path, just execute(need to deal with other things in it)
 			if (is_builtin(exec_cmd.whole_cmd->argv[0]))

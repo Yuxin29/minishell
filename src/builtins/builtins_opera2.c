@@ -1,10 +1,5 @@
 #include "minishell.h"
 
-// ft_export(char *argv, char **envp)
-// {
-
-// }
-
 int	ft_env(t_env *env)
 {
 	while (env)
@@ -15,3 +10,9 @@ int	ft_env(t_env *env)
 	}
 	return (0);
 }
+
+// ft_export(char *argv, char **envp)
+// {
+
+// }
+

@@ -204,6 +204,10 @@ Memory allocation failures (malloc, calloc, etc.)
 
 System call failures (like fork, pipe, dup2, execve, etc.)
 
+perror("malloc failed")
+exit(126)
+malloc f: xxxxxxxxx
+
 Any library/system function documented to set errno on failure
 
 ❌ When should you NOT use perror?

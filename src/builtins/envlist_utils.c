@@ -22,7 +22,10 @@ void	set_env(t_env **env, char *key, char *value)
 	*env = new_node;
 }
 
-void	unset_env(t_env **env, char *key)
-{
-	
-}
+// void	unset_env(t_env **env, char *key)
+// {
+// 	t_env *cur;
+// 	t_env *
+
+// 	cur = *env;
+// }

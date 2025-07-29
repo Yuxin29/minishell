@@ -35,7 +35,7 @@ t_cmd	*build_command_list(t_token *token_head)
 //generate on single cmd struct
 t_token	*get_one_new_cmd(t_token *token_head, t_cmd *cmd_current)
 {
-	while (token_head && token_head->t_type != 1) 
+	while (token_head && token_head->t_type != 1)
 	{
 		if (token_head->t_type == 0)
 			token_head = parse_argv(cmd_current, token_head);

@@ -7,9 +7,9 @@
 // after redirections it can not be followed by pipe or redirectiosn
 // after pipe, it can not be followed by pipe or redirections
 // if it is a word without quotes, it can not contain special character 
-void check_token_syntax(t_token *token_head)
+void	check_token_syntax(t_token *token_head)
 {
-	t_token *head;
+	t_token	*head;
 
 	head = token_head;
 	if (!token_head)
@@ -40,9 +40,9 @@ void check_token_syntax(t_token *token_head)
 }
 
 //used in parse_argv, for malloc str of strs
-int count_argv(t_token *start)
+int	count_argv(t_token *start)
 {
-	int count;
+	int	count;
 
 	count = 0;
 	while (start && start->t_type == 0)
@@ -50,7 +50,7 @@ int count_argv(t_token *start)
 		count++;
 		start = start->next;
 	}
-	return count;
+	return (count);
 }
 
 void    check_strndup(char *str, t_cmd *cmd, t_token *tokens)
@@ -66,7 +66,7 @@ void    check_strndup(char *str, t_cmd *cmd, t_token *tokens)
 //free a linked list of t_cmd
 void    free_cmd_list(t_cmd *cmd_head)
 {
-	t_cmd   *tmp;
+	t_cmd	*tmp;
 
 	if (!cmd_head)
 		return ;

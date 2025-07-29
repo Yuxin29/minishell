@@ -352,6 +352,7 @@ int main(int argc, char **argv, char **envp)
 				ft_putstr_fd("Error: build command list failed\n", 2);
 				exit(EXIT_FAILURE);
 			}
+            check_and_apply_redirections(exec_cmd.whole_cmd);
 
 			exec_cmd.cmd_path = get_cmd_path(exec_cmd.whole_cmd->argv[0], exec_cmd.envp);
 			if (!exec_cmd.cmd_path)

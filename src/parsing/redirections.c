@@ -7,7 +7,7 @@
 void	check_and_apply_redirections(t_cmd *cmd)
 {
 	int	fd;
-    
+
 	if (cmd->infile)
 	{
 		fd = open(cmd->infile, O_RDONLY);
@@ -21,7 +21,7 @@ void	check_and_apply_redirections(t_cmd *cmd)
 	}
 	if (cmd->outfile)
 	{
-		if(cmd->append_out == 1)
+		if (cmd->append_out == 1)
 			fd = open(cmd->outfile, O_WRONLY | O_CREAT | O_APPEND, 0644);
 		else if (cmd->append_out == 0)
 			fd = open(cmd->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
@@ -66,9 +66,9 @@ static void	get_tmp_file(t_cmd *cmd_list, int heredoc_count, char *tmp_path, int
 	}
 }
 
-void        check_and_apply_heredocs(t_cmd *cmd_list)
+void	check_and_apply_heredocs(t_cmd *cmd_list)
 {
-	char	*tmp_path;  //what happens if the are pipes or multiple commands, is the tmp file reused, does the mkstemp happen at the same time and same path, or with an first and second order
+	char	*tmp_path;//what happens if the are pipes or multiple commands, is the tmp file reused, does the mkstemp happen at the same time and same path, or with an first and second order
 	int		fd;
 	char	*line;
 	int		heredoc_count;
@@ -86,7 +86,7 @@ void        check_and_apply_heredocs(t_cmd *cmd_list)
 				line = readline("minishell: heredoc> ");
 				if (!line || ft_strcmp(line, cmd_list->heredoc_delim) == 0)//Stop reading when user inputs a line exactly matching the heredoc delimiter.
 				{
-					free(line);
+					free (line);
 					break ;
 				}
 				ft_putendl_fd(line, fd);//Write all lines except the delimiter into the temporary file.
@@ -98,4 +98,3 @@ void        check_and_apply_heredocs(t_cmd *cmd_list)
 		cmd_list = cmd_list->next;
 	}
 }
-

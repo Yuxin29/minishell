@@ -47,3 +47,8 @@ int	ft_unset(char **argv, t_env **env)
 	}
 	return (0);
 }
+
+// int	ft_exit(char **argv, t_env **env)
+// {
+
+// }

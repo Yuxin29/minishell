@@ -5,7 +5,7 @@
 # include "parsing.h"
 # include "minishell.h"
 
-typedef struct s_cmd t_cmd; 
+typedef struct s_cmd t_cmd;
 
 typedef struct s_exec_path
 {
@@ -15,6 +15,6 @@ typedef struct s_exec_path
 }	t_exec_path;
 
 char	*get_cmd_path(char *cmd, char **envp);
-int		execute_internal_cmd(t_exec_path *cmd);
+int		execute_external_cmd(t_exec_path *cmd);
 
 #endif

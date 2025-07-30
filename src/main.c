@@ -1,5 +1,4 @@
 #include "minishell.h"
-#include "parsing.h"
 
 int main(int argc, char **argv, char **envp)
 {
@@ -28,7 +27,6 @@ int main(int argc, char **argv, char **envp)
 
 			//convert list to envp array
 			exec_cmd.envp = env_list_to_envp(env_list);
-			//free_env_list(env_list);
 			if (!exec_cmd.envp)
 			{
 				free(line);
@@ -81,22 +79,25 @@ int main(int argc, char **argv, char **envp)
 				{
 					printf("minishell: %s : command not found\n", exec_cmd.whole_cmd->argv[0]); //can't use printf to print error message
 					free_env_list(env_list);
-					ft_free_arr(exec_cmd.envp);
-					free_cmd_list(exec_cmd.whole_cmd);
+					free_t_exec_path(&exec_cmd);
+					// ft_free_arr(exec_cmd.envp);
+					// free_cmd_list(exec_cmd.whole_cmd);
 					exit(127);
 				}
 
-				// and execute internal cmd
-				if (execute_internal_cmd(&exec_cmd) == -1)
+				// and execute external cmd
+				if (execute_external_cmd(&exec_cmd) == -1)
 				{
-					//free, close??
+					free_env_list(env_list);
+					free_t_exec_path(&exec_cmd);
+					exit(EXIT_FAILURE);
 				}
 			}
-			//free_env_list(env_list);
-			ft_free_arr(exec_cmd.envp);
-			free_cmd_list(exec_cmd.whole_cmd);
-			if (exec_cmd.cmd_path)
-				free(exec_cmd.cmd_path);
+			free_t_exec_path(&exec_cmd);
+			// ft_free_arr(exec_cmd.envp);
+			// free_cmd_list(exec_cmd.whole_cmd);
+			// if (exec_cmd.cmd_path)
+			// 	free(exec_cmd.cmd_path);
 		}
 	}
 	free_env_list(env_list);

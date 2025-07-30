@@ -1,4 +1,3 @@
-#include "parsing.h"
 #include "minishell.h"
 
 //redirections.c
@@ -35,11 +34,11 @@ void	check_and_apply_redirections(t_cmd *cmd)
 	}
 }
 
-/* 
+/*
 #include <stdio.h>
 mkstemp - create a unique temporary file
 int mkstemp(char *template); ///XXXXXX are ramdom characters here
-The  mkstemp() function generates a unique temporary filename from template, 
+The  mkstemp() function generates a unique temporary filename from template,
 creates and opens the file, and returns an open file  descriptor for the file.
 snprintf - snprintf
 int snprintf(char *str, size_t size, const char *format, ...);

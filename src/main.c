@@ -66,8 +66,7 @@ int main(int argc, char **argv, char **envp)
 				// continue;
 				exit(EXIT_FAILURE);
 			}
-			check_and_apply_heredocs(exec_cmd.whole_cmd);
-
+			
 			//if bulitin, no need to find cmd_path, just execute(need to deal with other things in it)
 			if (is_builtin(exec_cmd.whole_cmd->argv[0]))
 			{

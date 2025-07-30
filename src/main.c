@@ -21,7 +21,6 @@ int main(int argc, char **argv, char **envp)
 	while (1)
 	{
 		line = readline("minishell$ ");
-		printf("DEBUG: line = %p\n", (void*)line);
 		if (!line) //Ctrl+D
 			break ;
 		if(*line)

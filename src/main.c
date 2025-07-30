@@ -132,6 +132,7 @@ char *test_lines[] =
 
     // Test 5: Consecutive redirections (heredoc + append)
     "cat << heredoc >> out",
+
 mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo << $USER
 > skfd
 > mikko
@@ -188,7 +189,7 @@ minishell: heredoc> mikko
 
     // ❌ Test 18: Unclosed double quote
     "echo \"hello world",
-
+./m
     // ❌ Test 19: Unclosed single quote
     "echo 'hello world",
 

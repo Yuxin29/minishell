@@ -199,6 +199,7 @@ echo$USER           bash: echoyuwu: command not found
 cat<Makefile        bash: solid, same as cat < Makefile
 
 =================================to tell lin on Thursday=====================================================
+//empty string executions 
 mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ ./minishell
 minishell$ ""
 execve: Permission denied
@@ -222,6 +223,22 @@ minishell$  echo << $USER
 minishell: heredoc> asd
 asd
 minishell: heredoc> mikko
+
+//first redirections and then actuall command is valid in bash
+mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ > out.txt echo hello
+mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo $?
+0
+mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ ./minishell
+minishell$ > out.txt echo hello
+hello
+
+// bash allows empty command and redirections and outfile
+mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ ./minishell
+minishell$ < infile
+Error: build command list failed test
+mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ < infile
+bash: infile: No such file or directory
+
 
 
 

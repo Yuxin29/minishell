@@ -30,7 +30,6 @@ t_cmd	*build_command_list(t_token *token_head)
 		if (!token_head && !cmd_current->argv)
 		{
 			free_cmd_list(cmd_head);
-			free_cmd_list(cmd_head);
 			return (NULL);
 		}
 	}

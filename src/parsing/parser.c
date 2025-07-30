@@ -4,6 +4,7 @@
 //to find / recognize a cmd, we need to find a pipe
 //basically, before the pipe is a cmd, after it is pipe.
 //if no pipe, then this is a single cmd
+//no need to null check token head, if null, exited earlier
 t_cmd	*build_command_list(t_token *token_head)
 {
 	t_cmd	*cmd_head;
@@ -26,11 +27,11 @@ t_cmd	*build_command_list(t_token *token_head)
 			cmd_last->next = cmd_current;
 		cmd_last = cmd_current;
 		token_head = get_one_new_cmd(token_head, cmd_current);
-        if (!token_head && !cmd_current->argv)
-        {
-            free_cmd_list(cmd_head);
-            return (NULL);
-        }
+		if (!token_head && !cmd_current->argv)
+		{
+			free_cmd_list(cmd_head);
+			return (NULL);
+		}
 	}
 	return (cmd_head);
 }

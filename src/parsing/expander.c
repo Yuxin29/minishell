@@ -34,7 +34,7 @@ static char	*change_value_part(char *str, int i, char *value)
 
 	var_len = 0;
 	while (str[i + var_len]
-        && ((ft_isalnum(str[i + var_len]) || str[i + var_len] == '_')))
+		&& ((ft_isalnum(str[i + var_len]) || str[i + var_len] == '_')))
 		var_len++;
 	before = ft_substr(str, 0, i - 1); // everything before the $
 	after = ft_strdup(str + i + var_len); // //null check to do

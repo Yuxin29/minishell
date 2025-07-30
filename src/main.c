@@ -254,16 +254,20 @@ char *test_lines[] =
     NULL
 };
 
-//other weird testing case:
 //about quotes and #USER
 echo "yuxin $USER '$USER' "user" kk,"
 echo "hello "yuxin" wi"
 echo 'hello 'yuxin' wi'
 echo "hello 'yuxin' wi"
 echo 'hello "yuxin" wi'
+
 //about redirection
 < infile            bash: infile: No such file or directory, fake excution
-cat <               bash: syntax error near unexpected token 'newline', 应在解析阶段提示语法错误并退出
+cat <               bash: syntax error near unexpected token 'newline', exit during parsing stage
+
+//cmds without empty space in between
+echo$USER           bash: echoyuwu: command not found
+cat<Makefile        bash: solid, same as cat < Makefile
 
 //for testing lexing, delete later
 static void print_token_list(t_token *head)

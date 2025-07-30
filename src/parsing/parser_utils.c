@@ -62,6 +62,7 @@ int	count_argv(t_token *start)
 	return (count);
 }
 
+//why is this necessary
 void	check_strndup(char *str, t_cmd *cmd, t_token *tokens)
 {
 	if (!str)

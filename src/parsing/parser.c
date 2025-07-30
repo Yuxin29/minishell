@@ -30,6 +30,7 @@ t_cmd	*build_command_list(t_token *token_head)
 		if (!token_head && !cmd_current->argv)
 		{
 			free_cmd_list(cmd_head);
+			free_cmd_list(cmd_head);
 			return (NULL);
 		}
 	}
@@ -94,7 +95,7 @@ t_token	*parse_argv(t_cmd *cmd, t_token *tokens)
 	{
 		free_token_list(tokens);
 		free_cmd_list(cmd);
-		error_and_return("malloc failed", NULL);
+		return (NULL);
 	}
 	while (i < len && tokens && tokens->t_type == 0)
 	{

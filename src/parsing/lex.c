@@ -48,17 +48,17 @@ static t_token	*build_word_token(char *line, int *i)
 		else
 			part = get_unquoted_part(line, i);
 		if (!part)
-        {
-            if (temp)
-                free(temp);
-            return (NULL);
-        }
+		{
+			if (temp)
+				free(temp);
+			return (NULL);
+		}
 		temp = ft_strjoin_free(temp, part);
-        if (!temp)
-            return (NULL);
+		if (!temp)
+			return (NULL);
 	}
 	token = malloc(sizeof(t_token));
-    if (!token)
+	if (!token)
 		return (free(temp), NULL);
 	token->str = ft_strdup(temp);
 	free(temp);
@@ -86,10 +86,10 @@ t_token	*build_token_from_next_word(char *line, int *i)
 		if (!part)
 			return (NULL);
 		token = malloc(sizeof(t_token));
-        if (!token)
+		if (!token)
 			return (free(part), NULL);
 		token->str = ft_strdup(part);
-        free(part);
+		free(part);
 		if (!(token->str))
 			return (free(token), NULL);
 		token->quote_type = 0;

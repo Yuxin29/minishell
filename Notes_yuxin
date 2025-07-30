@@ -197,3 +197,13 @@ cat <               bash: syntax error near unexpected token 'newline', exit dur
 //cmds without empty space in between
 echo$USER           bash: echoyuwu: command not found
 cat<Makefile        bash: solid, same as cat < Makefile
+
+=================================to tell lin on Thursday=====================================================
+mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ ./minishell
+minishell$ ""
+execve: Permission denied
+minishell$ ^C
+mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ ""
+Command '' not found, but can be installed with:
+
+

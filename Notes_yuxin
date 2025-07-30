@@ -183,7 +183,6 @@ Input                   Expected Output
 
 =================================weird testing case=====================================================
 //about quotes and #USER
-
 echo "yuxin $USER '$USER' "user" kk,"
 echo "hello "yuxin" wi"
 echo 'hello 'yuxin' wi'
@@ -195,5 +194,5 @@ echo 'hello "yuxin" wi'
 cat <               bash: syntax error near unexpected token 'newline', exit during parsing stage
 
 //cmds without empty space in between
-echo$USER           bash: echomikko: command not found
+echo$USER           bash: echoyuwu: command not found
 cat<Makefile        bash: solid, same as cat < Makefile

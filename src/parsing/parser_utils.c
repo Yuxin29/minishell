@@ -4,10 +4,10 @@
 // if it is a word without quotes, it can not contain special character
 static int	check_special_characters(t_token *token_head)
 {
-	if (token_head->t_type == 0 && token_head->quote_type == 0)
+    if (token_head->t_type == 0 && token_head->quote_type == 0)
 	{
 		if (ft_strchr((const char *)token_head->str, ';')
-			|| ft_strchr((const char *)token_head->str, '\''))
+			|| ft_strchr((const char *)token_head->str, '\\'))
 			return (1);
 	}
 	return (0);

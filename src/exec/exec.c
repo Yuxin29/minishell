@@ -8,7 +8,8 @@ int	execute_external_cmd(t_exec_path *cmd)
 	pid = fork();
 	if (pid == 0)
 	{
-		check_and_apply_redirections(cmd->whole_cmd);
+		if (check_and_apply_redirections(cmd->whole_cmd) == -1)
+			return (-1);
 		execve(cmd->cmd_path, cmd->whole_cmd->argv, cmd->envp);
 		perror("execve");
 		//!!free everything before exit(or close??)

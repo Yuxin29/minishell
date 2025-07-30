@@ -203,4 +203,18 @@ User input validation errors
 !!!!!!!! should fix 730;
 1\ can not exit directly in redirection, otherwise there is no chance to free the thing we've already malloced
 2\ also check in lex_utils and parce_utils
-2\ same in execute
+3\ same in execute
+4\ should not exit if the user types a non-existent command like cati Makefile, They only exit if the user types exit, sends an EOF (Ctrl+D), or if there is a critical internal error.
+5\in this case, continue or exit??
+			exec_cmd.whole_cmd = build_command_list(token_list);
+			free_token_list(token_list);
+			if (!exec_cmd.whole_cmd)
+			{
+				free_env_list(env_list);
+				ft_free_arr(exec_cmd.envp);
+				ft_putstr_fd("Error: build command list failed\n", 2);
+				g_exit_status = 1;
+				continue;
+				//exit(EXIT_FAILURE);
+			}
+

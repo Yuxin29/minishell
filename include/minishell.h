@@ -1,6 +1,8 @@
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
+extern int	g_exit_status; // declare the global exit status
+
 # include "builtins.h"
 # include "parsing.h"
 # include "exec.h"

@@ -13,7 +13,7 @@ int	is_builtin(char *cmd)
 				|| ft_strcmp(cmd, "exit") == 0);
 }
 
-int	execute_builtin_cmd(char **argv, t_env **env)
+int	execute_builtin_cmd(char **argv, t_env **env) //should handle redir here!!!
 {
 	if (ft_strcmp(argv[0], "echo") == 0)
 		return (ft_echo(argv));

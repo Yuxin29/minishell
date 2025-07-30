@@ -69,9 +69,24 @@ t_token	*parse_redirections(t_cmd *cmd, t_token *tokens)
 		else
 			cmd->append_out = 1;
 	}
+	// if (tokens->t_type == 5)
+	// {
+	// 	cmd->heredoc_delim = ft_strndup(next->str, ft_strlen(next->str));
+	// 	check_strndup(cmd->heredoc_delim, cmd, tokens);
+	// }
 	if (tokens->t_type == 5)
 	{
+		char *tmpfile;
+
 		cmd->heredoc_delim = ft_strndup(next->str, ft_strlen(next->str));
+		tmpfile = creat_heredoc_file(cmd->heredoc_delim);
+		if (!tmpfile)
+			check_strndup(NULL, cmd, tokens);
+		if (cmd->infile)
+			free(cmd->infile);
+		if (cmd->heredoc_delim)
+			free(cmd->heredoc_delim);
+		cmd->infile = tmpfile;
 		check_strndup(cmd->heredoc_delim, cmd, tokens);
 	}
 	return (next->next);

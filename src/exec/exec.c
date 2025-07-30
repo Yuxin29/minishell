@@ -8,7 +8,7 @@ int	execute_external_cmd(t_exec_path *cmd)
 	pid = fork();
 	if (pid == 0)
 	{
-		if (check_and_apply_redirections(cmd->whole_cmd) == -1)
+		if (check_and_apply_redirections(cmd->whole_cmd) == -1) //redirect should happen after fork and before execute
 			exit (EXIT_FAILURE);
 		execve(cmd->cmd_path, cmd->whole_cmd->argv, cmd->envp);
 		perror("execve");

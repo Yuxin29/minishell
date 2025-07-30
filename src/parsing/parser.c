@@ -78,16 +78,17 @@ t_token	*parse_redirections(t_cmd *cmd, t_token *tokens)
 	{
 		char *tmpfile;
 
-		cmd->heredoc_delim = ft_strndup(next->str, ft_strlen(next->str));
-		tmpfile = creat_heredoc_file(cmd->heredoc_delim);
-		if (!tmpfile)
-			check_strndup(NULL, cmd, tokens);
 		if (cmd->infile)
 			free(cmd->infile);
 		if (cmd->heredoc_delim)
 			free(cmd->heredoc_delim);
+		cmd->heredoc_delim = ft_strdup(next->str);
+		if (!cmd->heredoc_delim)
+			return (NULL);
+		tmpfile = creat_heredoc_file(cmd->heredoc_delim);
+		if (!tmpfile)
+			return (NULL);
 		cmd->infile = tmpfile;
-		check_strndup(cmd->heredoc_delim, cmd, tokens);
 	}
 	return (next->next);
 }

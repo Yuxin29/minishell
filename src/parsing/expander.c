@@ -85,9 +85,43 @@ void	expand_all_tokens(t_token *token_list, t_exec_path exec_cmd)
 						free(value);
 					}
 				}
-				i++;
+				else
+                    i++;
 			}
 		}
 		token_list = token_list->next;
 	}
 }
+
+/*
+// Expands $VAR inside a full line if needed
+char	*expand_heredoc_line(char *line, char **envp)
+{
+	int		i = 0;
+	char	*value;
+	char	*var_name;
+	char	*new_str;
+
+	while (line[i])
+	{
+		if (line[i] == '$')
+		{
+			i++;
+			var_name = ft_substr(line, i, ft_strlen(&line[i]));
+			value = expand_variables(var_name, envp);
+			free(var_name);
+			if (value)
+			{
+				new_str = change_value_part(line, i, value);
+				free(line);
+				line = new_str;
+				free(value);
+				i = 0;
+			}
+		}
+		else
+			i++;
+	}
+	return (line);
+}*/
+

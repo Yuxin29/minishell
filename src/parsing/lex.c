@@ -32,16 +32,6 @@ t_token	*get_token_list(char *raw_line)
 	return (head);
 }
 
-static void get_quote_type(t_token *token, char q)
-{
-    if (q == '\'')
-        token->quote_type = 1;
-    else if (q == '"')
-        token->quote_type = 2;
-    else
-        token->quote_type = 0;
-}
-
 // if it is a world token
 static t_token	*build_word_token(char *line, int *i)
 {
@@ -92,8 +82,8 @@ t_token	*build_token_from_next_word(char *line, int *i)
 	if (line[*i] == '<' || line[*i] == '>' || line[*i] == '|')
 	{
 		start = (*i)++;
-		if (line[start] == '>' && line[*i] == '>')
-			(*i)++;
+		if ((line[start] == '>' && line[*i] == '>') || (line[start] == '<' && line[*i] == '<'))
+            (*i)++;
 		part = ft_strndup(&line[start], *i - start);
 		if (!part)
 			return (NULL);

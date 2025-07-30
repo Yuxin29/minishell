@@ -85,3 +85,13 @@ char	*ft_strjoin_free(char *s1, char *s2)
 	free(s2);
 	return (joined);
 }
+
+void get_quote_type(t_token *token, char q)
+{
+    if (q == '\'')
+        token->quote_type = 1;
+    else if (q == '"')
+        token->quote_type = 2;
+    else
+        token->quote_type = 0;
+}

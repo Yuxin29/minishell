@@ -26,9 +26,11 @@ there could be multiple heredocs within one line
 so here we repeatedly check all the cmds in this linked list*/
 
 void	check_and_apply_heredocs(t_cmd *cmd_list);
+//void	check_and_apply_heredocs(t_cmd *cmd_list, char **envp)//yuxin added
 
 //we check here if there are redirections symbles here in each cmd.
 //we check a single cmd inside the child, once per cmd.
 int	check_and_apply_redirections(t_cmd *cmd);
+
 
 #endif

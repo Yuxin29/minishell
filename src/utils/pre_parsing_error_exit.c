@@ -6,8 +6,8 @@ void	errmsg_exit(char *msg, int status)
 {
 	if (msg)
 		ft_putstr_fd(msg, 2);
-	printf("🔴 Exit Status: %d\n", status); //delete later
-	longjmp(g_jmpbuf, 1);//delete later
+	//printf("🔴 Exit Status: %d\n", status); //delete later
+    //longjmp(g_jmpbuf, 1);//delete later
 	exit(status);
 }
 
@@ -17,8 +17,8 @@ void	free_errmsg_exit(t_token *tokens, char *msg, int status)
 		free_token_list(tokens);
 	if (msg)
 		ft_putstr_fd(msg, 2);
-	printf("🔴 Exit Status: %d\n", status);//delete later
-	longjmp(g_jmpbuf, 1);//delete later
+	//printf("🔴 Exit Status: %d\n", status);//delete later
+	//longjmp(g_jmpbuf, 1);//delete later
 	exit (status);
 }
 
@@ -30,7 +30,7 @@ void	free_tc_errmsg_exit(t_token *tokens, t_cmd *cmds, char *msg, int status)
 		free_cmd_list(cmds);
 	if (msg)
 		ft_putstr_fd(msg, 2);
-	printf("🔴 Exit Status: %d\n", status);//delete later
-	longjmp(g_jmpbuf, 1);//delete later
+	//printf("🔴 Exit Status: %d\n", status);//delete later
+	//longjmp(g_jmpbuf, 1);//delete later
 	exit (status);
 }

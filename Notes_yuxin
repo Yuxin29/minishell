@@ -206,4 +206,23 @@ minishell$ ^C
 mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ ""
 Command '' not found, but can be installed with:
 
+//I have the wrong expanding time
+//need to add this: char	*expand_heredoc_line(char *line, char **envp)
+mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo << $USER
+> skfd
+> mikko
+> $USER
+
+mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ cat $USER
+cat: mikko: No such file or directory
+mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo $USER
+mikko
+mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ ./minishell 
+minishell$  echo << $USER
+minishell: heredoc> asd
+asd
+minishell: heredoc> mikko
+
+
+
 

@@ -132,6 +132,21 @@ char *test_lines[] =
 
     // Test 5: Consecutive redirections (heredoc + append)
     "cat << heredoc >> out",
+mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo << $USER
+> skfd
+> mikko
+> $USER
+
+mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ cat $USER
+cat: mikko: No such file or directory
+mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo $USER
+mikko
+mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ ./minishell 
+minishell$  echo << $USER
+minishell: heredoc> asd
+asd
+minishell: heredoc> mikko
+
 
     // Test 6: Only quoted space
     "' '",

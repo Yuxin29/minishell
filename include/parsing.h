@@ -59,6 +59,7 @@ char *get_unquoted_part(char *s, int *i);
 void         check_raw_line_syntax(char *raw_line);
 void        free_token_list(t_token *token_head);
 void        get_token_type(t_token *token);
+void get_quote_type(t_token *token, char q);
 char *ft_strjoin_free(char *s1, char *s2);
 
 // parser.c
@@ -82,5 +83,6 @@ int         count_argv(t_token *start);
 //char *expand_variables(const char *str, t_env *env);
 //char *get_env_value(t_env *env, const char *key);
 void expand_all_tokens(t_token *token_list, t_exec_path exec_cmd);
+char	*expand_heredoc_line(char *line, char **envp); //yuxin added
 
 #endif

@@ -2,7 +2,7 @@
 #include "minishell.h"
 
 // loop through raw_line and build token list
-//no need to check null in raw)_
+//no need to check null in rawline, checked in main
 t_token	*get_token_list(char *raw_line)
 {
 	t_token	*head;
@@ -48,14 +48,22 @@ static t_token	*build_word_token(char *line, int *i)
 		else
 			part = get_unquoted_part(line, i);
 		if (!part)
-			return (free(temp), NULL);
+        {
+            if (temp)
+                free(temp);
+            return (NULL);
+        }
 		temp = ft_strjoin_free(temp, part);
+        if (!temp)
+            return (NULL);
 	}
 	token = malloc(sizeof(t_token));
+    if (!token)
+		return (free(temp), NULL);
 	token->str = ft_strdup(temp);
-	if (!token || !(token->str))
-		return (free(temp), free(token), NULL);
 	free(temp);
+	if (!(token->str))
+		return (free(token), NULL);
 	token->quote_type = 0;
 	token->next = NULL;
 	get_token_type(token);
@@ -69,7 +77,6 @@ t_token	*build_token_from_next_word(char *line, int *i)
 	t_token	*token;
 	int		start;
 
-	//in case of redirections, not space is needed
 	if (line[*i] == '<' || line[*i] == '>' || line[*i] == '|')
 	{
 		start = (*i)++;
@@ -79,10 +86,12 @@ t_token	*build_token_from_next_word(char *line, int *i)
 		if (!part)
 			return (NULL);
 		token = malloc(sizeof(t_token));
+        if (!token)
+			return (free(part), NULL);
 		token->str = ft_strdup(part);
-		if (!token || !(token->str))
-			return (free(part), free(token), NULL);
-		free(part);
+        free(part);
+		if (!(token->str))
+			return (free(token), NULL);
 		token->quote_type = 0;
 		token->next = NULL;
 		get_token_type(token);
@@ -91,6 +100,7 @@ t_token	*build_token_from_next_word(char *line, int *i)
 	return (build_word_token(line, i));
 }
 
+//return null if fails
 char	*get_quoted_part(char *s, int *i)
 {
 	int		start;
@@ -110,6 +120,7 @@ char	*get_quoted_part(char *s, int *i)
 	return (part);
 }
 
+//return null if fails
 char	*get_unquoted_part(char *s, int *i)
 {
 	int	start;

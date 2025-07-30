@@ -1,7 +1,7 @@
 #include "parsing.h"
 #include "minishell.h"
 
-//nothing to free in this while
+//nothing to free in this whole files functions
 //precheck validity of the raw_line
 //return 1 on errors and 1 on okei
 //in case of the quotes not close, 

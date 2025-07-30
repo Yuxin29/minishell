@@ -80,12 +80,6 @@ Expected:[TOKEN_WORD:echo][TOKEN_WORD:ab$c]
 (The lexer should correctly interpret the escaped character)
 -----------------------------"
 
-void exit_error(const char *msg)
-{
-    perror(msg);
-    exit(EXIT_FAILURE);
-}
-
 void	*safe_malloc(size_t size)
 {
 	void *ptr;
@@ -94,13 +88,6 @@ void	*safe_malloc(size_t size)
 	if (!ptr)
 		exit_error("malloc failed\n");
 	return (ptr);
-}
----------------------------------
-int main(void)
-{
-	setup_signals();
-	repl_loop();
-	return (0);
 }
 ------------------------
 three issue:
@@ -212,47 +199,22 @@ Logic errors in your own code that have nothing to do with system/library calls
 Checking if a command string matches something (no error from a system call)
 
 User input validation errors
-----------
-!!
-check error and free in execute_cmd and in main after this function
---------------------
+------------------
+!!!!!!!! should fix 730;
+1\ can not exit directly in redirection, otherwise there is no chance to free the thing we've already malloced
+2\ also check in lex_utils and parce_utils
+3\ same in execute
+4\ should not exit if the user types a non-existent command like cati Makefile, They only exit if the user types exit, sends an EOF (Ctrl+D), or if there is a critical internal error.
+5\in this case, continue or exit??
+			exec_cmd.whole_cmd = build_command_list(token_list);
+			free_token_list(token_list);
+			if (!exec_cmd.whole_cmd)
+			{
+				free_env_list(env_list);
+				ft_free_arr(exec_cmd.envp);
+				ft_putstr_fd("Error: build command list failed\n", 2);
+				g_exit_status = 1;
+				continue;
+				//exit(EXIT_FAILURE);
+			}
 
-void	unset_env(t_env **env, const char *key)
-{
-	t_env *cur = *env, *prev = NULL;
-	while (cur)
-	{
-		if (strcmp(cur->key, key) == 0)
-		{
-			if (prev)
-				prev->next = cur->next;
-			else
-				*env = cur->next;
-			free(cur->key);
-			free(cur->value);
-			free(cur);
-			return;
-		}
-		prev = cur;
-		cur = cur->next;
-	}
-}
-
-void	set_env(t_env **env, const char *key, const char *value)
-{
-	t_env *cur = *env;
-	while (cur)
-	{
-		if (strcmp(cur->key, key) == 0)
-		{
-			free(cur->value);
-			cur->value = strdup(value);
-			return;
-		}
-		cur = cur->next;
-	}
-	// 没找到，新建一个加到头部
-	t_env *new_node = env_new((char*)key, (char*)value);
-	new_node->next = *env;
-	*env = new_node;
-}

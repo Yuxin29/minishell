@@ -1,8 +1,6 @@
 #include "minishell.h"
-#include "parsing.h"
 
-#include <setjmp.h> //delete later
-jmp_buf g_jmpbuf;//delete later
+int	g_exit_status = 0;
 
 int main(int argc, char **argv, char **envp)
 {
@@ -31,12 +29,13 @@ int main(int argc, char **argv, char **envp)
 
 			//convert list to envp array
 			exec_cmd.envp = env_list_to_envp(env_list);
-			//free_env_list(env_list);
 			if (!exec_cmd.envp)
 			{
 				free(line);
 				free_env_list(env_list);
 				ft_putstr_fd("Error: env list initialized failed\n", 2);
+				// g_exit_status = 1;
+				// continue;
 				exit(EXIT_FAILURE);
 			}
 
@@ -48,10 +47,12 @@ int main(int argc, char **argv, char **envp)
 				free_env_list(env_list);
 				ft_free_arr(exec_cmd.envp);
 				ft_putstr_fd("Error: get token list failed\n", 2);
+				// g_exit_status = 1;
+				// continue;
 				exit(EXIT_FAILURE);
 			}
 
-            expand_all_tokens(token_list, exec_cmd);
+			expand_all_tokens(token_list, exec_cmd);
 
 			//convert token list to command list
 			exec_cmd.whole_cmd = build_command_list(token_list);
@@ -61,6 +62,8 @@ int main(int argc, char **argv, char **envp)
 				free_env_list(env_list);
 				ft_free_arr(exec_cmd.envp);
 				ft_putstr_fd("Error: build command list failed\n", 2);
+				// g_exit_status = 1;
+				// continue;
 				exit(EXIT_FAILURE);
 			}
 			check_and_apply_heredocs(exec_cmd.whole_cmd);
@@ -70,12 +73,10 @@ int main(int argc, char **argv, char **envp)
 			{
 				exec_cmd.cmd_path = NULL;
 				//check_and_apply_redirections(cmd->whole_cmd);
-				if (execute_builtin_cmd(exec_cmd.whole_cmd->argv, &env_list) == 0) //modify
-				{
-					//free??
-				}
+				g_exit_status = execute_builtin_cmd(exec_cmd.whole_cmd->argv, &env_list);
+				free_t_exec_path(&exec_cmd);
+				continue;
 			}
-
 			//if internal cmd, get cmd_path first
 			else
 			{
@@ -83,29 +84,34 @@ int main(int argc, char **argv, char **envp)
 				if (!exec_cmd.cmd_path)
 				{
 					printf("minishell: %s : command not found\n", exec_cmd.whole_cmd->argv[0]); //can't use printf to print error message
-					free_env_list(env_list);
-					ft_free_arr(exec_cmd.envp);
-					free_cmd_list(exec_cmd.whole_cmd);
-					exit(127);
+					//free_env_list(env_list);
+					free_t_exec_path(&exec_cmd);
+					g_exit_status = 127;
+					continue;
+					//exit(127);
 				}
-
-				// and execute internal cmd
-				if (execute_internal_cmd(&exec_cmd) == -1)
+				// and execute external cmd
+				if (execute_external_cmd(&exec_cmd) == -1)
 				{
-					//free, close??
+					free_t_exec_path(&exec_cmd);
+					g_exit_status = 1;
+					continue;
+					//exit(EXIT_FAILURE);
 				}
 			}
-
-			//free_env_list(env_list);
-			ft_free_arr(exec_cmd.envp);
-			free_cmd_list(exec_cmd.whole_cmd);
-			if (exec_cmd.cmd_path)
-				free(exec_cmd.cmd_path);
+			free_t_exec_path(&exec_cmd);
+			// ft_free_arr(exec_cmd.envp);
+			// free_cmd_list(exec_cmd.whole_cmd);
+			// if (exec_cmd.cmd_path)
+			// 	free(exec_cmd.cmd_path);
 		}
 	}
 	free_env_list(env_list);
 	return (0);
 }
+
+#include <setjmp.h> //delete later
+jmp_buf g_jmpbuf;//delete later
 
 /* 
 char *test_lines[] =
@@ -412,5 +418,4 @@ int main(void)
     }
     return (0);
 }
-
 */

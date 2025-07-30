@@ -52,8 +52,8 @@ expander.c    --->   +---------------------------------------------+
                      +---------------------------------------------+
                                         |
                                         v
-executor.c    --->   +---------------------------------------------+          
-👤 B                 | for each command:                           |                                                       
+executor.c    --->   +---------------------------------------------+
+👤 B                 | for each command:                           |
                      |   - fork child                              | -> pid_t fork_and_execute(t_cmd *cmd, t_env *env);
                      |   - set up redirs & pipes                   | -> void setup_redirections(t_cmd *cmd);
                      |   - execve or builtin call                  | -> int execute_builtin_or_exec(t_cmd *cmd, t_env *env);
@@ -90,6 +90,7 @@ utils.c       --->   +---------------------------------------------+
 
 
 ** Error exit codes:
+
     - Syntax error:         exit 2
     - Command not found:    exit 127
     - Permission denied:    exit 126
@@ -99,8 +100,8 @@ utils.c       --->   +---------------------------------------------+
 =================================concept in parsing=====================================================
 
 prompt: A prompt in a shell is the text displayed to the user that signals it's ready to receive input.
-for example:        -bash       user@hostname:~$ 
-                    -minishell  minishell$ 
+for example:        -bash       user@hostname:~$
+                    -minishell  minishell$
 
 lexing and token
 lexing  - a process the analyse the raw line and change it to tokens
@@ -112,7 +113,7 @@ token   - the results of the smallest unit
 
 ====================================for example====================================
 echo "hello world" > file.txt | cat -e
-[TOKEN: echo]	[TOKEN: "hello world"]	[TOKEN: >]	[TOKEN: file.txt]   [TOKEN: |] 	[TOKEN: cat]  	[TOKEN: -e] 
+[TOKEN: echo]	[TOKEN: "hello world"]	[TOKEN: >]	[TOKEN: file.txt]   [TOKEN: |] 	[TOKEN: cat]  	[TOKEN: -e]
 T_WORD	  				T_WORD		T_REDIRECT_OUT		 T_WORD			  T_PIPE	   T_WORD		  T_WORD
 --------------------------------------------------------------------------------------
 t_cmd *cmd_list = cmd1;

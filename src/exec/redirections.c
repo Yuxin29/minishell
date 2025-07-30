@@ -1,10 +1,9 @@
-#include "parsing.h"
 #include "minishell.h"
 
 //redirections.c
 //after parsing, we got already cmd list.
 //we check here if there are redirections symbles here in each cmd.
-void	check_and_apply_redirections(t_cmd *cmd)
+int	check_and_apply_redirections(t_cmd *cmd)
 {
 	int	fd;
 
@@ -12,11 +11,9 @@ void	check_and_apply_redirections(t_cmd *cmd)
 	{
 		fd = open(cmd->infile, O_RDONLY);
 		if (fd < 0)
-		{
-			perror(cmd->infile);
-			exit(1);//is exit status 1 when infile faild???
-		}
-		dup2(fd, STDIN_FILENO);
+			return (perror(cmd->infile), -1);
+		if (dup2(fd, STDIN_FILENO) < 0)
+			return (perror("dup2 infile failed"), close(fd), -1);
 		close(fd);
 	}
 	if (cmd->outfile)
@@ -26,20 +23,19 @@ void	check_and_apply_redirections(t_cmd *cmd)
 		else if (cmd->append_out == 0)
 			fd = open(cmd->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 		if (fd < 0)
-		{
-			perror(cmd->outfile);
-			exit(1);
-		}
-		dup2(fd, STDOUT_FILENO);
+			return (perror(cmd->infile), -1);
+		if (dup2(fd, STDOUT_FILENO) < 0)
+			return (perror("dup2 outfile failed"), close(fd), -1);
 		close(fd);
 	}
+	return (0);
 }
 
-/* 
+/*
 #include <stdio.h>
 mkstemp - create a unique temporary file
 int mkstemp(char *template); ///XXXXXX are ramdom characters here
-The  mkstemp() function generates a unique temporary filename from template, 
+The  mkstemp() function generates a unique temporary filename from template,
 creates and opens the file, and returns an open file  descriptor for the file.
 snprintf - snprintf
 int snprintf(char *str, size_t size, const char *format, ...);

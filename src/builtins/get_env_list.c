@@ -29,7 +29,7 @@ static void	split_env(char *str, char **key, char **value)
 	}
 }
 
-static t_env	*env_new_node(char *key, char *value)
+t_env	*env_new_node(char *key, char *value)
 {
 	t_env	*node;
 

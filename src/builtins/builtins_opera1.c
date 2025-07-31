@@ -1,37 +1,5 @@
 #include "minishell.h"
 
-int	is_builtin(char *cmd)
-{
-	if (!cmd)
-		return (0);
-	return (ft_strcmp(cmd, "echo") == 0
-				|| ft_strcmp(cmd, "cd") == 0
-				|| ft_strcmp(cmd, "pwd") == 0
-				|| ft_strcmp(cmd, "export") == 0
-				|| ft_strcmp(cmd, "unset") == 0
-				|| ft_strcmp(cmd, "env") == 0
-				|| ft_strcmp(cmd, "exit") == 0);
-}
-
-int	execute_builtin_cmd(char **argv, t_env **env) //should handle redir here!!!
-{
-	if (ft_strcmp(argv[0], "echo") == 0)
-		return (ft_echo(argv));
-	if (ft_strcmp(argv[0], "cd") == 0)
-		return (ft_cd(argv));
-	if (ft_strcmp(argv[0], "pwd") == 0)
-		return (ft_pwd());
-	if (ft_strcmp(argv[0], "export") == 0)
-		return (ft_export(argv, env));
-	if (ft_strcmp(argv[0], "unset") == 0)
-		return (ft_unset(argv, env));
-	if (ft_strcmp(argv[0], "env") == 0)
-		return (ft_env(*env));
-	// if (ft_strcmp(argv[0], "exit") == 0)
-	// 	return (ft_exit(argv, *env));
-	return (0);
-}
-
 int	ft_echo(char **argv)
 {
 	int	flag;
@@ -72,6 +40,11 @@ int ft_cd(char **argv)
 	return (0);
 }
 
+// int	ft_exit(char **argv, t_env **env)
+// {
+
+// }
+
 int	ft_pwd()
 {
 	char buf[PATH_MAX];
@@ -91,4 +64,15 @@ In the case of getcwd() and getwd() this is the same value as buf.
 On failure, these functions return NULL, and errno is set to indicate the error.  The contents of the  array  pointed
 to by buf are undefined on error.
 */
+
+int	ft_env(t_env *env)
+{
+	while (env)
+	{
+		if (env->key && env->value)
+			printf("%s=%s\n", env->key, env->value);
+		env = env->next;
+	}
+	return (0);
+}
 

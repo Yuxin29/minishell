@@ -1,14 +1,50 @@
 #include "minishell.h"
 
-int	ft_env(t_env *env)
+static void	set_env(t_env **env, char *key, char *value)
 {
-	while (env)
+	t_env	*cur;
+	t_env	*new_node;
+
+	cur = *env;
+	while (cur)
 	{
-		if (env->key && env->value)
-			printf("%s=%s\n", env->key, env->value);
-		env = env->next;
+		if (ft_strcmp(cur->key, key) == 0)
+		{
+			free(cur->value);
+			cur->value = ft_strdup(value);
+			return ;
+		}
+		cur = cur->next;
 	}
-	return (0);
+	// if no exit node, create a new one
+	new_node = env_new_node(key, value);
+	new_node->next = *env;
+	*env = new_node;
+}
+
+static void	unset_env(t_env **env, char *key)
+{
+	t_env *cur;
+	t_env *pre;
+
+	cur = *env;
+	pre = NULL;
+	while(cur)
+	{
+		if (ft_strcmp(cur->key, key) == 0)
+		{
+			if (!pre)
+				*env = cur->next;
+			else
+				pre->next = cur->next;
+			free(cur->key);
+			free(cur->value);
+			free(cur);
+			return ;
+		}
+		pre = cur;
+		cur = cur->next;
+	}
 }
 
 int	ft_export(char **argv, t_env **env)
@@ -47,8 +83,3 @@ int	ft_unset(char **argv, t_env **env)
 	}
 	return (0);
 }
-
-// int	ft_exit(char **argv, t_env **env)
-// {
-
-// }

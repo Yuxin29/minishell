@@ -12,6 +12,7 @@ int main(int argc, char **argv, char **envp)
 	(void)argc;
 	(void)argv;
 
+	ft_memset(&exec_cmd, 0, sizeof(exec_cmd));
 	env_list = env_list_init(envp);
 	if (!env_list)
 	{
@@ -21,12 +22,11 @@ int main(int argc, char **argv, char **envp)
 	while (1)
 	{
 		line = readline("minishell$ ");
-		if (!line) //Ctrl+D
+		if (!line)
 			break ;
 		if(*line)
 		{
-			add_history(line); //no need to care about the history memory
-
+			add_history(line);
 			//convert list to envp array
 			exec_cmd.envp = env_list_to_envp(env_list);
 			if (!exec_cmd.envp)
@@ -34,11 +34,8 @@ int main(int argc, char **argv, char **envp)
 				free(line);
 				free_env_list(env_list);
 				ft_putstr_fd("Error: env list initialized failed\n", 2);
-				// g_exit_status = 1;
-				// continue;
 				exit(EXIT_FAILURE);
 			}
-
 			//convert line token list
 			token_list = get_token_list(line);
 			free(line);
@@ -47,8 +44,6 @@ int main(int argc, char **argv, char **envp)
 				free_env_list(env_list);
 				ft_free_arr(exec_cmd.envp);
 				ft_putstr_fd("Error: get token list failed\n", 2);
-				// g_exit_status = 1;
-				// continue;
 				exit(EXIT_FAILURE);
 			}
 
@@ -62,52 +57,48 @@ int main(int argc, char **argv, char **envp)
 				free_env_list(env_list);
 				ft_free_arr(exec_cmd.envp);
 				ft_putstr_fd("Error: build command list failed\n", 2);
-				// g_exit_status = 1;
-				// continue;
 				exit(EXIT_FAILURE);
 			}
-
+			//check < infile
 			if (!exec_cmd.whole_cmd->argv || !exec_cmd.whole_cmd->argv[0])
 			{
 				if (check_and_apply_redirections(exec_cmd.whole_cmd) == -1)
 					g_exit_status = 1;
 				else
 					g_exit_status = 0;
-				free_t_exec_path(&exec_cmd);
 				continue;
 			}
-
-			//start execute
+			//check if null or empty
+			if (exec_cmd.whole_cmd->argv[0][0] == '\0')
+			{
+				ft_putstr_fd("minishell: : command not found\n", 2);
+				g_exit_status = 127;
+				continue;
+			}
 			//if bulitin, no need to find cmd_path, just execute(need to deal with other things in it)
 			if (is_builtin(exec_cmd.whole_cmd->argv[0]))
 			{
 				exec_cmd.cmd_path = NULL;
-				//check_and_apply_redirections(cmd->whole_cmd);
-				g_exit_status = execute_builtin_cmd(exec_cmd.whole_cmd->argv, &env_list);
-				free_t_exec_path(&exec_cmd);
+				run_builtin_with_redir(exec_cmd.whole_cmd, &env_list);
 				continue;
 			}
-			//if internal cmd, get cmd_path first
+			//if internal cmd, get cmd_path first, then run external cmd
 			else
 			{
 				exec_cmd.cmd_path = get_cmd_path(exec_cmd.whole_cmd->argv[0], exec_cmd.envp);
 				if (!exec_cmd.cmd_path)
 				{
-					printf("minishell: %s : command not found\n", exec_cmd.whole_cmd->argv[0]); //can't use printf to print error message
-					free_t_exec_path(&exec_cmd);
+					ft_putstr_fd(exec_cmd.whole_cmd->argv[0], 2);
+					ft_putstr_fd(": command not found\n", 2);
 					g_exit_status = 127;
 					continue;
 				}
-				// and execute external cmd
-				if (execute_external_cmd(&exec_cmd) == -1)
-				{
-					free_t_exec_path(&exec_cmd);
-					g_exit_status = 1;
-					continue;
-				}
+				execute_external_cmd(&exec_cmd);
+				continue;
 			}
-			free_t_exec_path(&exec_cmd);
 		}
+		free_t_exec_path(&exec_cmd);
+		rl_clear_history();
 	}
 	free_env_list(env_list);
 	return (0);

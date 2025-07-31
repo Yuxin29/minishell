@@ -2,68 +2,68 @@
 
 int	g_exit_status = 0;
 
-static void print_token_list(t_token *head)
-{
-    if (!head)
-    {
-        printf("token empty\n");
-        return;
-    }
-    while (head)
-    {
-        printf("[TYPE:%d] ", head->t_type);
-        if (head->quote_type == 1)
-            printf("(SINGLE-QUOTE) ");
-        else if (head->quote_type == 2)
-            printf("(DOUBLE-QUOTE) ");
-        printf("VAL:'%s'; ", head->str ? head->str : "(null)");
-        head = head->next;
-    }
-    printf("\n");
-}
+// static void print_token_list(t_token *head)
+// {
+//     if (!head)
+//     {
+//         printf("token empty\n");
+//         return;
+//     }
+//     while (head)
+//     {
+//         printf("[TYPE:%d] ", head->t_type);
+//         if (head->quote_type == 1)
+//             printf("(SINGLE-QUOTE) ");
+//         else if (head->quote_type == 2)
+//             printf("(DOUBLE-QUOTE) ");
+//         printf("VAL:'%s'; ", head->str ? head->str : "(null)");
+//         head = head->next;
+//     }
+//     printf("\n");
+// }
 
-static void print_cmd_list(t_cmd *head)
-{
-    int i = 0;
-    int cmd_num = 1;
+// static void print_cmd_list(t_cmd *head)
+// {
+//     int i = 0;
+//     int cmd_num = 1;
 
-    if (!head)
-    {
-        printf("cmd empty\n");
-        return ;
-    }
-    while (head)
-    {
-        printf("====== Command %d ======\n", cmd_num++);
-        // Print argv
-        if (head->argv)
-        {
-            printf("argv: ");
-            i = 0;
-            while (head->argv[i])
-            {
-                printf("'%s' ", head->argv[i]);
-                i++;
-            }
-            printf("\n");
-        }
-        else
-            printf("argv: (null)\n");
-        // Print input redicheck_quotes_closedrection
-        if (head->infile)
-            printf("infile: '%s'\n", head->infile);
-        // Print output redirection
-        if (head->outfile)
-        {
-            printf("outfile: '%s'\n", head->outfile);
-            printf("append_out: %s\n", head->append_out ? "yes" : "no");
-        }
-        // Print heredoc delimiter
-        if (head->heredoc_delim)
-            printf("heredoc_delim: '%s'\n", head->heredoc_delim);
-        head = head->next;
-    }
-}
+//     if (!head)
+//     {
+//         printf("cmd empty\n");
+//         return ;
+//     }
+//     while (head)
+//     {
+//         printf("====== Command %d ======\n", cmd_num++);
+//         // Print argv
+//         if (head->argv)
+//         {
+//             printf("argv: ");
+//             i = 0;
+//             while (head->argv[i])
+//             {
+//                 printf("'%s' ", head->argv[i]);
+//                 i++;
+//             }
+//             printf("\n");
+//         }
+//         else
+//             printf("argv: (null)\n");
+//         // Print input redicheck_quotes_closedrection
+//         if (head->infile)
+//             printf("infile: '%s'\n", head->infile);
+//         // Print output redirection
+//         if (head->outfile)
+//         {
+//             printf("outfile: '%s'\n", head->outfile);
+//             printf("append_out: %s\n", head->append_out ? "yes" : "no");
+//         }
+//         // Print heredoc delimiter
+//         if (head->heredoc_delim)
+//             printf("heredoc_delim: '%s'\n", head->heredoc_delim);
+//         head = head->next;
+//     }
+// }
 
 
 int main(int argc, char **argv, char **envp)
@@ -111,7 +111,7 @@ int main(int argc, char **argv, char **envp)
 				exit(EXIT_FAILURE);
 			}
             //print tokens;
-            print_token_list(token_list);
+            //print_token_list(token_list);
 			expand_all_tokens(token_list, exec_cmd);
 
 			//convert token list to command list
@@ -119,12 +119,13 @@ int main(int argc, char **argv, char **envp)
 			free_token_list(token_list);
 
             //print cmd
-            print_cmd_list(exec_cmd.whole_cmd);
+            //print_cmd_list(exec_cmd.whole_cmd);
 			if (!exec_cmd.whole_cmd)
 			{
 				free_env_list(env_list);
 				ft_free_arr(exec_cmd.envp);
 				ft_putstr_fd("Error: build command list failed\n", 2);
+                free_t_exec_path(&exec_cmd);
 				exit(EXIT_FAILURE);
 			}
 			//check < infile
@@ -134,6 +135,7 @@ int main(int argc, char **argv, char **envp)
 					g_exit_status = 1;
 				else
 					g_exit_status = 0;
+                free_t_exec_path(&exec_cmd);
 				continue;
 			}
 			//check if null or empty
@@ -141,6 +143,7 @@ int main(int argc, char **argv, char **envp)
 			{
 				ft_putstr_fd("minishell: : command not found\n", 2);
 				g_exit_status = 127;
+                free_t_exec_path(&exec_cmd);
 				continue;
 			}
 			//if bulitin, no need to find cmd_path, just execute(need to deal with other things in it)
@@ -148,6 +151,7 @@ int main(int argc, char **argv, char **envp)
 			{
 				exec_cmd.cmd_path = NULL;
 				run_builtin_with_redir(exec_cmd.whole_cmd, &env_list);
+                free_t_exec_path(&exec_cmd);
 				continue;
 			}
 			//if internal cmd, get cmd_path first, then run external cmd
@@ -158,14 +162,16 @@ int main(int argc, char **argv, char **envp)
 				{
 					ft_putstr_fd(exec_cmd.whole_cmd->argv[0], 2);
 					ft_putstr_fd(": command not found\n", 2);
+                    free_t_exec_path(&exec_cmd);
 					g_exit_status = 127;
 					continue;
 				}
 				execute_external_cmd(&exec_cmd);
+                free_t_exec_path(&exec_cmd);
 				continue;
 			}
 		}
-		free_t_exec_path(&exec_cmd);
+		//free_t_exec_path(&exec_cmd);
 		rl_clear_history();
 	}
 	free_env_list(env_list);

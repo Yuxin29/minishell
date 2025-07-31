@@ -220,3 +220,19 @@ User input validation errors
 7\ changed parse (t_type == 5), but should rewrite and cannot exit
 8\ run echo "hello  ,some memory problen happened
 9\can we use errno ??
+10\
+lin@EricdeMacBook-Pro minishell % cat out > wc -l
+cat: -l: No such file or directory
+
+lin@EricdeMacBook-Pro minishell % ./minishell
+minishell$ cat out > wc -l
+minishell: -l : command not found
+minishell$ ^D%
+11\ cat << 1 << out // cat < in < out (only deal with the last one...)
+lin@EricdeMacBook-Pro minishell % cat < in < out
+zsh: no such file or directory: in
+
+lin@EricdeMacBook-Pro minishell % make
+lin@EricdeMacBook-Pro minishell % ./minishell
+minishell$ cat < in < out
+out: No such file or directory

@@ -40,7 +40,9 @@ void	get_token_type(t_token *token)
 	const char	*tmp;
 
 	tmp = token->str;
-	if (ft_strncmp(tmp, "|", 2) == 0)
+    if (token->quote_type != 0)
+		token->t_type = T_WORD;
+	else if (ft_strncmp(tmp, "|", 2) == 0)
 		token->t_type = T_PIPE;
 	else if (ft_strncmp(tmp, "<", 2) == 0)
 		token->t_type = T_REDIRECT_IN;

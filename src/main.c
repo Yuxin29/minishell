@@ -112,7 +112,8 @@ int main(int argc, char **argv, char **envp)
 			}
             //print tokens;
             //print_token_list(token_list);
-			expand_all_tokens(token_list, exec_cmd);
+			
+            //expand_all_tokens(token_list, exec_cmd);
 
 			//convert token list to command list
 			exec_cmd.whole_cmd = build_command_list(token_list);
@@ -128,6 +129,8 @@ int main(int argc, char **argv, char **envp)
                 free_t_exec_path(&exec_cmd);
 				exit(EXIT_FAILURE);
 			}
+
+            expand_all_cmds(exec_cmd.whole_cmd, exec_cmd.envp);
 			//check < infile
 			if (!exec_cmd.whole_cmd->argv || !exec_cmd.whole_cmd->argv[0])
 			{

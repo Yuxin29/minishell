@@ -82,7 +82,7 @@ int         count_argv(t_token *start);
 //void scan_all_tokens(t_token *token_list, t_env *env_list);
 //char *expand_variables(const char *str, t_env *env);
 //char *get_env_value(t_env *env, const char *key);
-void expand_all_tokens(t_token *token_list, t_exec_path exec_cmd);
-char	*expand_heredoc_line(char *line, char **envp); //yuxin added
+void	expand_all_cmds(t_cmd *cmd_list, char **envp);
+//void expand_all_tokens(t_token *token_list, t_exec_path exec_cmd);
 
 #endif

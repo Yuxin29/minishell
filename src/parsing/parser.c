@@ -81,11 +81,6 @@ t_token	*parse_redirections(t_cmd *cmd, t_token *tokens)
 		else
 			cmd->append_out = 1;
 	}
-	// if (tokens->t_type == 5)
-	// {
-	// 	cmd->heredoc_delim = ft_strndup(next->str, ft_strlen(next->str));
-	// 	check_strndup(cmd->heredoc_delim, cmd, tokens);
-	// }
 	if (tokens->t_type == 5)
 	{
 		if (cmd->infile)

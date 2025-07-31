@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-void	split_env(char *str, char **key, char **value)
+static void	split_env(char *str, char **key, char **value)
 {
 	char *eq;
 

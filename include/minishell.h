@@ -3,8 +3,8 @@
 
 extern int	g_exit_status; // declare the global exit status
 
-# include "builtins.h"
 # include "parsing.h"
+# include "builtins.h"
 # include "exec.h"
 # include "utils.h"
 # include "../libft/libft.h"

@@ -13,9 +13,10 @@ INCLUDE := -I include
 # Sources
 SRCS := \
 	$(SRC_DIR)/main.c \
-	$(SRC_DIR)/builtins/builtins_opera1.c $(SRC_DIR)/builtins/get_env_list.c $(SRC_DIR)/builtins/envlist_to_envp.c \
-	$(SRC_DIR)/builtins/builtins_opera2.c $(SRC_DIR)/builtins/envlist_utils.c \
-	$(SRC_DIR)/exec/exec.c $(SRC_DIR)/exec/get_path.c $(SRC_DIR)/exec/redirections.c \
+	$(SRC_DIR)/builtins/builtins_opera1.c $(SRC_DIR)/builtins/get_env_list.c \
+	$(SRC_DIR)/builtins/envlist_to_envp.c $(SRC_DIR)/builtins/builtins_opera2.c \
+	$(SRC_DIR)/exec/exec_external.c $(SRC_DIR)/exec/exec_builtin.c \
+	$(SRC_DIR)/exec/get_path.c $(SRC_DIR)/exec/redirections.c \
 	$(SRC_DIR)/parsing/lex.c $(SRC_DIR)/parsing/lex_utils.c $(SRC_DIR)/parsing/parser.c \
 	$(SRC_DIR)/parsing/parser_utils.c $(SRC_DIR)/parsing/expander.c \
 	$(SRC_DIR)/utils/post_parsing_perror_exit.c \

@@ -36,8 +36,8 @@ typedef struct      s_token
 typedef struct s_cmd
 {
     char            **argv;         // Arguments array: argv[0] = command, argv[1..n] = args
-    char            *infile;        // For '<' redirection
-    char            *outfile;       // For '>' or '>>' redirection
+    char            *infile;        // For '<' redirection ::           cat < in < out  *infile
+    char            *outfile;       // For '>' or '>>' redirection      cat > in > out **outfile
     int             append_out;     // 1 if '>>', 0 if '>'
     char            *heredoc_delim; // For '<<' heredoc
     struct s_cmd    *next;          // Next command in a pipeline
@@ -45,16 +45,22 @@ typedef struct s_cmd
 
 // lex.c
 // get raw_line with readline / getnextline, and the put them to t_token
-t_token     *get_token_list(char *raw_line);
-t_token    *get_one_new_token(char *raw_line, int *len);
-void		token_no_quote(char *raw_line, int  *i, t_token  *token);
-void		token_single_quote(char *raw_line, int  *i, t_token  *token);
-void		token_double_quote(char *raw_line, int  *i, t_token  *token);
+//t_token     *get_token_list(char *raw_line);
+//t_token    *get_one_new_token(char *raw_line, int *len);
+//void		token_no_quote(char *raw_line, int  *i, t_token  *token);
+//void		token_single_quote(char *raw_line, int  *i, t_token  *token);
+//void		token_double_quote(char *raw_line, int  *i, t_token  *token);
+t_token	*get_token_list(char *raw_line);
+t_token	*build_token_from_next_word(char *line, int *i);
+char *get_quoted_part(char *s, int *i);
+char *get_unquoted_part(char *s, int *i);
 
 // lex_utils.c
 void         check_raw_line_syntax(char *raw_line);
 void        free_token_list(t_token *token_head);
 void        get_token_type(t_token *token);
+void get_quote_type(t_token *token, char q);
+char *ft_strjoin_free(char *s1, char *s2);
 
 // parser.c
 //change token_list to command list and free the original tokens
@@ -77,5 +83,6 @@ int         count_argv(t_token *start);
 //char *expand_variables(const char *str, t_env *env);
 //char *get_env_value(t_env *env, const char *key);
 void expand_all_tokens(t_token *token_list, t_exec_path exec_cmd);
+char	*expand_heredoc_line(char *line, char **envp); //yuxin added
 
 #endif

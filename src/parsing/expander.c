@@ -34,12 +34,12 @@ static char	*change_value_part(char *str, int i, char *value)
 
 	var_len = 0;
 	while (str[i + var_len]
-        && ((ft_isalnum(str[i + var_len]) || str[i + var_len] == '_')))
+		&& ((ft_isalnum(str[i + var_len]) || str[i + var_len] == '_')))
 		var_len++;
 	before = ft_substr(str, 0, i - 1); // everything before the $
-	after = ft_strdup(str + i + var_len); // after the variable name // need to malloc check
-	temp = ft_strjoin(before, value); // need to malloc check
-	result = ft_strjoin(temp, after); // need to malloc check
+	after = ft_strdup(str + i + var_len); // //null check to do
+	temp = ft_strjoin(before, value); // //null check to do
+	result = ft_strjoin(temp, after); // //null check to do
 	free (temp);
 	free (before);
 	free (after);
@@ -72,7 +72,7 @@ void	expand_all_tokens(t_token *token_list, t_exec_path exec_cmd)
 			i = 0;
 			while (token_list->str[i])
 			{
-				if (token_list->str[i] == '$')
+				if (token_list->str[i] == '$') //find it
 				{
 					i++;
 					var_name = ft_substr(token_list->str, i, ft_strlen(&token_list->str[i]));
@@ -85,9 +85,43 @@ void	expand_all_tokens(t_token *token_list, t_exec_path exec_cmd)
 						free(value);
 					}
 				}
-				i++;
+				else
+                    i++;
 			}
 		}
 		token_list = token_list->next;
 	}
 }
+
+/*
+// Expands $VAR inside a full line if needed
+char	*expand_heredoc_line(char *line, char **envp)
+{
+	int		i = 0;
+	char	*value;
+	char	*var_name;
+	char	*new_str;
+
+	while (line[i])
+	{
+		if (line[i] == '$')
+		{
+			i++;
+			var_name = ft_substr(line, i, ft_strlen(&line[i]));
+			value = expand_variables(var_name, envp);
+			free(var_name);
+			if (value)
+			{
+				new_str = change_value_part(line, i, value);
+				free(line);
+				line = new_str;
+				free(value);
+				i = 0;
+			}
+		}
+		else
+			i++;
+	}
+	return (line);
+}*/
+

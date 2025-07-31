@@ -66,6 +66,7 @@ int main(int argc, char **argv, char **envp)
 					g_exit_status = 1;
 				else
 					g_exit_status = 0;
+				free_t_exec_path(&exec_cmd);
 				continue;
 			}
 			//check if null or empty
@@ -73,6 +74,7 @@ int main(int argc, char **argv, char **envp)
 			{
 				ft_putstr_fd("minishell: : command not found\n", 2);
 				g_exit_status = 127;
+				free_t_exec_path(&exec_cmd);
 				continue;
 			}
 			//if bulitin, no need to find cmd_path, just execute(need to deal with other things in it)
@@ -80,6 +82,7 @@ int main(int argc, char **argv, char **envp)
 			{
 				exec_cmd.cmd_path = NULL;
 				run_builtin_with_redir(exec_cmd.whole_cmd, &env_list);
+				free_t_exec_path(&exec_cmd);
 				continue;
 			}
 			//if internal cmd, get cmd_path first, then run external cmd
@@ -91,13 +94,14 @@ int main(int argc, char **argv, char **envp)
 					ft_putstr_fd(exec_cmd.whole_cmd->argv[0], 2);
 					ft_putstr_fd(": command not found\n", 2);
 					g_exit_status = 127;
+					free_t_exec_path(&exec_cmd);
 					continue;
 				}
 				execute_external_cmd(&exec_cmd);
+				free_t_exec_path(&exec_cmd);
 				continue;
 			}
 		}
-		free_t_exec_path(&exec_cmd);
 		rl_clear_history();
 	}
 	free_env_list(env_list);

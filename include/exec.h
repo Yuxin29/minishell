@@ -2,6 +2,7 @@
 # define EXEC_H
 
 # include <sys/wait.h>
+# include <errno.h> //？？
 # include "parsing.h"
 # include "minishell.h"
 

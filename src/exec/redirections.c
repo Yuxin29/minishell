@@ -3,34 +3,79 @@
 //redirections.c
 //after parsing, we got already cmd list.
 //we check here if there are redirections symbles here in each cmd node.
-int	check_and_apply_redirections(t_cmd *cmd)
+
+static int	apply_infile(t_cmd *cmd)
 {
 	int	fd;
 
-	if (cmd->infile)
-	{
-		fd = open(cmd->infile, O_RDONLY);
-		if (fd < 0)
-			return (perror(cmd->infile), -1);
-		unlink(cmd->infile); //should unlink tmp file(here cod) after open, unlink only affect tmp file
-		if (dup2(fd, STDIN_FILENO) < 0)
-			return (perror("dup2 infile failed"), close(fd), -1);
-		close(fd);
-	}
-	if (cmd->outfile)
-	{
-		if (cmd->append_out == 1)
-			fd = open(cmd->outfile, O_WRONLY | O_CREAT | O_APPEND, 0644);
-		else if (cmd->append_out == 0)
-			fd = open(cmd->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-		if (fd < 0)
-			return (perror(cmd->infile), -1);
-		if (dup2(fd, STDOUT_FILENO) < 0)
-			return (perror("dup2 outfile failed"), close(fd), -1);
-		close(fd);
-	}
+	fd = open(cmd->infile, O_RDONLY);
+	if (fd < 0)
+		return (perror(cmd->infile), -1);
+	if (ft_strncmp(cmd->infile, "/tmp/.heredoc_", 14) == 0)
+		unlink(cmd->infile);
+	if (dup2(fd, STDIN_FILENO) < 0)
+		return (perror("dup2 infile failed"), close(fd), -1);
+	close(fd);
 	return (0);
 }
+
+static int	apply_outfile(t_cmd *cmd)
+{
+	int	fd;
+
+	if (cmd->append_out == 1)
+		fd = open(cmd->outfile, O_WRONLY | O_CREAT | O_APPEND, 0644);
+	else
+		fd = open(cmd->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (fd < 0)
+		return (perror(cmd->outfile), -1);
+	if (dup2(fd, STDOUT_FILENO) < 0)
+		return (perror("dup2 outfile failed"), close(fd), -1);
+	close(fd);
+	return (0);
+}
+
+int	check_and_apply_redirections(t_cmd *cmd)
+{
+	if (!cmd)
+		return (-1);
+	if (cmd->infile)
+		if (apply_infile(cmd) < 0)
+			return (-1);
+	if (cmd->outfile)
+		if (apply_outfile(cmd) < 0)
+			return (-1);
+	return (0);
+}
+// int	check_and_apply_redirections(t_cmd *cmd)
+// {
+// 	int	fd;
+
+// 	if (cmd->infile)
+// 	{
+// 		fd = open(cmd->infile, O_RDONLY);
+// 		if (fd < 0)
+// 			return (perror(cmd->infile), -1);
+// 		if (ft_strncmp(cmd->infile, "/tmp/.heredoc_", 14) == 0)
+// 			unlink(cmd->infile); //should unlink tmp file(here cod) after open, should modify
+// 		if (dup2(fd, STDIN_FILENO) < 0)
+// 			return (perror("dup2 infile failed"), close(fd), -1);
+// 		close(fd);
+// 	}
+// 	if (cmd->outfile)
+// 	{
+// 		if (cmd->append_out == 1)
+// 			fd = open(cmd->outfile, O_WRONLY | O_CREAT | O_APPEND, 0644);
+// 		else if (cmd->append_out == 0)
+// 			fd = open(cmd->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+// 		if (fd < 0)
+// 			return (perror(cmd->outfile), -1);
+// 		if (dup2(fd, STDOUT_FILENO) < 0)
+// 			return (perror("dup2 outfile failed"), close(fd), -1);
+// 		close(fd);
+// 	}
+// 	return (0);
+// }
 
 
 /*every thread has a unique pid(precess ID), so we can use pid to differ heredoc, for every heredoc we should have a temperary file to save lines, so in this case, cat << out << 1 << 2, we should have 3 different tmp files, so we should use pid to name different tmp filename

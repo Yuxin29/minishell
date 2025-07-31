@@ -76,7 +76,7 @@ t_token	*parse_redirections(t_cmd *cmd, t_token *tokens)
 	// }
 	if (tokens->t_type == 5)
 	{
-		char *tmpfile;
+		char	*tmpfile;
 
 		if (cmd->infile)
 			free(cmd->infile);

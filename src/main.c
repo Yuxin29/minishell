@@ -66,7 +66,18 @@ int main(int argc, char **argv, char **envp)
 				// continue;
 				exit(EXIT_FAILURE);
 			}
-			
+
+			if (!exec_cmd.whole_cmd->argv || !exec_cmd.whole_cmd->argv[0])
+			{
+				if (check_and_apply_redirections(exec_cmd.whole_cmd) == -1)
+					g_exit_status = 1;
+				else
+					g_exit_status = 0;
+				free_t_exec_path(&exec_cmd);
+				continue;
+			}
+
+			//start execute
 			//if bulitin, no need to find cmd_path, just execute(need to deal with other things in it)
 			if (is_builtin(exec_cmd.whole_cmd->argv[0]))
 			{

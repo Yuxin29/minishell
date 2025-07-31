@@ -219,4 +219,4 @@ User input validation errors
 6\ how to do redir and heredoc in builtins ??
 7\ changed parse (t_type == 5), but should rewrite and cannot exit
 8\ run echo "hello  ,some memory problen happened
-
+9\can we use errno ??

@@ -27,11 +27,15 @@ t_cmd	*build_command_list(t_token *token_head)
 			cmd_last->next = cmd_current;
 		cmd_last = cmd_current;
 		token_head = get_one_new_cmd(token_head, cmd_current);
-		if (!token_head && !cmd_current->argv)
+		//if (!token_head && !cmd_current->argv)
+		if (!token_head)
+			break ;
+		/*
+		if (!token_head && !cmd_current->argv && !cmd_current->infile && !cmd_current->outfile)
 		{
 			free_cmd_list(cmd_head);
 			return (NULL);
-		}
+		}*/
 	}
 	return (cmd_head);
 }
@@ -43,8 +47,10 @@ t_token	*get_one_new_cmd(t_token *token_head, t_cmd *cmd_current)
 	{
 		if (token_head->t_type == 0)
 			token_head = parse_argv(cmd_current, token_head);
-		else if (token_head->t_type >= 2)
+		else if (token_head->t_type >= 2 && token_head->t_type <= 5)
 			token_head = parse_redirections(cmd_current, token_head);
+		//else
+			//token_head = token_head->next; // skip unknowns
 	}
 	if (token_head && token_head->t_type == 1)
 		token_head = token_head->next;
@@ -55,12 +61,16 @@ t_token	*get_one_new_cmd(t_token *token_head, t_cmd *cmd_current)
 t_token	*parse_redirections(t_cmd *cmd, t_token *tokens)
 {
 	t_token	*next;
+	char	*tmpfile;
 
 	next = tokens->next;
 	if (tokens->t_type == 2)
 	{
-		cmd->infile = ft_strndup(next->str, ft_strlen(next->str));
-		check_strndup(cmd->infile, cmd, tokens);
+		if (!cmd->infile)
+		{
+			cmd->infile = ft_strndup(next->str, ft_strlen(next->str));
+			check_strndup(cmd->infile, cmd, tokens);
+		}
 	}
 	if (tokens->t_type == 3 || tokens->t_type == 4)
 	{
@@ -78,8 +88,6 @@ t_token	*parse_redirections(t_cmd *cmd, t_token *tokens)
 	// }
 	if (tokens->t_type == 5)
 	{
-		char	*tmpfile;
-
 		if (cmd->infile)
 			free(cmd->infile);
 		if (cmd->heredoc_delim)

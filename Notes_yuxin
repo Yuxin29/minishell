@@ -271,6 +271,8 @@ typedef struct s_cmd
 - exev_builtin
 - main
 
+PARSING PART FIXED
+
 4.signals
 ./
 
@@ -311,4 +313,44 @@ mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo $?$?"$"$?$"$"
 00$0$
 
 
+c2r4p10% bash
+=================================echo -n 234 ==========================
+yuwu@c2r4p10:~$ echo -nnnnnnn 123
+123yuwu@c2r4p10:~$ echo -nnnnnnn -nnnnn -n -nnnn 123
+123yuwu@c2r4p10:~$ echo -nnnnnnn -nnnnn -n -nnnn -n-n 123
+-n-n 123yuwu@c2r4p10:~$ pwd
+/home/yuwu
+yuwu@c2r4p10:~$ cd ..
+yuwu@c2r4p10:/home$ pwd
+/home
+yuwu@c2r4p10:/home$ pwd
+/home
+yuwu@c2r4p10:/home$ unset PWD
+yuwu@c2r4p10:/home$ pwd
+/home
+yuwu@c2r4p10:/home$ export
 
+==============================export nbrs="1 2 3" ==========================
+minishell$ export 77="1 2 3"
+
+============================== exit numeric argument required ==========================
+yuwu@c2r4p10:~$ exit 1 1
+exit
+bash: exit: too many arguments
+yuwu@c2r4p10:~$ exit a 1
+exit
+bash: exit: a: numeric argument required
+c2r4p10% bash
+yuwu@c2r4p10:~$ exit 1
+exit
+c2r4p10% bash
+yuwu@c2r4p10:~$ exit 1111111111111111111111111111111
+exit
+bash: exit: 1111111111111111111111111111111: numeric argument required
+c2r4p10% bash    
+yuwu@c2r4p10:~$ exit 300
+exit
+c2r4p10% echo  $?
+44
+c2r4p10% 300-256
+zsh: command not found: 300-256

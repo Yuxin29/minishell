@@ -4,7 +4,7 @@
 // if it is a word without quotes, it can not contain special character
 int	check_special_characters(t_token *token_head)
 {
-    if (token_head->t_type == 0 && token_head->quote_type == 0)
+	if (token_head->t_type == 0 && token_head->quote_type == 0)
 	{
 		if (ft_strchr((const char *)token_head->str, ';')
 			|| ft_strchr((const char *)token_head->str, '\\'))
@@ -19,33 +19,34 @@ int	check_special_characters(t_token *token_head)
 // after redirections it can not be followed by pipe or redirectiosn
 // after pipe, it can not be followed by pipe or redirections
 // at the end of the tokens, it can not be pipe or redirections
-void	check_token_syntax(t_token *token_head)
+int	check_token_syntax(t_token *token_head)
 {
 	t_token	*head;
 
 	head = token_head;
 	if (!token_head)
-		return ;
+		return (1);
 	if (token_head->t_type == 1)
-		free_errmsg_exit(head, "minishell: syntax error near unexpected token `|'", 2);
+		errmsg_set_status("minishell: syntax error near unexpected token `|'", 2);
 	while (token_head)
 	{
 		if (check_special_characters(token_head))
-			free_errmsg_exit(head, "minishell: syntax error: special characters", 2);
-		if (token_head->t_type == 1 && token_head->next && token_head->next->t_type == 1)
-			free_errmsg_exit(head, "minishell: syntax error near unexpected token `|'", 2);
+			errmsg_set_status("minishell: syntax error: special characters", 2);
+		if (token_head->t_type >= 1 && token_head->next && token_head->next->t_type == 1)
+			errmsg_set_status("minishell: ssyntax error near unexpected token `|'", 2);
 		if (token_head->t_type == 1 && token_head->next && token_head->next->t_type > 1)
-			free_errmsg_exit(head, "minishell: syntax error near unexpected token `newline'", 2);
-		if (token_head->t_type >= 2 && token_head->next && token_head->next->t_type == 1)
-			free_errmsg_exit(head, "minishell: ssyntax error near unexpected token `|'", 2);
+			errmsg_set_status("minishell: syntax error near unexpected token `newline'", 2);
 		if (token_head->t_type >= 2 && token_head->next && token_head->next->t_type > 1)
-			free_errmsg_exit(head, "minishell: syntax error: near unexpected token redirections", 2);
+			errmsg_set_status("minishell: syntax error: near unexpected token redirections", 2);
 		if (token_head->t_type == 1 && token_head->next == NULL)
-			free_errmsg_exit(head, "minishell: syntax error: near unexpected token `|'", 2);
+			errmsg_set_status("minishell: syntax error: near unexpected token `|'", 2);
 		if (token_head->t_type >= 2 && token_head->next == NULL)
-			free_errmsg_exit(head, "minishell: syntax error: missing filename or delimiter after redirection", 2);
+			errmsg_set_status("minishell: syntax error: missing filename or delimiter after redirection", 2);
 		token_head = token_head->next;
 	}
+	if (g_exit_status == 2)
+		return (1);
+	return (0);
 }
 
 //used in parse_argv, for malloc str of strs
@@ -72,7 +73,7 @@ void	free_redirections(t_cmd *cmd_head)
 		if (cmd_head->redirections)
 			free(cmd_head->redirections->file);
 		if (cmd_head->redirections->heredoc_delim)
-		 	free (cmd_head->redirections->heredoc_delim);
+			free (cmd_head->redirections->heredoc_delim);
 		free(cmd_head->redirections);
 		cmd_head->redirections = tmp;
 	}

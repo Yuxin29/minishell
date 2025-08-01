@@ -57,24 +57,24 @@ typedef struct s_cmd
 */
 
 // lex_utils.c
-void		check_raw_line_syntax(char *raw_line);
-void		free_token_list(t_token *token_head);
-void		get_token_type(t_token *token);
-void		get_quote_type(t_token *token, char q);
+int		check_raw_line_syntax(char *raw_line);
+void	free_token_list(t_token *token_head);
+void	get_token_type(t_token *token);
+void	get_quote_type(t_token *token, char q);
 
 // lex.c
 // get raw_line with readline / getnextline, and the put them to t_token
-t_token		*get_token_list(char *raw_line);
+t_token	*get_token_list(char *raw_line);
 t_token	*build_word_token(char *line, int *i);
-t_token		*build_token_from_next_word(char *line, int *i);
-char		*get_quoted_part(char *s, int *i);
-char		*get_unquoted_part(char *s, int *i);
+t_token	*build_token_from_next_word(char *line, int *i);
+char	*get_quoted_part(char *s, int *i);
+char	*get_unquoted_part(char *s, int *i);
 
 // parser_utils.c
 int         check_special_characters(t_token *token_head);
-void		check_token_syntax(t_token *tokens);
-int		    count_argv(t_token *start);
-void	    free_redirections(t_cmd *cmd_head);
+int				check_token_syntax(t_token *tokens);
+int				count_argv(t_token *start);
+void		free_redirections(t_cmd *cmd_head);
 void		free_cmd_list(t_cmd *cmd_head);
 
 // parser.c
@@ -86,8 +86,8 @@ t_token		*parse_argv(t_cmd *cmd, t_token *tokens);
 
 //expander_utils.c >
 //string operations helpers
-char	*get_env_value(char **envp, const char *key);
-char	*replace_variable_in_str(char *input, int pos, char **envp);
+// char	*get_env_value(char **envp, const char *key);
+// char	*replace_variable_in_str(char *input, int pos, char **envp);
 
 //expander.c >...... this one should be called after lexing,
 //check the t_word without quotes or with double quotes, when it starts with $ and if it exits

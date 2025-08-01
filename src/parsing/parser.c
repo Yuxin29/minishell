@@ -11,7 +11,8 @@ t_cmd	*build_command_list(t_token *token_head)
 	t_cmd	*cmd_current;
 	t_cmd	*cmd_last;
 
-	check_token_syntax(token_head);
+	if (check_token_syntax(token_head) == 1)
+		return (NULL);
 	cmd_head = NULL;
 	cmd_current = NULL;
 	cmd_last = NULL;
@@ -19,7 +20,7 @@ t_cmd	*build_command_list(t_token *token_head)
 	{
 		cmd_current = malloc(sizeof(t_cmd));
 		if (!cmd_current)
-			return (NULL);
+			return ((t_cmd *)free_malloc_fail_null(NULL));
 		ft_bzero(cmd_current, sizeof(t_cmd));
 		if (!cmd_head)
 			cmd_head = cmd_current;
@@ -60,12 +61,13 @@ t_token	*parse_redirections(t_cmd *cmd, t_token *tokens)
 		{
 			next = tokens->next;
 			if (!next || next->t_type != 0)
-				return (free_cmd_list(cmd), NULL);
+				return (NULL);
 			new_redir = malloc(sizeof(t_redir));
 			if (!new_redir)
-				return (free_cmd_list(cmd), NULL);
+				return ((t_token *)free_malloc_fail_null(NULL));
 			new_redir->file = ft_strndup(next->str, ft_strlen(next->str));
-			check_strndup(new_redir->file, cmd, tokens);
+			if (!new_redir->file)
+				return ((t_token *)free_malloc_fail_null(NULL));
 			new_redir->type = tokens->t_type;
 			new_redir->next = NULL;
 			if (!cmd->redirections)
@@ -97,15 +99,12 @@ t_token	*parse_argv(t_cmd *cmd, t_token *tokens)
 	len = count_argv(tokens);
 	cmd->argv = malloc(sizeof(char *) * (len + 1));
 	if (!cmd->argv)
-	{
-		free_token_list(tokens);
-		free_cmd_list(cmd);
-		return (NULL);
-	}
+		return ((t_token *)free_malloc_fail_null(NULL));
 	while (i < len && tokens && tokens->t_type == 0)
 	{
 		cmd->argv[i] = ft_strndup(tokens->str, ft_strlen(tokens->str));
-		check_strndup(cmd->argv[i], cmd, tokens);
+		if (!cmd->argv[i])
+			return ((t_token *)free_malloc_fail_null(NULL));
 		tokens = tokens->next;
 		i++;
 	}

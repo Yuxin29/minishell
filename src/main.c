@@ -2,83 +2,6 @@
 
 int	g_exit_status = 0;
 
-static void print_token_list(t_token *head)
-{
-    if (!head)
-    {
-        printf("token empty\n");
-        return;
-    }
-    while (head)
-    {
-        printf("[TYPE:%d] ", head->t_type);
-        if (head->quote_type == 1)
-            printf("(SINGLE-QUOTE) ");
-        else if (head->quote_type == 2)
-            printf("(DOUBLE-QUOTE) ");
-        printf("VAL:'%s'; ", head->str ? head->str : "(null)");
-        head = head->next;
-    }
-    printf("\n");
-}
-
-#include <stdio.h>
-static void	print_cmd_list(t_cmd *head)
-{
-	int		i;
-	int		cmd_num = 1;
-	t_redir	*redir;
-
-	if (!head)
-	{
-		printf("cmd empty\n");
-		return;
-	}
-	while (head)
-	{
-		printf("====== Command %d ======\n", cmd_num++);
-		
-		// Print argv
-		if (head->argv)
-		{
-			printf("argv: ");
-			i = 0;
-			while (head->argv[i])
-			{
-				printf("'%s' ", head->argv[i]);
-				i++;
-			}
-			printf("\n");
-		}
-		else
-			printf("argv: (null)\n");
-
-		// Print redirections
-		redir = head->redirections;
-		if (!redir)
-			printf("no redirections\n");
-		while (redir)
-		{
-			if (redir->type == T_REDIRECT_IN)
-				printf("input redirection:    < '%s'\n", redir->file);
-			else if (redir->type == T_REDIRECT_OUT)
-				printf("output redirection:   > '%s'\n", redir->file);
-			else if (redir->type == T_APPEND)
-				printf("append redirection:  >> '%s'\n", redir->file);
-			else if (redir->type == T_HEREDOC)
-			{
-				printf("heredoc redirection: << '%s'\n", redir->file);
-				//if (redir->heredoc_delim)
-				//	printf("  heredoc delimiter:  \"%s\"\n", redir->heredoc_delim);
-			}
-			else
-				printf("unknown redirection type (%d): '%s'\n", redir->type, redir->file);
-			redir = redir->next;
-		}
-
-		head = head->next;
-	}
-}
 
 
 // int main(int argc, char **argv, char **envp)
@@ -199,6 +122,83 @@ static void	print_cmd_list(t_cmd *head)
 #include <setjmp.h> //delete later
 jmp_buf g_jmpbuf;//delete later
 
+static void print_token_list(t_token *head)
+{
+    if (!head)
+    {
+        printf("token empty\n");
+        return;
+    }
+    while (head)
+    {
+        printf("[TYPE:%d] ", head->t_type);
+        if (head->quote_type == 1)
+            printf("(SINGLE-QUOTE) ");
+        else if (head->quote_type == 2)
+            printf("(DOUBLE-QUOTE) ");
+        printf("VAL:'%s'; ", head->str ? head->str : "(null)");
+        head = head->next;
+    }
+    printf("\n");
+}
+
+#include <stdio.h>
+static void	print_cmd_list(t_cmd *head)
+{
+	int		i;
+	int		cmd_num = 1;
+	t_redir	*redir;
+
+	if (!head)
+	{
+		printf("cmd empty\n");
+		return;
+	}
+	while (head)
+	{
+		printf("====== Command %d ======\n", cmd_num++);
+		
+		// Print argv
+		if (head->argv)
+		{
+			printf("argv: ");
+			i = 0;
+			while (head->argv[i])
+			{
+				printf("'%s' ", head->argv[i]);
+				i++;
+			}
+			printf("\n");
+		}
+		else
+			printf("argv: (null)\n");
+
+		// Print redirections
+		redir = head->redirections;
+		if (!redir)
+			printf("no redirections\n");
+		while (redir)
+		{
+			if (redir->type == T_REDIRECT_IN)
+				printf("input redirection:    < '%s'\n", redir->file);
+			else if (redir->type == T_REDIRECT_OUT)
+				printf("output redirection:   > '%s'\n", redir->file);
+			else if (redir->type == T_APPEND)
+				printf("append redirection:  >> '%s'\n", redir->file);
+			else if (redir->type == T_HEREDOC)
+			{
+				printf("heredoc redirection: << '%s'\n", redir->file);
+				//if (redir->heredoc_delim)
+				//	printf("  heredoc delimiter:  \"%s\"\n", redir->heredoc_delim);
+			}
+			else
+				printf("unknown redirection type (%d): '%s'\n", redir->type, redir->file);
+			redir = redir->next;
+		}
+
+		head = head->next;
+	}
+}
 
 char *test_lines[] =
 {
@@ -221,7 +221,7 @@ char *test_lines[] =
     "echo \"hello world\" 'foo bar'",
 
     // Test 4: Operators Inside Quotes
-    "echo \"a|b\" | grep \"c>d\"",
+    //"echo \"a|b\" | grep \"c>d\"",
 
     // Test 5: Consecutive redirections (heredoc + append)
     "cat << heredoc >> out",
@@ -347,94 +347,29 @@ char *test_lines[] =
     NULL
 };
 
-// //about quotes and #USER
-// echo "yuxin $USER '$USER' "user" kk,"
-// echo "hello "yuxin" wi"
-// echo 'hello 'yuxin' wi'
-// echo "hello 'yuxin' wi"
-// echo 'hello "yuxin" wi'
-
-// //about redirection
-// < infile            bash: infile: No such file or directory, fake excution
-// cat <               bash: syntax error near unexpected token 'newline', exit during parsing stage
-
-// //cmds without empty space in between
-// echo$USER           bash: echoyuwu: command not found
-// cat<Makefile        bash: solid, same as cat < Makefile
-
-#include <string.h>
-
-// Helper to sanitize input by escaping redirection chars
-static void sanitize_input(const char *input, char *out, size_t out_size)
-{
-    size_t j = 0;
-    for (size_t i = 0; input[i] && j + 2 < out_size; i++)
-    {
-        if (input[i] == '<' || input[i] == '>' || input[i] == '|')
-        {
-            // Escape with backslash to prevent redirection execution
-            out[j++] = '\\';
-            out[j++] = input[i];
-        }
-        else
-        {
-            out[j++] = input[i];
-        }
-    }
-    out[j] = '\0';
-}
-
-static void show_real_bash_tokens(const char *input)
-{
-    char command[4096];
-    char sanitized[2048];
-
-    sanitize_input(input, sanitized, sizeof(sanitized));
-
-    snprintf(command, sizeof(command),
-        "bash -c 'set -- %s; i=1; for arg in \"$@\"; do echo \"$i: [$arg]\"; i=$((i+1)); done'",
-        sanitized);
-
-    FILE *fp = popen(command, "r");
-    if (!fp)
-    {
-        perror("popen");
-        return;
-    }
-
-    printf("🐚 Real Bash Tokens:\n");
-    char line[512];
-    while (fgets(line, sizeof(line), fp))
-        printf("%s", line);
-
-    pclose(fp);
-}
-
-
-
 int main(void)
 {
     t_token *tokens;
     t_cmd   *cmds;
     int     i = 0;
 
-    // while (test_lines[i])
+    while (test_lines[i])
     {
         printf("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
         printf("Test %d: %s\n", i + 1, test_lines[i]);
-        if (setjmp(g_jmpbuf) != 0)
-        {
-            printf("cmd empty\n");
-            i++;
-            //continue;
-        }
+        // if (setjmp(g_jmpbuf) != 0)
+        // {
+        //     printf("cmd empty\n");
+        //     i++;
+        //     //continue;
+        // }
         tokens = get_token_list(test_lines[i]);
         printf("🧱 Tokens:\n");
         if (!tokens)
               printf("tokens empty\n");
         else
             print_token_list(tokens);
-        show_real_bash_tokens(test_lines[i]);
+        //show_real_bash_tokens(test_lines[i]);
         printf("━━━━━━━━━━━━━━━━\n");
         cmds = build_command_list(tokens);
         if (!cmds)
@@ -446,7 +381,55 @@ int main(void)
             free_token_list(tokens);
             free_cmd_list(cmds);
         }
-        // i++;
+         i++;
     }
     return (0);
 }
+
+// #include <string.h>
+
+// // Helper to sanitize input by escaping redirection chars
+// static void sanitize_input(const char *input, char *out, size_t out_size)
+// {
+//     size_t j = 0;
+//     for (size_t i = 0; input[i] && j + 2 < out_size; i++)
+//     {
+//         if (input[i] == '<' || input[i] == '>' || input[i] == '|')
+//         {
+//             // Escape with backslash to prevent redirection execution
+//             out[j++] = '\\';
+//             out[j++] = input[i];
+//         }
+//         else
+//         {
+//             out[j++] = input[i];
+//         }
+//     }
+//     out[j] = '\0';
+// }
+
+// static void show_real_bash_tokens(const char *input)
+// {
+//     char command[4096];
+//     char sanitized[2048];
+
+//     sanitize_input(input, sanitized, sizeof(sanitized));
+
+//     snprintf(command, sizeof(command),
+//         "bash -c 'set -- %s; i=1; for arg in \"$@\"; do echo \"$i: [$arg]\"; i=$((i+1)); done'",
+//         sanitized);
+
+//     FILE *fp = popen(command, "r");
+//     if (!fp)
+//     {
+//         perror("popen");
+//         return;
+//     }
+
+//     printf("🐚 Real Bash Tokens:\n");
+//     char line[512];
+//     while (fgets(line, sizeof(line), fp))
+//         printf("%s", line);
+
+//     pclose(fp);
+// }

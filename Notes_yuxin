@@ -242,10 +242,37 @@ eg:
 echo > out1 > out2 > out3
 cat < in1 < in2 < in3
 cat < file1 > file2 < file1: does this make sense: should we handle it?
-UNFIXED: BIG BIG BIG ONE
+---> YES, direct in and direct out in a bash cmd is solid and we need to handle it
+---> FOR EXAMPLE: cat < in.txt > out.txtThis reads from in.txt and writes to out.txt.
+                  grep hello < file.txt > result.txt, grep hello from infile and put it to a outfile
+WAITING: BIG BIG BIG ONE
+---> suggested restructured struc
+typedef struct s_redir {
+	char *file;
+	int type; // T_REDIRECT_IN, T_REDIRECT_OUT, T_APPEND, T_HEREDOC
+	struct s_redir *next;
+} t_redir;
+
+typedef struct s_cmd
+{
+	char **argv;
+	t_redir *redirections;  // <-- list of redirections
+	struct s_cmd *next;
+} t_cmd;
+---> Why this:
+- In real Bash, even though only the last redirection affects where the command reads/writes
+- all redirections are processed in order, and errors can occur during any redirection (not just the last).
+- in one cmd, redirectin, redirectout, append and heredoc can appear at the same time for multiple times
+---> what needs to be rewritten:
+- parser
+- redirections
+- exevc_external
+- exev_builtin
+- main
 
 4.signals
 ./
+
 5.echo $?
 
 6. possiblye 2 unfinished builtins from lin

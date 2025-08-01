@@ -27,15 +27,8 @@ t_cmd	*build_command_list(t_token *token_head)
 			cmd_last->next = cmd_current;
 		cmd_last = cmd_current;
 		token_head = get_one_new_cmd(token_head, cmd_current);
-		//if (!token_head && !cmd_current->argv)
 		if (!token_head)
 			break ;
-		/*
-		if (!token_head && !cmd_current->argv && !cmd_current->infile && !cmd_current->outfile)
-		{
-			free_cmd_list(cmd_head);
-			return (NULL);
-		}*/
 	}
 	return (cmd_head);
 }
@@ -49,53 +42,45 @@ t_token	*get_one_new_cmd(t_token *token_head, t_cmd *cmd_current)
 			token_head = parse_argv(cmd_current, token_head);
 		else if (token_head->t_type >= 2 && token_head->t_type <= 5)
 			token_head = parse_redirections(cmd_current, token_head);
-		//else
-			//token_head = token_head->next; // skip unknowns
 	}
 	if (token_head && token_head->t_type == 1)
 		token_head = token_head->next;
 	return (token_head);
 }
 
-// handle redirections
 t_token	*parse_redirections(t_cmd *cmd, t_token *tokens)
 {
+	t_redir	*new_redir;
+	t_redir	*last;
 	t_token	*next;
-	char	*tmpfile;
 
-	next = tokens->next;
-	if (tokens->t_type == 2)
+	while (tokens && tokens->t_type != 1)
 	{
-		if (!cmd->infile)
+		if (tokens->t_type >= 2 && tokens->t_type <= 5)
 		{
-			cmd->infile = ft_strndup(next->str, ft_strlen(next->str));
-			check_strndup(cmd->infile, cmd, tokens);
+			next = tokens->next;
+			new_redir = malloc(sizeof(t_redir));
+			if (!new_redir)
+				return (free_cmd_list(cmd), NULL);
+			new_redir->file = ft_strndup(next->str, ft_strlen(next->str));
+			check_strndup(new_redir->file, cmd, tokens);
+			new_redir->type = tokens->t_type;
+			new_redir->next = NULL;
+			if (!cmd->redirections)
+				cmd->redirections = new_redir;
+			else
+			{
+				last = cmd->redirections;
+				while (last->next)
+					last = last->next;
+				last->next = new_redir;
+			}
+			tokens = next->next;
 		}
-	}
-	if (tokens->t_type == 3 || tokens->t_type == 4)
-	{
-		cmd->outfile = ft_strndup(next->str, ft_strlen(next->str));
-		check_strndup(cmd->outfile, cmd, tokens);
-		if (tokens->t_type == 3)
-			cmd->append_out = 0;
 		else
-			cmd->append_out = 1;
+			break;
 	}
-	if (tokens->t_type == 5)
-	{
-		if (cmd->infile)
-			free(cmd->infile);
-		if (cmd->heredoc_delim)
-			free(cmd->heredoc_delim);
-		cmd->heredoc_delim = ft_strdup(next->str);
-		if (!cmd->heredoc_delim)
-			return (NULL);
-		tmpfile = creat_heredoc_file(cmd->heredoc_delim);
-		if (!tmpfile)
-			return (NULL);
-		cmd->infile = tmpfile;
-	}
-	return (next->next);
+	return (tokens);
 }
 
 //handle normal word_tokens, string and strings

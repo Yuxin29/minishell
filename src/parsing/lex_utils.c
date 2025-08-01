@@ -40,7 +40,7 @@ void	get_token_type(t_token *token)
 	const char	*tmp;
 
 	tmp = token->str;
-    if (token->quote_type != 0)
+	if (token->quote_type != 0)
 		token->t_type = T_WORD;
 	else if (ft_strncmp(tmp, "|", 2) == 0)
 		token->t_type = T_PIPE;
@@ -73,27 +73,12 @@ void	free_token_list(t_token *token_head)
 	}
 }
 
-//no need to null check in ft_strjoin, it will return null if failed
-//but need to null check when calling ft_strjoin_free
-char	*ft_strjoin_free(char *s1, char *s2)
-{
-	char	*joined;
-
-	if (!s1)
-		joined = ft_strjoin("", s2);
-	else
-		joined = ft_strjoin(s1, s2);
-	free(s1);
-	free(s2);
-	return (joined);
-}
-
 void get_quote_type(t_token *token, char q)
 {
-    if (q == '\'')
-        token->quote_type = 1;
-    else if (q == '"')
-        token->quote_type = 2;
-    else
-        token->quote_type = 0;
+	if (q == '\'')
+		token->quote_type = 1;
+	else if (q == '"')
+		token->quote_type = 2;
+	else
+		token->quote_type = 0;
 }

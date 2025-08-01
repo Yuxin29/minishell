@@ -17,4 +17,9 @@ void    errmsg_exit(char *msg, int status);
 void    free_errmsg_exit(t_token *tokens, char *msg, int status);
 void    free_tc_errmsg_exit(t_token *tokens, t_cmd *cmds, char *msg, int status);
 
+
+//str_utils.c
+void	check_strndup(char *str, t_cmd *cmd, t_token *tokens);
+char	*ft_strjoin_free(char *s1, char *s2);
+
 #endif

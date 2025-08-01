@@ -33,19 +33,19 @@ t_token	*get_token_list(char *raw_line)
 }
 
 // if it is a world token
-static t_token	*build_word_token(char *line, int *i)
+t_token	*build_word_token(char *line, int *i)
 {
 	t_token	*token;
 	char	*temp;
 	char	*part;
-    char    q;
+	char	q;
 
 	temp = NULL;
 	while (line[*i] && !ft_isspace(line[*i])
 		&& line[*i] != '<' && line[*i] != '>' && line[*i] != '|')
 	{
 		q = line[*i];
-        if (line[*i] == '\'' || line[*i] == '"')
+		if (line[*i] == '\'' || line[*i] == '"')
 			part = get_quoted_part(line, i);
 		else
 			part = get_unquoted_part(line, i);
@@ -66,7 +66,7 @@ static t_token	*build_word_token(char *line, int *i)
 	free(temp);
 	if (!(token->str))
 		return (free(token), NULL);
-    get_quote_type(token, q);
+	get_quote_type(token, q);
 	token->next = NULL;
 	get_token_type(token);
 	return (token);
@@ -83,7 +83,7 @@ t_token	*build_token_from_next_word(char *line, int *i)
 	{
 		start = (*i)++;
 		if ((line[start] == '>' && line[*i] == '>') || (line[start] == '<' && line[*i] == '<'))
-            (*i)++;
+			(*i)++;
 		part = ft_strndup(&line[start], *i - start);
 		if (!part)
 			return (NULL);

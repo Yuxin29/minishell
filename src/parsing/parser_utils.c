@@ -2,7 +2,7 @@
 #include "minishell.h"
 
 // if it is a word without quotes, it can not contain special character
-static int	check_special_characters(t_token *token_head)
+int	check_special_characters(t_token *token_head)
 {
     if (token_head->t_type == 0 && token_head->quote_type == 0)
 	{
@@ -62,14 +62,17 @@ int	count_argv(t_token *start)
 	return (count);
 }
 
-//why is this necessary
-void	check_strndup(char *str, t_cmd *cmd, t_token *tokens)
+void	free_redirections(t_cmd *cmd_head)
 {
-	if (!str)
+	t_redir	*tmp;
+
+	while (cmd_head->redirections)
 	{
-		free_token_list(tokens);
-		free_cmd_list(cmd);
-		error_and_return("malloc failed", NULL);//free_t_errmsg_exit
+		tmp = cmd_head->redirections->next;
+		if (cmd_head->redirections)
+			free(cmd_head->redirections->file);
+		free(cmd_head->redirections);
+		cmd_head->redirections = tmp;
 	}
 }
 
@@ -85,12 +88,8 @@ void	free_cmd_list(t_cmd *cmd_head)
 		tmp = cmd_head->next;
 		if (cmd_head->argv)
 			ft_free_arr(cmd_head->argv);
-		if (cmd_head->infile)
-			free(cmd_head->infile);
-		if (cmd_head->outfile)
-			free(cmd_head->outfile);
-		if (cmd_head->heredoc_delim)
-			free(cmd_head->heredoc_delim);
+		if (cmd_head->redirections)
+			free_redirections(cmd_head);
 		free(cmd_head);
 		cmd_head = tmp;
 	}

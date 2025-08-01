@@ -59,6 +59,8 @@ t_token	*parse_redirections(t_cmd *cmd, t_token *tokens)
 		if (tokens->t_type >= 2 && tokens->t_type <= 5)
 		{
 			next = tokens->next;
+			if (!next || next->t_type != 0)
+				return (free_cmd_list(cmd), NULL);
 			new_redir = malloc(sizeof(t_redir));
 			if (!new_redir)
 				return (free_cmd_list(cmd), NULL);

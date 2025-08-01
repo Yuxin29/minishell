@@ -71,6 +71,8 @@ void	free_redirections(t_cmd *cmd_head)
 		tmp = cmd_head->redirections->next;
 		if (cmd_head->redirections)
 			free(cmd_head->redirections->file);
+		if (cmd_head->redirections->heredoc_delim)
+		 	free (cmd_head->redirections->heredoc_delim);
 		free(cmd_head->redirections);
 		cmd_head->redirections = tmp;
 	}

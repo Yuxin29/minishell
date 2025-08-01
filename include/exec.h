@@ -16,24 +16,24 @@ typedef struct s_exec_path
 	char	**envp;  //the copy one
 }	t_exec_path;
 
-//execute builtins cmd
-int		is_builtin(char *cmd);
-int		execute_builtin_cmd(char **argv, t_env **env);
-//run builtin with redir
-void	run_builtin_with_redir(t_cmd *cmd, t_env **env_list);
-//------------------
+// //execute builtins cmd
+// int		is_builtin(char *cmd);
+// int		execute_builtin_cmd(char **argv, t_env **env);
+// //run builtin with redir
+// void	run_builtin_with_redir(t_cmd *cmd, t_env **env_list);
+// //------------------
 
-//execute external cmd (which is different with builtin cmd)
-char	*get_cmd_path(char *cmd, char **envp);
-void	execute_external_cmd(t_exec_path *cmd);
-//--------------------
+// //execute external cmd (which is different with builtin cmd)
+// char	*get_cmd_path(char *cmd, char **envp);
+// void	execute_external_cmd(t_exec_path *cmd);
+// //--------------------
 
-//void	check_and_apply_heredocs(t_cmd *cmd_list, char **envp)//yuxin added
-//we check here if there are redirections symbles here in each cmd.
-//we check a single cmd inside the child, once per cmd.
-int		check_and_apply_redirections(t_cmd *cmd);
-// return tmpfile, in token, check if t_type==5, then cmd_list->infile== tmp_file, then do redirections
-char	*creat_heredoc_file(char *delim);
+// //void	check_and_apply_heredocs(t_cmd *cmd_list, char **envp)//yuxin added
+// //we check here if there are redirections symbles here in each cmd.
+// //we check a single cmd inside the child, once per cmd.
+// int		check_and_apply_redirections(t_cmd *cmd);
+// // return tmpfile, in token, check if t_type==5, then cmd_list->infile== tmp_file, then do redirections
+// char	*creat_heredoc_file(char *delim);
 
 
 #endif

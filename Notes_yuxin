@@ -259,6 +259,7 @@ typedef struct s_cmd
 	t_redir *redirections;  // <-- list of redirections
 	struct s_cmd *next;
 } t_cmd;
+
 ---> Why this:
 - In real Bash, even though only the last redirection affects where the command reads/writes
 - all redirections are processed in order, and errors can occur during any redirection (not just the last).

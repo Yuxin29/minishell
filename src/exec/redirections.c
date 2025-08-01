@@ -1,8 +1,8 @@
 #include "minishell.h"
 
-//redirections.c
-//after parsing, we got already cmd list.
-//we check here if there are redirections symbles here in each cmd node.
+redirections.c
+after parsing, we got already cmd list.
+we check here if there are redirections symbles here in each cmd node.
 static int	apply_infile(t_cmd *cmd)
 {
 	int	fd;
@@ -90,57 +90,3 @@ char	*creat_heredoc_file(char *delim)
 	return (tmp_file);
 	// return tmpfile, in token, check if t_type==5, then cmd_list->infile== tmp_file, then do redirections
 }
-
-
-// void	check_and_apply_heredocs(t_cmd *cmd_list)
-// {
-// 	char	*tmp_path;//what happens if the are pipes or multiple commands, is the tmp file reused, does the mkstemp happen at the same time and same path, or with an first and second order
-// 	int		fd;
-// 	char	*line;
-// 	int		heredoc_count;
-
-// 	tmp_path = NULL;
-// 	heredoc_count = 0;
-// 	fd = 0;
-// 	while (cmd_list)
-// 	{
-// 		if (cmd_list->heredoc_delim)
-// 		{
-// 			get_tmp_file(cmd_list, heredoc_count, tmp_path, fd);
-// 			while (1)
-// 			{
-// 				line = readline("minishell: heredoc> ");
-// 				if (!line || ft_strcmp(line, cmd_list->heredoc_delim) == 0)//Stop reading when user inputs a line exactly matching the heredoc delimiter.
-// 				{
-// 					free (line);
-// 					break ;
-// 				}
-// 				ft_putendl_fd(line, fd);//Write all lines except the delimiter into the temporary file.
-// 				free(line);
-// 			}
-// 			close(fd);
-// 			cmd_list->infile = tmp_path;// Update infile to temp path
-// 		}
-// 		cmd_list = cmd_list->next;
-// 	}
-// }
-
-// static void	get_tmp_file(t_cmd *cmd_list, int heredoc_count, char *tmp_path, int fd)
-// {
-// 	tmp_path = malloc(32);
-// 	if (!tmp_path)
-// 	{
-// 		free_cmd_list(cmd_list);
-// 		perror("malloc");
-// 		exit(1);
-// 	}
-// 	snprintf(tmp_path, 32, "/tmp/.heredoc_%d_XXXXXX", heredoc_count++);
-// 	fd = mkstemp(tmp_path);
-// 	if (fd < 0)
-// 	{
-// 		free(tmp_path);
-// 		free_cmd_list(cmd_list);
-// 		perror(cmd_list->heredoc_delim);
-// 		exit(1);
-// 	}
-// }

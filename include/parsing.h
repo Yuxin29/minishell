@@ -33,6 +33,7 @@ typedef struct s_redir
 {
 	char			*file;
 	int				type; // T_REDIRECT_IN, T_REDIRECT_OUT, T_APPEND, T_HEREDOC
+    char            *heredoc_delim;
 	struct s_redir	*next;
 }					t_redir;
 

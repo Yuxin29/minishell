@@ -33,15 +33,31 @@ typedef struct      s_token
 //Parsing: - Taking the token list and Understanding the structure of the command,
 // 			- Grouping tokens into command nodes, pipes, redirections, etc,
 // 			- Building a linked list of command objects (t_cmd)
+
+// typedef struct s_cmd
+// {
+//     char            **argv;         // Arguments array: argv[0] = command, argv[1..n] = args
+//     char            *infile;        // For '<' redirection ::           cat < in < out  *infile
+//     char            *outfile;       // For '>' or '>>' redirection      cat > in > out **outfile
+//     int             append_out;     // 1 if '>>', 0 if '>'
+//     char            *heredoc_delim; // For '<<' heredoc
+//     struct s_cmd    *next;          // Next command in a pipeline
+// }                   t_cmd;
+
+typedef struct s_redir
+{
+	char			*file;
+	int				type; // T_REDIRECT_IN 2, T_REDIRECT_OUT 3, T_APPEND 4, T_HEREDOC 5
+	char			*delimiter;  // only for heredoc
+	struct s_redir	*next;
+}	t_redir;
+
 typedef struct s_cmd
 {
-    char            **argv;         // Arguments array: argv[0] = command, argv[1..n] = args
-    char            *infile;        // For '<' redirection ::           cat < in < out  *infile
-    char            *outfile;       // For '>' or '>>' redirection      cat > in > out **outfile
-    int             append_out;     // 1 if '>>', 0 if '>'
-    char            *heredoc_delim; // For '<<' heredoc
-    struct s_cmd    *next;          // Next command in a pipeline
-}                   t_cmd;
+	char			**argv;
+	t_redir			*redirections;  // <-- list of redirections
+	struct s_cmd	*next;
+}	t_cmd;
 
 // lex.c
 // get raw_line with readline / getnextline, and the put them to t_token

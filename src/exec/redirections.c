@@ -3,47 +3,81 @@
 //redirections.c
 //after parsing, we got already cmd list.
 //we check here if there are redirections symbles here in each cmd node.
-static int	apply_infile(t_cmd *cmd)
+static int	apply_infile(t_redir *redir)
 {
 	int	fd;
 
-	fd = open(cmd->infile, O_RDONLY);
+	fd = open(redir->file, O_RDONLY);
 	if (fd < 0)
-		return (perror(cmd->infile), -1);
-	if (ft_strncmp(cmd->infile, "/tmp/.heredoc_", 14) == 0)
-		unlink(cmd->infile);
+		return (perror(redir->file), -1);
+	if (ft_strncmp(redir->file, "/tmp/.heredoc_", 14) == 0)
+		unlink(redir->file);
 	if (dup2(fd, STDIN_FILENO) < 0)
-		return (perror("dup2 infile failed"), close(fd), -1);
+	{
+		perror("dup2 infile failed");
+		close(fd);
+		if (ft_strncmp(redir->file, "/tmp/.heredoc_", 14) == 0)
+			unlink(redir->file);
+		return (-1);
+	}
 	close(fd);
 	return (0);
 }
 
-static int	apply_outfile(t_cmd *cmd)
+static int	apply_outfile(t_redir *redir , int is_last)
 {
 	int	fd;
 
-	if (cmd->append_out == 1)
-		fd = open(cmd->outfile, O_WRONLY | O_CREAT | O_APPEND, 0644);
+	if (redir->type == 4)
+		fd = open(redir->file, O_WRONLY | O_CREAT | O_APPEND, 0644);
 	else
-		fd = open(cmd->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+		fd = open(redir->file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd < 0)
-		return (perror(cmd->outfile), -1);
-	if (dup2(fd, STDOUT_FILENO) < 0)
-		return (perror("dup2 outfile failed"), close(fd), -1);
+		return (perror(redir->file), -1);
+	if (is_last)
+	{
+		if (dup2(fd, STDOUT_FILENO) < 0)
+			return (perror("dup2 outfile failed"), close(fd), -1);
+	}
 	close(fd);
 	return (0);
 }
 
 int	check_and_apply_redirections(t_cmd *cmd)
 {
+	t_redir	*cur;
+	t_redir	*last;
+	int		is_last;
+
 	if (!cmd)
 		return (-1);
-	if (cmd->infile)
-		if (apply_infile(cmd) < 0)
-			return (-1);
-	if (cmd->outfile)
-		if (apply_outfile(cmd) < 0)
-			return (-1);
+	cur = cmd->redirections;
+	last = NULL;
+	while (cur)
+	{
+		if (cur->type == 3 || cur->type == 4)
+			last = cur;
+		cur = cur->next;
+	}
+	cur = cmd->redirections;
+	while (cur)
+	{
+		if (cur->type == 2)
+		{
+			if (apply_infile(cmd) < 0)
+				return (-1);
+		}
+		else if (cur->type == 3 || cur->type == 4)
+		{
+			if (cur == last)
+				is_last == 1;
+			else
+				is_last == 0;
+			if (apply_outfile(cmd, is_last) < 0)
+				return (-1);
+		}
+		cur = cur->next;
+	}
 	return (0);
 }
 
@@ -53,11 +87,11 @@ static char	*get_tmp_filepath(void)
 {
 	static int	i; //generate unique tmp filename
 	char	*tmp_filepath;
-	char	*fakepid;
+	char	*fake_pid;
 
-	fakepid = ft_itoa(i++);
-	tmp_filepath = ft_strjoin("/tmp/.heredoc_", fakepid);
-	free(fakepid);
+	fake_pid = ft_itoa(i++);
+	tmp_filepath = ft_strjoin("/tmp/.heredoc_", fake_pid);
+	free(fake_pid);
 	if (!tmp_filepath)
 		return (NULL);
 	return (tmp_filepath);
@@ -75,7 +109,7 @@ char	*creat_heredoc_file(char *delim)
 		return (free(tmp_file), perror("heredoc open failed"), NULL);
 	while (1)
 	{
-		line = readline("minishell herecod> ");
+		line = readline("minishell heredoc> ");
 		if (!line)
 			break ;
 		if (ft_strcmp(line, delim) == 0)
@@ -91,56 +125,3 @@ char	*creat_heredoc_file(char *delim)
 	// return tmpfile, in token, check if t_type==5, then cmd_list->infile== tmp_file, then do redirections
 }
 
-
-// void	check_and_apply_heredocs(t_cmd *cmd_list)
-// {
-// 	char	*tmp_path;//what happens if the are pipes or multiple commands, is the tmp file reused, does the mkstemp happen at the same time and same path, or with an first and second order
-// 	int		fd;
-// 	char	*line;
-// 	int		heredoc_count;
-
-// 	tmp_path = NULL;
-// 	heredoc_count = 0;
-// 	fd = 0;
-// 	while (cmd_list)
-// 	{
-// 		if (cmd_list->heredoc_delim)
-// 		{
-// 			get_tmp_file(cmd_list, heredoc_count, tmp_path, fd);
-// 			while (1)
-// 			{
-// 				line = readline("minishell: heredoc> ");
-// 				if (!line || ft_strcmp(line, cmd_list->heredoc_delim) == 0)//Stop reading when user inputs a line exactly matching the heredoc delimiter.
-// 				{
-// 					free (line);
-// 					break ;
-// 				}
-// 				ft_putendl_fd(line, fd);//Write all lines except the delimiter into the temporary file.
-// 				free(line);
-// 			}
-// 			close(fd);
-// 			cmd_list->infile = tmp_path;// Update infile to temp path
-// 		}
-// 		cmd_list = cmd_list->next;
-// 	}
-// }
-
-// static void	get_tmp_file(t_cmd *cmd_list, int heredoc_count, char *tmp_path, int fd)
-// {
-// 	tmp_path = malloc(32);
-// 	if (!tmp_path)
-// 	{
-// 		free_cmd_list(cmd_list);
-// 		perror("malloc");
-// 		exit(1);
-// 	}
-// 	snprintf(tmp_path, 32, "/tmp/.heredoc_%d_XXXXXX", heredoc_count++);
-// 	fd = mkstemp(tmp_path);
-// 	if (fd < 0)
-// 	{
-// 		free(tmp_path);
-// 		free_cmd_list(cmd_list);
-// 		perror(cmd_list->heredoc_delim);
-// 		exit(1);
-// 	}
-// }

@@ -2,7 +2,7 @@
 #include "minishell.h"
 #include "exec.h"
 
-// //return (new_value); //no need for null check or need
+//return (new_value); //no need for null check or need
 // char	*get_env_value(char **envp, const char *key)
 // {
 // 	int		j;
@@ -19,7 +19,10 @@
 // 		{
 // 			new_value = ft_strdup(split[1]);
 // 			if (!new_value)
-// 				return (NULL);
+// 			{	
+// 				ft_free_arr(split);
+// 				return (free_malloc_fail_null(NULL));
+// 			}
 // 			ft_free_arr(split);
 // 			return (new_value);
 // 		}
@@ -27,43 +30,4 @@
 // 		ft_free_arr(split);
 // 	}
 // 	return (NULL);
-// }
-
-// char	*replace_variable_in_str(char *input, int pos, char **envp)
-// {
-// 	char	*var_name;
-// 	char	*value;
-// 	char	*joined;
-// 	char	*new_input;
-// 	char	*suffix;
-// 	char	*tmp;
-// 	int		start;
-// 	int		var_len;
-
-// 	start = pos + 1;
-// 	var_len = 0;
-// 	while (input[start + var_len] && (ft_isalnum(input[start + var_len])
-// 		|| input[start + var_len] == '_'))
-// 		var_len++;
-// 	var_name = ft_substr(input, start, var_len);
-// 	if (!var_name)
-// 		return (NULL);
-// 	value = get_env_value(envp, var_name);
-// 	free(var_name);
-// 	if (!value)
-// 		return (NULL);
-// 	joined = ft_substr(input, 0, pos);//null check
-// 	if (value)
-// 	{
-// 		tmp = ft_strjoin(joined, value);//null check
-// 		free(joined);
-// 		joined = tmp;
-// 		free(value);
-// 	}
-// 	suffix = ft_strdup(input + start + var_len);//null check
-// 	new_input = ft_strjoin(joined, suffix);//null check
-// 	free(joined);
-// 	free(suffix);
-// 	free(input);
-// 	return (new_input);
 // }

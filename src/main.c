@@ -455,7 +455,55 @@ static void	print_cmd_list(t_cmd *head)
 		head = head->next;
 	}
 }
-				
+
+#include <string.h>
+
+// Helper to sanitize input by escaping redirection chars
+static void sanitize_input(const char *input, char *out, size_t out_size)
+{
+    size_t j = 0;
+    for (size_t i = 0; input[i] && j + 2 < out_size; i++)
+    {
+        if (input[i] == '<' || input[i] == '>' || input[i] == '|')
+        {
+            // Escape with backslash to prevent redirection execution
+            out[j++] = '\\';
+            out[j++] = input[i];
+        }
+        else
+        {
+            out[j++] = input[i];
+        }
+    }
+    out[j] = '\0';
+}
+
+static void show_real_bash_tokens(const char *input)
+{
+    char command[4096];
+    char sanitized[2048];
+
+    sanitize_input(input, sanitized, sizeof(sanitized));
+
+    snprintf(command, sizeof(command),
+        "bash -c 'set -- %s; i=1; for arg in \"$@\"; do echo \"$i: [$arg]\"; i=$((i+1)); done'",
+        sanitized);
+
+    FILE *fp = popen(command, "r");
+    if (!fp)
+    {
+        perror("popen");
+        return;
+    }
+
+    printf("🐚 Real Bash Tokens:\n");
+    char line[512];
+    while (fgets(line, sizeof(line), fp))
+        printf("%s", line);
+
+    pclose(fp);
+}	
+
 int main(void)
 {
     t_token *tokens;
@@ -478,7 +526,7 @@ int main(void)
               printf("tokens empty\n");
         else
             print_token_list(tokens);
-        //show_real_bash_tokens(test_lines[i]);
+        show_real_bash_tokens(test_lines[i]);
         printf("━━━━━━━━━━━━━━━━\n");
         cmds = build_command_list(tokens);
         if (!cmds)
@@ -495,50 +543,3 @@ int main(void)
     return (0);
 }
 
-// #include <string.h>
-
-// // Helper to sanitize input by escaping redirection chars
-// static void sanitize_input(const char *input, char *out, size_t out_size)
-// {
-//     size_t j = 0;
-//     for (size_t i = 0; input[i] && j + 2 < out_size; i++)
-//     {
-//         if (input[i] == '<' || input[i] == '>' || input[i] == '|')
-//         {
-//             // Escape with backslash to prevent redirection execution
-//             out[j++] = '\\';
-//             out[j++] = input[i];
-//         }
-//         else
-//         {
-//             out[j++] = input[i];
-//         }
-//     }
-//     out[j] = '\0';
-// }
-
-// static void show_real_bash_tokens(const char *input)
-// {
-//     char command[4096];
-//     char sanitized[2048];
-
-//     sanitize_input(input, sanitized, sizeof(sanitized));
-
-//     snprintf(command, sizeof(command),
-//         "bash -c 'set -- %s; i=1; for arg in \"$@\"; do echo \"$i: [$arg]\"; i=$((i+1)); done'",
-//         sanitized);
-
-//     FILE *fp = popen(command, "r");
-//     if (!fp)
-//     {
-//         perror("popen");
-//         return;
-//     }
-
-//     printf("🐚 Real Bash Tokens:\n");
-//     char line[512];
-//     while (fgets(line, sizeof(line), fp))
-//         printf("%s", line);
-
-//     pclose(fp);
-// }

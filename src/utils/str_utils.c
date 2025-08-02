@@ -18,8 +18,12 @@ char	*ft_strjoin_free(char *s1, char *s2)
 {
 	char	*joined;
 
+	if (!s1 && !s2)
+		return (NULL);
 	if (!s1)
 		joined = ft_strjoin("", s2);
+	else if (!s2)
+		joined = ft_strjoin(s1, "");
 	else
 		joined = ft_strjoin(s1, s2);
 	if (s1)

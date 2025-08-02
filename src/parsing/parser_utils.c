@@ -2,6 +2,8 @@
 #include "parsing.h"
 #include "minishell.h"
 
+extern int g_exit_status;
+
 // if it is a word without quotes, it can not contain special character
 int	check_special_characters(t_token *token_head)
 {
@@ -22,27 +24,24 @@ int	check_special_characters(t_token *token_head)
 // at the end of the tokens, it can not be pipe or redirections
 int	check_token_syntax(t_token *token_head)
 {
-	t_token	*head;
-
-	head = token_head;
 	if (!token_head)
 		return (1);
 	if (token_head->t_type == 1)
-		errmsg_set_status("minishell: syntax error near unexpected token `|'", 2);
+		errmsg_set_status("minishell: syntax error near unexpected token `|'");
 	while (token_head)
 	{
 		if (check_special_characters(token_head))
-			errmsg_set_status("minishell: syntax error: special characters", 2);
+			errmsg_set_status("minishell: syntax error: special characters");
 		if (token_head->t_type >= 1 && token_head->next && token_head->next->t_type == 1)
-			errmsg_set_status("minishell: ssyntax error near unexpected token `|'", 2);
+			errmsg_set_status("minishell: ssyntax error near unexpected token `|'");
 		if (token_head->t_type == 1 && token_head->next && token_head->next->t_type > 1)
-			errmsg_set_status("minishell: syntax error near unexpected token `newline'", 2);
+			errmsg_set_status("minishell: syntax error near unexpected token `newline'");
 		if (token_head->t_type >= 2 && token_head->next && token_head->next->t_type > 1)
-			errmsg_set_status("minishell: syntax error: near unexpected token redirections", 2);
+			errmsg_set_status("minishell: syntax error: near unexpected token redirections");
 		if (token_head->t_type == 1 && token_head->next == NULL)
-			errmsg_set_status("minishell: syntax error: near unexpected token `|'", 2);
+			errmsg_set_status("minishell: syntax error: near unexpected token `|'");
 		if (token_head->t_type >= 2 && token_head->next == NULL)
-			errmsg_set_status("minishell: syntax error: missing filename or delimiter after redirection", 2);
+			errmsg_set_status("minishell: syntax error: missing filename or delimiter after redirection");
 		token_head = token_head->next;
 	}
 	if (g_exit_status == 2)

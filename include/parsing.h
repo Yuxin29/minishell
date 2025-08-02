@@ -84,15 +84,18 @@ t_token		*parse_redirections(t_cmd *cmd, t_token *tokens);
 t_token		*parse_argv(t_cmd *cmd, t_token *tokens);
 
 //expander_utils.c >
-//string operations helpers
-// char	*get_env_value(char **envp, const char *key);
-// char	*replace_variable_in_str(char *input, int pos, char **envp);
+//string operations helpers.
+char	*get_env_value(char **envp, const char *key);
+char	*get_env_value_from_substr(char *input, int start, int var_len, char **envp);
+char	*join_three_and_free(char *s1, char *s2, char *s3);
 
 //expander.c >...... this one should be called after lexing,
 //check the t_word without quotes or with double quotes, when it starts with $ and if it exits
 //not expanding heredocs
+char	*replace_variable_in_str(char *input, int pos, char **envp);
 char	*expand_variables_in_str(char *input, char **envp);
 void	expand_redirection(t_cmd *cmd_list, char **envp);
+void	expand_argv(char **argv, char **envp);
 void	expand_all_cmds(t_cmd *cmd_list, char **envp);
 
 #endif

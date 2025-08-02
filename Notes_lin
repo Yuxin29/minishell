@@ -235,3 +235,70 @@ lin@EricdeMacBook-Pro minishell % make
 lin@EricdeMacBook-Pro minishell % ./minishell
 minishell$ cat < in < out
 out: No such file or directory
+$
+--------------------------------------
+
+typedef struct s_redir
+{
+	char            *file;
+	int                type; // T_REDIRECT_IN 2, T_REDIRECT_OUT 3, T_APPEND 4, T_HEREDOC 5
+	struct s_redir    *next;
+}	t_redir;
+
+typedef struct s_cmd
+{
+	char            **argv;
+	t_redir            *redirections;  // <-- list of redirections
+	struct s_cmd    *next;
+}	t_cmd;
+-----------------------
+
+void	apply_redirections(t_redir_info *redir)
+{
+	int	fd;
+
+	while (redir)
+	{
+		if (redir->type == REDIR_IN)
+		{
+			fd = open(redir->filename, O_RDONLY);
+			if (fd < 0)
+				exit_with_error("infile open fail");
+			dup2(fd, STDIN_FILENO);
+			close(fd);
+		}
+		else if (redir->type == REDIR_OUT || redir->type == REDIR_APPEND)
+		{
+			int flags = O_WRONLY | O_CREAT |
+				((redir->type == REDIR_APPEND) ? O_APPEND : O_TRUNC);
+			fd = open(redir->filename, flags, 0644);
+			if (fd < 0)
+				exit_with_error("outfile open fail");
+
+			if (redir->next == NULL ||
+				!(redir->next->type == REDIR_OUT || redir->next->type == REDIR_APPEND))
+			{
+				dup2(fd, STDOUT_FILENO);
+			}
+			close(fd);
+		}
+		redir = redir->next;
+	}
+}
+--------------
+modify return msg in get_path(use perror to print first)
+---------------
+	if (tokens->t_type == 5)
+	{
+		if (cmd->infile)
+			free(cmd->infile);
+		if (cmd->heredoc_delim)
+			free(cmd->heredoc_delim);
+		cmd->heredoc_delim = ft_strdup(next->str);
+		if (!cmd->heredoc_delim)
+			return (NULL);
+		tmpfile = creat_heredoc_file(cmd->heredoc_delim);
+		if (!tmpfile)
+			return (NULL);
+		cmd->infile = tmpfile;
+	}

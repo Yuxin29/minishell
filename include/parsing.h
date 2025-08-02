@@ -44,17 +44,15 @@ typedef struct s_cmd
 	struct s_cmd    *next;
 } t_cmd;
 
-/*   old one
-typedef struct s_cmd
-{
-    char            **argv;         // Arguments array: argv[0] = command, argv[1..n] = args
-    char            *infile;        // For '<' redirection ::           cat < in < out  *infile
-    char            *outfile;       // For '>' or '>>' redirection      cat > in > out **outfile
-    int             append_out;     // 1 if '>>', 0 if '>'
-    char            *heredoc_delim; // For '<<' heredoc
-    struct s_cmd    *next;          // Next command in a pipeline
-}                   t_cmd;
-*/
+// typedef struct s_cmd
+// {
+//     char            **argv;         // Arguments array: argv[0] = command, argv[1..n] = args
+//     char            *infile;        // For '<' redirection ::           cat < in < out  *infile
+//     char            *outfile;       // For '>' or '>>' redirection      cat > in > out **outfile
+//     int             append_out;     // 1 if '>>', 0 if '>'
+//     char            *heredoc_delim; // For '<<' heredoc
+//     struct s_cmd    *next;          // Next command in a pipeline
+// }                   t_cmd;
 
 // lex_utils.c
 int		check_raw_line_syntax(char *raw_line);

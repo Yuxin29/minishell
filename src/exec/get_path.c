@@ -6,9 +6,6 @@ static char	*find_path_in_envp(char **envp)
 
 	if(!envp)
 		return (NULL);
-	// path_value = getenv("PATH");
-	// if (!path_value)
-	// 	return NULL;
 	while(*envp) //get path
 	{
 		if (ft_strncmp(*envp, "PATH=", 5) == 0) //

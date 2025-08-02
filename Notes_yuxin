@@ -220,6 +220,7 @@ minishell$ echo << $USER
 > mikko
 > $USER
 FIXED: now expand after parsing in cmd list, nor normed, too many variables in str operations
+------------------------------------------------------
 
 2. "<" and '<' should be solid input argv, but < is certainly redirect int
 echo "<"<<"<"
@@ -236,6 +237,7 @@ minishell herecod> <<
 <<
 minishell$ echo '>>'
 >>
+------------------------------------------------------
 
 3. continously redirections
 eg:
@@ -271,19 +273,28 @@ typedef struct s_cmd
 - exev_builtin
 - main
 
-PARSING PART FIXED
+PARSING PART FIXED, not tested because can only print but not execute
+------------------------------------------------------
 
 4.signals
 ./
+not done
+------------------------------------------------------
 
 5.echo $?
+DONE, in parsing, I did it as a normal $VAR
+------------------------------------------------------
 
 6. possiblye 2 unfinished builtins from lin
+not done
+------------------------------------------------------
 
 7. 
 -    globle status setting in parsing phase,
 -    pre-lexing exit and free exex_envp
 -    no exit, but try to return null up to the main
+FIXED, not existing now, save status to 2 in case of syntax error
+------------------------------------------------------
 
 n. maybe, can try to solve
 echo "$"$"$"$"$"
@@ -312,7 +323,7 @@ mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo $?$?"$"$?"$"
 mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo $?$?"$"$?$"$"
 00$0$
 
-
+=================================MAX built in edge case tests ==========================
 c2r4p10% bash
 =================================echo -n 234 ==========================
 yuwu@c2r4p10:~$ echo -nnnnnnn 123

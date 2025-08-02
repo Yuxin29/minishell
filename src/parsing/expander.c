@@ -2,7 +2,7 @@
 #include "minishell.h"
 #include "exec.h"
 
-extern int g_exit_status;
+extern int	g_exit_status;
 
 char	*get_env_value(char **envp, const char *key)
 {
@@ -33,80 +33,69 @@ char	*get_env_value(char **envp, const char *key)
 	return (NULL);
 }
 
-static char *join_three_and_free(char *s1, char *s2, char *s3)
+char	*get_env_value_from_substr(char *input, int start, int var_len, char **envp)
 {
-	char *temp = ft_strjoin_free(s1, s2); // 会释放 s1 和 s2
+	char	*var_name;
+	char	*value;
+
+	var_name = ft_substr(input, start, var_len);
+	if (!var_name)
+		return (NULL);
+	value = get_env_value(envp, var_name);
+	free(var_name);
+	return (value);
+}
+
+static char	*join_three_and_free(char *s1, char *s2, char *s3)
+{
+	char	*temp;
+	char	*result;
+
+	temp = ft_strjoin_free(s1, s2);
 	if (!temp)
 	{
 		free(s3);
-		return NULL;
+		return (NULL);
 	}
-	char *result = ft_strjoin_free(temp, s3); // 会释放 temp 和 s3
-	return result;
-}
-
-// a bash examlpe of of I have variable expandable in a redirection, and this variable is $?
-// ls > output_$?.txt
-// cat output_0.txt
-char	*show_exit_status(char *input, int pos)
-{
-	char	*value;
-	char	*prefix;
-	char	*suffix;
-	char	*result;
-
-	value = ft_itoa(g_exit_status);
-	if (!value)
-		return (free_malloc_fail_null(NULL));
-	prefix = ft_substr(input, 0, pos);
-	if (!prefix)
-		return (free_malloc_fail_null(value));
-	suffix = ft_strdup(input + pos + 2); // +2 to skip `$?`
-	if (!suffix)
-	{
-		free(prefix);
-		return (free_malloc_fail_null(value));
-	}
-	result = join_three_and_free(prefix, value, suffix);
-	free(input);
+	result = ft_strjoin_free(temp, s3);
 	return (result);
 }
 
+// a bash examlpe of variable expandable in a redirection, and this variable is $?
+// ls > output_$?.txt
+// cat output_0.txt
 char	*replace_variable_in_str(char *input, int pos, char **envp)
 {
 	int		start;
 	int		var_len;
-	char	*var_name;
 	char	*value;
 	char	*prefix;
 	char	*suffix;
-	char	*result;
 
-	if (input[pos + 1] == '?')
-		return (show_exit_status(input, pos));
 	start = pos + 1;
-	var_len = 0;
-	while (input[start + var_len] && (ft_isalnum(input[start + var_len]) || input[start + var_len] == '_'))
-		var_len++;
-	var_name = ft_substr(input, start, var_len);
-	if (!var_name)
-		return(free_malloc_fail_null(NULL));
-	value = get_env_value(envp, var_name);
-	free(var_name);
-	if (!value)
-		return (NULL);
+	var_len = 1;
+	if (input[pos + 1] == '?')
+		value = ft_itoa(g_exit_status);
+	else
+	{
+		var_len = 0;
+		while (input[start + var_len] && (ft_isalnum(input[start + var_len]) || input[start + var_len] == '_'))
+			var_len++;
+		value = get_env_value_from_substr(input, start, var_len, envp);
+		if (!value)
+			return (free_malloc_fail_null(input));
+	}
 	prefix = ft_substr(input, 0, pos);
-	if (!prefix)
-		return(free_malloc_fail_null(value));
 	suffix = ft_strdup(input + start + var_len);
+	free(input);
+	if (!prefix)
+		return (free_malloc_fail_null(value));
 	if (!suffix)
 	{
 		free(prefix);
-		return(free_malloc_fail_null(value));
+		return (free_malloc_fail_null(value));
 	}
-	result = join_three_and_free(prefix, value, suffix);
-	free(input);
-	return (result);
+	return (join_three_and_free(prefix, value, suffix));
 }
 
 char	*expand_variables_in_str(char *input, char **envp)
@@ -116,12 +105,12 @@ char	*expand_variables_in_str(char *input, char **envp)
 	i = 0;
 	while (input[i])
 	{
-		if (input[i] == '$' && input[i + 1]
-			&& (ft_isalpha(input[i + 1]) || input[i + 1] == '_'))
+		if (input[i] == '$' && input[i + 1] && ((input[i + 1] == '?'
+			|| ft_isalpha(input[i + 1]) || input[i + 1] == '_')))
 		{
 			input = replace_variable_in_str(input, i, envp);
 			if (!input)
-				return(NULL);
+				return (NULL);
 			i = 0;
 		}
 		else
@@ -132,19 +121,20 @@ char	*expand_variables_in_str(char *input, char **envp)
 
 void	expand_redirection(t_cmd *cmd_list, char **envp)
 {
-	t_redir *redir = cmd_list->redirections;
+	t_redir	*redir;
 	char	*value;
 
+	redir = cmd_list->redirections;
 	while (redir)
 	{
 		if (redir->type == 5)
 		{
 			redir = redir->next;
-			continue;
+			continue ;
 		}
 		if (redir->file && ft_strchr(redir->file, '$'))
 		{
-			value = expand_variables_in_str(redir->file, envp);//null check
+			value = expand_variables_in_str(redir->file, envp);
 			if (value)
 			{
 				free(redir->file);

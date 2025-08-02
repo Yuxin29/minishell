@@ -22,7 +22,7 @@ char	*free_malloc_fail_null(char	*str);
 
 
 //str_utils.c
-void	check_strndup(char *str, t_cmd *cmd, t_token *tokens);
+char	*check_strdup(char *dup, char *original);
 char	*ft_strjoin_free(char *s1, char *s2);
 
 #endif

@@ -2,14 +2,14 @@
 
 //why is this necessary
 //it is probably not needed, delete later
-void	check_strndup(char *str, t_cmd *cmd, t_token *tokens)
+char	*check_strdup(char *dup, char *original)
 {
-	if (!str)
+	if (!dup)
 	{
-		free_token_list(tokens);
-		free_cmd_list(cmd);
-		error_and_return("malloc failed", NULL);//free_t_errmsg_exit
+		free(original);
+		perror("strdup");
 	}
+	return (NULL);
 }
 
 //no need to null check in ft_strjoin, it will return null if failed

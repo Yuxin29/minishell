@@ -60,14 +60,17 @@ t_token	*parse_redirections(t_cmd *cmd, t_token *tokens)
 		if (tokens->t_type >= 2 && tokens->t_type <= 5)
 		{
 			next = tokens->next;
-			if (!next || next->t_type != 0)
+			if (!next || next->t_type != 0) //too defencive, probably not neccessary
 				return (NULL);
 			new_redir = malloc(sizeof(t_redir));
 			if (!new_redir)
 				return ((t_token *)free_malloc_fail_null(NULL));
 			new_redir->file = ft_strndup(next->str, ft_strlen(next->str));
 			if (!new_redir->file)
+			{
+				free(new_redir);
 				return ((t_token *)free_malloc_fail_null(NULL));
+			}
 			new_redir->type = tokens->t_type;
 			new_redir->next = NULL;
 			if (!cmd->redirections)

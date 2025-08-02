@@ -97,19 +97,3 @@ void	free_cmd_list(t_cmd *cmd_head)
 		cmd_head = tmp;
 	}
 }
-
-//return null if fails, null checked when it is used
-char	*get_unquoted_part(char *s, int *i)
-{
-	int	start;
-	char	*part;
-
-	start = *i;
-	while (s[*i] && !ft_isspace(s[*i]) && s[*i] != '\''
-		&& s[*i] != '"' && s[*i] != '<' && s[*i] != '>' && s[*i] != '|')
-		(*i)++;
-	part = ft_strndup(&s[start], *i - start);
-	if (!part)
-		return (free_malloc_fail_null(NULL));
-	return (part);
-}

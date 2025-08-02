@@ -1,6 +1,7 @@
 #include "minishell.h"
 
 //why is this necessary
+//it is probably not needed, delete later
 void	check_strndup(char *str, t_cmd *cmd, t_token *tokens)
 {
 	if (!str)

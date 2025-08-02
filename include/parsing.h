@@ -59,14 +59,15 @@ int		check_raw_line_syntax(char *raw_line);
 void	free_token_list(t_token *token_head);
 void	get_token_type(t_token *token);
 void	get_quote_type(t_token *token, char q);
+char	*get_unquoted_part(char *s, int *i);
 
 // lex.c
 // get raw_line with readline / getnextline, and the put them to t_token
 t_token	*get_token_list(char *raw_line);
 t_token	*build_word_token(char *line, int *i);
+t_token *build_operator_token(char *line, int *i);
 t_token	*build_token_from_next_word(char *line, int *i);
 char	*get_quoted_part(char *s, int *i);
-char	*get_unquoted_part(char *s, int *i);
 
 // parser_utils.c
 int         check_special_characters(t_token *token_head);

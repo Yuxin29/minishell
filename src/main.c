@@ -487,10 +487,10 @@ int main(void)
         {
             printf("\n🔧 Commands:\n");
             print_cmd_list(cmds);
-            free_token_list(tokens);
             free_cmd_list(cmds);
         }
-         i++;
+        free_token_list(tokens);
+        i++;
     }
     return (0);
 }

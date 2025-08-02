@@ -39,7 +39,8 @@ int	check_raw_line_syntax(char *raw_line)
 	}
 	return (0);
 }
-//not mem involved in this one
+
+//non mem involved in this one
 void	get_token_type(t_token *token)
 {
 	const char	*tmp;
@@ -77,7 +78,8 @@ void	free_token_list(t_token *token_head)
 		token_head = tmp;
 	}
 }
-//not mem involved in this one
+
+//non mem involved in this one
 void get_quote_type(t_token *token, char q)
 {
 	if (q == '\'')

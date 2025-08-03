@@ -103,9 +103,16 @@ t_token	*parse_argv(t_cmd *cmd, t_token *tokens)
 	cmd->argv = malloc(sizeof(char *) * (len + 1));
 	if (!cmd->argv)
 		return ((t_token *)free_malloc_fail_null(NULL));
+	cmd->quote_type = malloc(sizeof(int *) * (len));
+	if (!cmd->quote_type)
+	{
+		ft_free_arr(cmd->argv);
+		return ((t_token *)free_malloc_fail_null(NULL));
+	}
 	while (i < len && tokens && tokens->t_type == 0)
 	{
 		cmd->argv[i] = ft_strndup(tokens->str, ft_strlen(tokens->str));
+		cmd->quote_type[i] = tokens->quote_type;
 		if (!cmd->argv[i])
 		{
 			ft_free_arr(cmd->argv);

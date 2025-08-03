@@ -40,6 +40,7 @@ typedef struct s_redir
 typedef struct s_cmd
 {
 	char			**argv;
+	int		*quote_type; //inherete from t_token: 0: no quote; 1: single quote; 2: double quote
 	t_redir			*redirections;  // <-- list of redirections
 	struct s_cmd    *next;
 } t_cmd;
@@ -95,7 +96,7 @@ char	*join_three_and_free(char *s1, char *s2, char *s3);
 char	*replace_variable_in_str(char *input, int pos, char **envp);
 char	*expand_variables_in_str(char *input, char **envp);
 void	expand_redirection(t_cmd *cmd_list, char **envp);
-void	expand_argv(char **argv, char **envp);
+void	expand_argv(char **argv, int *quote_type, char **envp);
 void	expand_all_cmds(t_cmd *cmd_list, char **envp);
 
 #endif

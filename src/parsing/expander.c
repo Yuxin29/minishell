@@ -56,6 +56,8 @@ char	*expand_variables_in_str(char *input, char **envp)
 				return (NULL);
 			i = 0;
 		}
+		else if (input[i + 1] == '\0' || (!ft_isalnum(input[i + 1]) && input[i + 1] != '_'))
+			i++; 
 		else
 			i++;
 	}
@@ -88,7 +90,7 @@ void	expand_redirection(t_cmd *cmd_list, char **envp)
 	}
 }
 
-void	expand_argv(char **argv, char **envp)
+void	expand_argv(char **argv, int *quote_type, char **envp)
 {
 	int		i;
 	char	*value;
@@ -96,7 +98,7 @@ void	expand_argv(char **argv, char **envp)
 	i = 0;
 	while (argv && argv[i])
 	{
-		if (ft_strchr(argv[i], '$'))
+		if  ((!quote_type || quote_type[i] != 1) && ft_strchr(argv[i], '$'))
 		{
 			value = expand_variables_in_str(argv[i], envp);
 			if (value)
@@ -118,7 +120,7 @@ void	expand_all_cmds(t_cmd *cmd_list, char **envp)
 	while (cmd_list)
 	{
 		if (cmd_list->argv)
-			expand_argv(cmd_list->argv, envp);
+			expand_argv(cmd_list->argv, cmd_list->quote_type, envp);
 		if (cmd_list->redirections)
 			expand_redirection(cmd_list, envp);
 		cmd_list = cmd_list->next;

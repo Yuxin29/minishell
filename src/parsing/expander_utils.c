@@ -16,8 +16,11 @@ char	*get_env_value(char **envp, const char *key)
 			return (free_malloc_fail_null(NULL));
 		if (ft_strcmp(split[0], (char *)key) == 0)
 		{
-			new_value = ft_strdup(split[1]);
-			if (!new_value)
+			if (split[1])
+                new_value = ft_strdup(split[1]);
+			else //split[1] == NULL (e.g. FOO= in envp).
+                new_value = ft_strdup("");
+                if (!new_value)
 			{	
 				ft_free_arr(split);
 				return (free_malloc_fail_null(NULL));

@@ -22,14 +22,17 @@ t_cmd	*build_command_list(t_token *token_head)
 		if (!cmd_current)
 			return ((t_cmd *)free_malloc_fail_null(NULL));
 		ft_bzero(cmd_current, sizeof(t_cmd));
+		token_head = get_one_new_cmd(token_head, cmd_current);
+		if (!token_head && (!cmd_current->argv && !cmd_current->redirections))
+		{
+			free_cmd_list(cmd_head);
+			return (NULL);
+		}
 		if (!cmd_head)
 			cmd_head = cmd_current;
 		else
 			cmd_last->next = cmd_current;
 		cmd_last = cmd_current;
-		token_head = get_one_new_cmd(token_head, cmd_current);
-		if (!token_head)
-			break ;
 	}
 	return (cmd_head);
 }
@@ -40,9 +43,17 @@ t_token	*get_one_new_cmd(t_token *token_head, t_cmd *cmd_current)
 	while (token_head && token_head->t_type != 1)
 	{
 		if (token_head->t_type == 0)
+		{
 			token_head = parse_argv(cmd_current, token_head);
+			if (!token_head)
+				return (NULL);
+		}
 		else if (token_head->t_type >= 2 && token_head->t_type <= 5)
+		{
 			token_head = parse_redirections(cmd_current, token_head);
+			if (!token_head)
+				return (NULL);
+		}
 	}
 	if (token_head && token_head->t_type == 1)
 		token_head = token_head->next;
@@ -73,6 +84,7 @@ t_token	*parse_redirections(t_cmd *cmd, t_token *tokens)
 			}
 			new_redir->type = tokens->t_type;
 			new_redir->next = NULL;
+			new_redir->heredoc_delim = NULL; 
 			if (!cmd->redirections)
 				cmd->redirections = new_redir;
 			else
@@ -103,7 +115,7 @@ t_token	*parse_argv(t_cmd *cmd, t_token *tokens)
 	cmd->argv = malloc(sizeof(char *) * (len + 1));
 	if (!cmd->argv)
 		return ((t_token *)free_malloc_fail_null(NULL));
-	cmd->quote_type = malloc(sizeof(int *) * (len));
+	cmd->quote_type = malloc(sizeof(int) * len);
 	if (!cmd->quote_type)
 	{
 		ft_free_arr(cmd->argv);

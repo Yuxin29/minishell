@@ -117,19 +117,27 @@ int	g_exit_status = 0;
 // 	return (0);
 // }
 
-#include <setjmp.h> //delete later
-jmp_buf g_jmpbuf;//delete later
+// #include <setjmp.h> //delete later
+// jmp_buf g_jmpbuf;//delete later
 
 char *test_lines[] =
 {
-    
 
     // ✅ Valid test cases
     // Test 1: Simple Command
     "echo hello world",
 
+        // Test  continuous redirections
+    "cat << infile1 << infile2 << infile3 >> out4",
+
     // Test 2: Pipe and Redirection
-    //"cat < file | grep foo > out.txt",
+    "cat < file | grep foo > out.txt",
+    
+    // Test 2: Pipe and Redirection
+    "cat < file",
+
+    // Test 2: Pipe and Redirection
+    "< file",
 
     // Test 3: Strings with Double and Single Quotes
     "echo \"hello world\" 'foo bar'",
@@ -166,31 +174,25 @@ char *test_lines[] =
 
     // Test 14: Redirection with no filename (still valid to tokenize)
     "cat >",
-    
-    
 
     // Test 15: Redirection then commandint main(int argc, char **argv, char **envp)
     "> out.txt echo hello",
 
-    // Test 16: Spaces only
-    "        ",
-
-    // Test 17: Empty string
-    "",
+    "echo hello",
     
-    // ✅ Valid test cases nut on the edge
+    // ✅ Valid test cases but on the edge
 
     // Test  continuous redirections
     "cat << infile1 << infile2 << infile3 >> out4",
 
     //not cmd
-    "< infile1",
+    "< file",
     
     //no file
     "cat <<",
 
     //expansion
-    "echo $VAR",
+    "echo $USER",
     
     //empty string
     "",
@@ -247,13 +249,13 @@ char *test_lines[] =
     "cat <| grep",
 
     // ❌  Test 34: Output redirection with no command
-    "> file.txt",
+    "> file",
 
     // ❌  Test 35: Pipe followed by redirection
-    "| > file.txt",
+    "| > file",
 
     // ❌  Test 36: Invalid token between redirection
-    "cat > | file.txt",
+    "cat > | file",
 
     // ❌  Test 37: Empty input
     "",
@@ -273,6 +275,12 @@ char *test_lines[] =
 
     // ❌   Test 42: Incomplete heredoc
     "cat << EOF",
+
+        // Test 16: Spaces only
+    "        ",
+
+    // Test 17: Empty string
+    "",
 
     NULL
 
@@ -304,122 +312,166 @@ char *test_lines[] =
 //     pclose(fp);
 // }	
 
-
 static void print_token_list(t_token *head)
 {
+    int i = 0;
     if (!head)
     {
-        printf("token empty\n");
+        printf("Tokens list is empty\n");
         return;
     }
     while (head)
     {
-        printf("[TYPE:%d] ", head->t_type);
-        if (head->quote_type == 1)
-            printf("(SINGLE-QUOTE) ");
-        else if (head->quote_type == 2)
-            printf("(DOUBLE-QUOTE) ");
-        printf("VAL:'%s'; ", head->str ? head->str : "(null)");
+        printf("Token[%d]: ", i++);
+        // Print token type as string inline
+        if (head->t_type == T_WORD)             printf("type=T_WORD (0), ");
+        else if (head->t_type == T_PIPE)       printf("type=T_PIPE (1), ");
+        else if (head->t_type == T_REDIRECT_IN)printf("type=T_REDIRECT_IN (2), ");
+        else if (head->t_type == T_REDIRECT_OUT)printf("type=T_REDIRECT_OUT (3), ");
+        else if (head->t_type == T_APPEND)     printf("type=T_APPEND (4), ");
+        else if (head->t_type == T_HEREDOC)    printf("type=T_HEREDOC (5), ");
+        else                                  printf("type=UNKNOWN (%d), ", head->t_type);
+
+        // Print quote type inline
+        if (head->quote_type == 0)              printf("quote=NONE (0), ");
+        else if (head->quote_type == 1)         printf("quote=SINGLE_QUOTE (1), ");
+        else if (head->quote_type == 2)         printf("quote=DOUBLE_QUOTE (2), ");
+        else                                   printf("quote=UNKNOWN (%d), ", head->quote_type);
+
+        printf("str='%s'\n", head->str ? head->str : "(null)");
+
         head = head->next;
     }
-    printf("\n");
 }
 
-#include <stdio.h>
-static void	print_cmd_list(t_cmd *head)
+static void print_cmd_list(t_cmd *head)
 {
-	int		i;
-	int		cmd_num = 1;
-	t_redir	*redir;
+    int cmd_i = 0;
+    if (!head)
+    {
+        printf("Commands list is empty\n");
+        return;
+    }
 
-	if (!head)
-	{
-		printf("cmd empty\n");
-		return;
-	}
-	while (head)
-	{
-		printf("====== Command %d ======\n", cmd_num++);
-		
-		// Print argv
-		if (head->argv)
-		{
-			printf("argv: ");
-			i = 0;
-			while (head->argv[i])
-			{
-				printf("'%s' ", head->argv[i]);
-				i++;
-			}
-			printf("\n");
-		}
-		else
-			printf("argv: (null)\n");
+    while (head)
+    {
+        printf("Command[%d]:\n", cmd_i++);
 
-		// Print redirections
-		redir = head->redirections;
-		if (!redir)
-			printf("no redirections\n");
-		while (redir)
-		{
-			if (redir->type == T_REDIRECT_IN)
-				printf("input redirection:    < '%s'\n", redir->file);
-			else if (redir->type == T_REDIRECT_OUT)
-				printf("output redirection:   > '%s'\n", redir->file);
-			else if (redir->type == T_APPEND)
-				printf("append redirection:  >> '%s'\n", redir->file);
-			else if (redir->type == T_HEREDOC)
-			{
-				printf("heredoc redirection: << '%s'\n", redir->file);
-				//if (redir->heredoc_delim)
-				//	printf("  heredoc delimiter:  \"%s\"\n", redir->heredoc_delim);
-			}
-			else
-				printf("unknown redirection type (%d): '%s'\n", redir->type, redir->file);
-			redir = redir->next;
-		}
+        // Print argv array and corresponding quote_type array
+        if (!head->argv)
+        {
+            printf("  argv: (null)\n");
+        }
+        else
+        {
+            printf("  argv:\n");
+            for (int i = 0; head->argv[i] != NULL; i++)
+            {
+                printf("    argv[%d]: '%s'", i, head->argv[i]);
+                if (head->quote_type)
+                {
+                    int q = head->quote_type[i];
+                    if (q == 0)      printf(" (quote=NONE)");
+                    else if (q == 1) printf(" (quote=SINGLE_QUOTE)");
+                    else if (q == 2) printf(" (quote=DOUBLE_QUOTE)");
+                    else             printf(" (quote=UNKNOWN %d)", q);
+                }
+                printf("\n");
+            }
+        }
 
-		head = head->next;
-	}
+        // Print redirections
+        if (!head->redirections)
+        {
+            printf("  redirections: (none)\n");
+        }
+        else
+        {
+            printf("  redirections:\n");
+            t_redir *r = head->redirections;
+            int r_i = 0;
+            while (r)
+            {
+                printf("    redir[%d]: ", r_i++);
+                if (r->type == T_REDIRECT_IN)       printf("type=T_REDIRECT_IN (2), ");
+                else if (r->type == T_REDIRECT_OUT) printf("type=T_REDIRECT_OUT (3), ");
+                else if (r->type == T_APPEND)        printf("type=T_APPEND (4), ");
+                else if (r->type == T_HEREDOC)       printf("type=T_HEREDOC (5), ");
+                else                                printf("type=UNKNOWN (%d), ", r->type);
+
+                printf("file='%s'", r->file ? r->file : "(null)");
+                if (r->type == T_HEREDOC)
+                    printf(", heredoc_delim='%s'", r->heredoc_delim ? r->heredoc_delim : "(null)");
+
+                printf("\n");
+                r = r->next;
+            }
+        }
+
+        head = head->next;
+    }
 }
 
 
-int main(void)
+int main(int argc, char **argv, char **envp)
 {
     t_token *tokens;
     t_cmd   *cmds;
     int     i = 0;
+	t_env		*env_list;
+	t_exec_path	exec_cmd;
 
+	(void)argc;
+	(void)argv;
+     
+	ft_memset(&exec_cmd, 0, sizeof(exec_cmd));
+	env_list = env_list_init(envp);
+	if (!env_list)
+	{
+		ft_putstr_fd("Error: env list initialized failed\n", 2);
+		exit(EXIT_FAILURE);
+	}
+	exec_cmd.envp = env_list_to_envp(env_list);
+	if (!exec_cmd.envp)
+	{
+		free_env_list(env_list);
+		ft_putstr_fd("Error: env list initialized failed\n", 2);
+		exit(EXIT_FAILURE);
+	}
     while (test_lines[i])
     {
+        tokens = NULL;
+        cmds = NULL;
         printf("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
         printf("Test %d: %s\n", i + 1, test_lines[i]);
-        // if (setjmp(g_jmpbuf) != 0)
-        // {
-        //     printf("cmd empty\n");
-        //     i++;
-        //     //continue;
-        // }
         tokens = get_token_list(test_lines[i]);
-        printf("🧱 Tokens:\n");
         if (!tokens)
-              printf("tokens empty\n");
+              printf("KOOOOOOOOO build tokens failure\n");
         else
+        {
+            printf("🧱 Tokens:\n");
             print_token_list(tokens);
+        } 
         // show_real_bash_tokens(test_lines[i]);
         printf("━━━━━━━━━━━━━━━━\n");
         cmds = build_command_list(tokens);
-        if (!cmds)
-            printf("cmd empty\n");
-        else
+        if(tokens)
+            free_token_list(tokens);
+        if (cmds)
         {
+            expand_all_cmds(cmds, exec_cmd.envp);
             printf("\n🔧 Commands:\n");
             print_cmd_list(cmds);
-            free_cmd_list(cmds);
         }
-        free_token_list(tokens);
+        else
+            printf("KOOOOOOOOO build cmd failure\n");
+        if (cmds)
+            free_cmd_list(cmds);
         i++;
+        g_exit_status = 0;
     }
+    free_t_exec_path(&exec_cmd);
+	free_env_list(env_list);
     return (0);
 }
 

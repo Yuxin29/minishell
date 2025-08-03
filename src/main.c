@@ -13,6 +13,9 @@ int	g_exit_status = 0;
 // 	(void)argc;
 // 	(void)argv;
 
+    // yuxin added
+    // rl_catch_signals = 0;   // forbidden readline default signalsm global variables from the readline.h
+	// setup_signals();      
 // 	ft_memset(&exec_cmd, 0, sizeof(exec_cmd));
 // 	env_list = env_list_init(envp);
 // 	if (!env_list)

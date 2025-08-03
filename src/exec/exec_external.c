@@ -8,6 +8,11 @@ void	execute_external_cmd(t_exec_path *cmd)
 	pid = fork();
 	if (pid == 0)
 	{
+		// yuxin added, recover the signal to default in child process. 
+		// can not use setup_signals, only in the main
+		// signal(SIGINT, SIG_DFL);
+		// signal(SIGQUIT, SIG_DFL);
+
 		if (check_and_apply_redirections(cmd->whole_cmd) == -1)
 			exit (EXIT_FAILURE); //once in fork, do not return, must exit
 		execve(cmd->cmd_path, cmd->whole_cmd->argv, cmd->envp);

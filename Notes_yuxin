@@ -273,20 +273,21 @@ typedef struct s_cmd
 - exev_builtin
 - main
 
-PARSING PART FIXED, not tested because can only print but not execute
+PARSING PART FIXED, print tests done but execute tests not none yet
 ------------------------------------------------------
 
 4.signals
 ./
-not done
+ADDED, but not tested with main and minishell yet
 ------------------------------------------------------
 
 5.echo $?
-DONE, in parsing, I did it as a normal $VAR
+DONE in parsing, I did it as a normal $VAR
+in exectation, I think we still need to update it after every cmd execution in the env
 ------------------------------------------------------
 
 6. possiblye 2 unfinished builtins from lin
-not done
+not done, Yuxin can probably look into it on TUesday eve or Wed.
 ------------------------------------------------------
 
 7. 
@@ -322,6 +323,8 @@ mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo $?$?"$"$?"$"
 00$0$
 mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo $?$?"$"$?$"$"
 00$0$
+Maybe, yuxin probaly can solve it in expander, becuase expander is more precise now than before
+
 
 =================================MAX built in edge case tests ==========================
 c2r4p10% bash
@@ -365,3 +368,17 @@ c2r4p10% echo  $?
 44
 c2r4p10% 300-256
 zsh: command not found: 300-256
+
+=======================================About signal adn exec error in child===============
+（可选但推荐）：子进程出错时是否用 errno？
+
+你目前在 execve 失败时：
+
+perror("execve");
+exit(127);
+
+这是合理的，因为：
+
+    127 是标准 Unix 规定的 “command not found or not executable” 返回值。
+
+    用 errno 更复杂，只适合你要分类处理错误原因的情况，否则没必要。

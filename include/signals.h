@@ -14,5 +14,6 @@ struct sigaction
 };*/
 
 void	setup_signals(void);
+void	handle_sigint(int sig);
 
 #endif

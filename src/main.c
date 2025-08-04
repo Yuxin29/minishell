@@ -106,6 +106,9 @@ int main(int argc, char **argv, char **envp)
 				}	
 			}
 			//yuxin testing__________________________________
+			
+			//yuxin added: expand variables added
+			expand_all_cmds(exec_cmd.whole_cmd, exec_cmd.envp);
 
 			//check < infile
 			if (!exec_cmd.whole_cmd->argv || !exec_cmd.whole_cmd->argv[0])
@@ -125,6 +128,7 @@ int main(int argc, char **argv, char **envp)
 				free_t_exec_path(&exec_cmd);
 				continue;
 			}
+
 			//if bulitin, no need to find cmd_path, just execute(need to deal with other things in it)
 			if (is_builtin(exec_cmd.whole_cmd->argv[0]))
 			{

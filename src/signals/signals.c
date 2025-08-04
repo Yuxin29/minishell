@@ -13,7 +13,7 @@
 // hand coded in the exec child precess, eg when the cmd is sleep20
 void	setup_signals(void)
 {
-	signal(SIGINT, SIG_IGN); //If my process receives a SIGINT (Ctrl-C), just ignore it (SIG_IGN = ignore)
+	signal(SIGINT, handle_sigint); //If my process receives a SIGINT (Ctrl-C), just ignore it (SIG_IGN = ignore)
 	signal(SIGQUIT, SIG_IGN); //ignore SIGQUIT (usually triggered by Ctrl-\), so Ctrl-\ won’t kill my shell
 }
 

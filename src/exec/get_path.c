@@ -1,19 +1,30 @@
 #include "minishell.h"
 
-static char	*find_path_in_envp(char **envp)
-{
-	char	*path_value;
+// static char	*find_path_in_envp(char **envp)
+// {
+// 	char	*path_value;
 
-	if(!envp)
-		return (NULL);
-	while(*envp) //get path
+// 	if(!envp)
+// 		return (NULL);
+// 	while(*envp) //get path
+// 	{
+// 		if (ft_strncmp(*envp, "PATH=", 5) == 0) //
+// 		{
+// 			path_value = *envp + 5;
+// 			return (path_value);
+// 		}
+// 		envp++;
+// 	}
+// 	return (NULL);
+// }
+
+static char	*get_env(t_env *env, char *key)
+{
+	while (env)
 	{
-		if (ft_strncmp(*envp, "PATH=", 5) == 0) //
-		{
-			path_value = *envp + 5;
-			return (path_value);
-		}
-		envp++;
+		if (ft_strcmp(env->key, key) == 0)
+			return (env->value);
+		env = env->next;
 	}
 	return (NULL);
 }
@@ -41,7 +52,7 @@ static char	*match_cmd_in_path(char **paths, char *cmd)
 	}
 	return (NULL);
 }
-char	*get_cmd_path(char *cmd, char **envp)
+char	*get_cmd_path(char *cmd, t_env *env_list)
 {
 	char	**paths;
 	char	*path_value;
@@ -54,7 +65,8 @@ char	*get_cmd_path(char *cmd, char **envp)
 		else
 			return (NULL);
 	}
-	path_value = find_path_in_envp(envp); //find "PATH=""
+	//path_value = find_path_in_envp(envp); //find "PATH=""
+	path_value = get_env(env_list, "PATH");
 	if(!path_value)
 		return (NULL);
 	paths = ft_split(path_value, ':'); //split directory

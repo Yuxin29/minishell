@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-void	execute_external_cmd(t_exec_path *cmd)
+void	execute_single_cmd(t_exec_path *cmd, t_env *env_list)
 {
 	pid_t	pid;
 	int		status;
@@ -10,11 +10,12 @@ void	execute_external_cmd(t_exec_path *cmd)
 	{
 		if (check_and_apply_redirections(cmd->whole_cmd) == -1)
 			exit (EXIT_FAILURE); //once in fork, do not return, must exit
+		cmd->cmd_path = get_cmd_path(cmd->whole_cmd->argv[0], env_list);
 		execve(cmd->cmd_path, cmd->whole_cmd->argv, cmd->envp);
 		perror("execve");
-		//??free everything before exit(or close??)
-		if (errno == EACCES) //should i use errno? if it's because of permission denied， EACCEA means error:access
-			exit(126);
+		//free_t_exec_path(cmd); //free in child??
+		if (errno == EACCES) //should i use errno?
+			exit(126); //permission denied， EACCEA means error:access
 		else
 			exit(127);
 	}

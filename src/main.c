@@ -159,9 +159,17 @@ int main(int argc, char **argv, char **envp)
 				exec_cmd.cmd_path = get_cmd_path(exec_cmd.whole_cmd->argv[0], exec_cmd.envp);
 				if (!exec_cmd.cmd_path)
 				{
-					ft_putstr_fd(exec_cmd.whole_cmd->argv[0], 2);
-					ft_putstr_fd(": command not found\n", 2);
-					g_exit_status = 127;
+					if (!ft_strchr(exec_cmd.whole_cmd->argv[0], '/'))
+					{
+						ft_putstr_fd(exec_cmd.whole_cmd->argv[0], 2);
+						ft_putstr_fd(": command not found\n", 2);
+						g_exit_status = 127;
+					}
+					else
+					{
+						perror(exec_cmd.whole_cmd->argv[0]); //print no such file or dir
+						g_exit_status = 127;
+					}
 					free_t_exec_path(&exec_cmd);
 					continue;
 				}
@@ -170,7 +178,6 @@ int main(int argc, char **argv, char **envp)
 				continue;
 			}
 		}
-		//free_t_exec_path(&exec_cmd);
 		rl_clear_history();
 	}
 	free_env_list(env_list);

@@ -251,40 +251,7 @@ typedef struct s_cmd
 	t_redir            *redirections;  // <-- list of redirections
 	struct s_cmd    *next;
 }	t_cmd;
------------------------
 
-void	apply_redirections(t_redir_info *redir)
-{
-	int	fd;
-
-	while (redir)
-	{
-		if (redir->type == REDIR_IN)
-		{
-			fd = open(redir->filename, O_RDONLY);
-			if (fd < 0)
-				exit_with_error("infile open fail");
-			dup2(fd, STDIN_FILENO);
-			close(fd);
-		}
-		else if (redir->type == REDIR_OUT || redir->type == REDIR_APPEND)
-		{
-			int flags = O_WRONLY | O_CREAT |
-				((redir->type == REDIR_APPEND) ? O_APPEND : O_TRUNC);
-			fd = open(redir->filename, flags, 0644);
-			if (fd < 0)
-				exit_with_error("outfile open fail");
-
-			if (redir->next == NULL ||
-				!(redir->next->type == REDIR_OUT || redir->next->type == REDIR_APPEND))
-			{
-				dup2(fd, STDOUT_FILENO);
-			}
-			close(fd);
-		}
-		redir = redir->next;
-	}
-}
 --------------
 modify return msg in get_path(use perror to print first)
 ---------------

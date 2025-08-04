@@ -62,7 +62,7 @@ int	check_and_apply_redirections(t_cmd *cmd)
 	cur = cmd->redirections;
 	while (cur)
 	{
-		if (cur->type == 2)
+		if (cur->type == 2 || cur->type == 5)
 		{
 			if (apply_infile(cmd) < 0)
 				return (-1);

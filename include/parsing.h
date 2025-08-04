@@ -47,17 +47,18 @@ typedef struct      s_token
 typedef struct s_redir
 {
 	char			*file;
-	int				type; // T_REDIRECT_IN 2, T_REDIRECT_OUT 3, T_APPEND 4, T_HEREDOC 5
-	char			*delimiter;  // only for heredoc
+	int				type; // T_REDIRECT_IN, T_REDIRECT_OUT, T_APPEND, T_HEREDOC
+    char			*heredoc_delim;
 	struct s_redir	*next;
-}	t_redir;
+}					t_redir;
 
 typedef struct s_cmd
 {
 	char			**argv;
+	int				*quote_type; //inherete from t_token: 0: no quote; 1: single quote; 2: double quote
 	t_redir			*redirections;  // <-- list of redirections
 	struct s_cmd	*next;
-}	t_cmd;
+} t_cmd;
 
 // lex.c
 // get raw_line with readline / getnextline, and the put them to t_token

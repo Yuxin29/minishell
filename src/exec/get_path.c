@@ -62,6 +62,6 @@ char	*get_cmd_path(char *cmd, char **envp)
 		return (NULL);
 	cmd_path = match_cmd_in_path(paths,cmd); //strjoin /+cmd, check by access
 	ft_free_arr(paths);
-	return (cmd_path); //do i need return ,becuse i've save it in exec_cmd
+	return (cmd_path);
 }
 

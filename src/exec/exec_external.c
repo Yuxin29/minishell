@@ -12,8 +12,11 @@ void	execute_external_cmd(t_exec_path *cmd)
 			exit (EXIT_FAILURE); //once in fork, do not return, must exit
 		execve(cmd->cmd_path, cmd->whole_cmd->argv, cmd->envp);
 		perror("execve");
-		//!!free everything before exit(or close??)
-		 exit(127); //should i use errno?
+		//??free everything before exit(or close??)
+		if (errno == EACCES) //should i use errno? if it's because of permission denied， EACCEA means error:access
+			exit(126);
+		else
+			exit(127);
 	}
 	else if (pid > 0)
 	{

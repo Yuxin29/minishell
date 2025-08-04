@@ -52,9 +52,17 @@ int main(int argc, char **argv, char **envp)
 			if (!token_list)
 			{
 				ft_free_arr(exec_cmd.envp);
-				ft_putstr_fd("Error: get token list failed\n", 2);
-				g_exit_status = 258; // syntax error
-				continue;
+				if (g_exit_status == 2)
+				{
+					ft_putstr_fd("Error: get token list failed from syntax error\n", 2);
+					continue;
+				}
+				else
+				{
+					free_env_list(env_list);
+					ft_putstr_fd("Error: get token list failed from memory failure\n", 2);
+					exit(EXIT_FAILURE);
+				}	
 			}
 			//yuxin testing__________________________________
 
@@ -80,10 +88,18 @@ int main(int argc, char **argv, char **envp)
 			if (!exec_cmd.whole_cmd)
 			{
 				ft_free_arr(exec_cmd.envp);
-				ft_putstr_fd("Error: build command list failed\n", 2);
-				//free_t_exec_path(&exec_cmd);
-				g_exit_status = 258; // or 2 depending on your convention
-				continue;
+				if (g_exit_status == 2)
+				{
+					ft_putstr_fd("Error: get command list failed from syntax error\n", 2);
+					continue;
+				}	
+				else
+				{
+					free_env_list(env_list);
+					free_t_exec_path(&exec_cmd);
+					ft_putstr_fd("Error: build command list failed from memory failure\n", 2);
+					exit(EXIT_FAILURE);
+				}	
 			}
 			//yuxin testing__________________________________
 

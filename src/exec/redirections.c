@@ -1,8 +1,8 @@
 #include "minishell.h"
 
-//redirections.c
-//after parsing, we got already cmd list.
-//we check here if there are redirections symbles here in each cmd node.
+// redirections.c
+// after parsing, we got already cmd list.
+// we check here if there are redirections symbles here in each cmd node.
 static int	apply_infile(t_redir *redir)
 {
 	int	fd;
@@ -64,16 +64,16 @@ int	check_and_apply_redirections(t_cmd *cmd)
 	{
 		if (cur->type == 2 || cur->type == 5)
 		{
-			if (apply_infile(cmd) < 0)
+			if (apply_infile(cur) < 0)
 				return (-1);
 		}
 		else if (cur->type == 3 || cur->type == 4)
 		{
 			if (cur == last)
-				is_last == 1;
+				is_last = 1;
 			else
-				is_last == 0;
-			if (apply_outfile(cmd, is_last) < 0)
+				is_last = 0;
+			if (apply_outfile(cur, is_last) < 0)
 				return (-1);
 		}
 		cur = cur->next;
@@ -122,6 +122,5 @@ char	*creat_heredoc_file(char *delim)
 	}
 	close(fd);
 	return (tmp_file);
-	// return tmpfile, in token, check if t_type==5, then cmd_list->infile== tmp_file, then do redirections
+	// return tmpfile, in parsing, check if t_type==5, then cmd_list->infile== tmp_file, then do redirections
 }
-

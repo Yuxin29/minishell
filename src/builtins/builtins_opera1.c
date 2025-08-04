@@ -7,7 +7,7 @@ int	ft_echo(char **argv)
 
 	flag = 0;
 	i = 1;
-	if (argv[i] && ft_strcmp(argv[1], "-n") == 0)
+	if (argv[i] && ft_strncmp(argv[1], "-n", 2) == 0)
 	{
 		flag = 1; //echo -n world
 		i++;

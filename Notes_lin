@@ -203,7 +203,7 @@ User input validation errors
 !!!!!!!! should fix 0730;
 1\ also check in lex and parce, can not exit directly, otherwise there is no chance to free the thing we've already malloced. (check_strndup(NULL, cmd, tokens) in parsing)
 3\ same in execute, do not exit directly(except in child process)
-4\ should not exit if the user types a non-existent command like cati Makefile, They only exit if the user types exit, sends an EOF (Ctrl+D), or if there is a critical internal error. so shoul use globle var
+
 5\in this case, continue or exit??
 			exec_cmd.whole_cmd = build_command_list(token_list);
 			free_token_list(token_list);
@@ -255,17 +255,12 @@ typedef struct s_cmd
 --------------
 modify return msg in get_path(use perror to print first)
 ---------------
-	if (tokens->t_type == 5)
-	{
-		if (cmd->infile)
-			free(cmd->infile);
-		if (cmd->heredoc_delim)
-			free(cmd->heredoc_delim);
-		cmd->heredoc_delim = ft_strdup(next->str);
-		if (!cmd->heredoc_delim)
-			return (NULL);
-		tmpfile = creat_heredoc_file(cmd->heredoc_delim);
-		if (!tmpfile)
-			return (NULL);
-		cmd->infile = tmpfile;
-	}
+need fix:
+1\
+lin@EricdeMacBook-Pro minishell % ./minishell
+minishell$ echo "hello
+minishell: syntax error: unclosed quotes
+Error: get token list failed
+2\ lin changed parsing, should refactor
+3\ don't know how to use expand all cmds
+

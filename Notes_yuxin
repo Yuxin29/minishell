@@ -182,7 +182,7 @@ Input                   Expected Output
 "$UNDEFINED"	        ""
 "Mix$VAR1and$VAR2"	    "Mixval1andval2"
 
-=================================weird testing case=====================================================
+=================================weird testing case======SOLVED=========================================
 //about quotes and #USER
 echo "yuxin $USER '$USER' "user" kk,"
 echo "hello "yuxin" wi"
@@ -199,47 +199,186 @@ echo$USER           bash: echoyuwu: command not found
 cat<Makefile        bash: solid, same as cat < Makefile
 
 =================================to tell lin on Thursday=====================================================
-//empty string executions 
-mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ ./minishell
+1.empty string executions 
 minishell$ ""
-execve: Permission denied
-minishell$ ^C
-mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ ""
-Command '' not found, but can be installed with:
+Command '' not found,
+solved
 
-//I have the wrong expanding time
-//need to add this: char	*expand_heredoc_line(char *line, char **envp)
-mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo << $USER
+2. first redirections and then actuall command is valid in bash
+minishell$ > out.txt echo hello
+solved
+
+3. bash allows empty command and redirections and outfile
+minishell$ < infile
+minishell: infile: No such file or directory
+solved
+
+=================================to be solved on Friday, week 2================================================
+1. expand everything but not heredoc input
+minishell$ echo << $USER
 > skfd
 > mikko
 > $USER
+FIXED: now expand after parsing in cmd list, nor normed, too many variables in str operations
+------------------------------------------------------
 
-mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ cat $USER
-cat: mikko: No such file or directory
-mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo $USER
-mikko
-mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ ./minishell 
-minishell$  echo << $USER
-minishell: heredoc> asd
-asd
-minishell: heredoc> mikko
+2. "<" and '<' should be solid input argv, but < is certainly redirect int
+echo "<"<<"<"
+FIXED: in get token type, as long as there are quotes, it is a word token
+minishell$ echo "<"
+<
+minishell$ echo "<"<<"<"
+minishell herecod> asd
+minishell herecod> <
+<
+minishell$ echo "<<"<<"<<"
+minishell herecod> asd
+minishell herecod> <<
+<<
+minishell$ echo '>>'
+>>
+------------------------------------------------------
 
-//first redirections and then actuall command is valid in bash
-mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ > out.txt echo hello
-mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo $?
-0
-mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ ./minishell
-minishell$ > out.txt echo hello
-hello
+3. continously redirections
+eg:
+echo > out1 > out2 > out3
+cat < in1 < in2 < in3
+cat < file1 > file2 < file1: does this make sense: should we handle it?
+---> YES, direct in and direct out in a bash cmd is solid and we need to handle it
+---> FOR EXAMPLE: cat < in.txt > out.txtThis reads from in.txt and writes to out.txt.
+                  grep hello < file.txt > result.txt, grep hello from infile and put it to a outfile
+WAITING: BIG BIG BIG ONE
+---> suggested restructured struc
+typedef struct s_redir {
+	char *file;
+	int type; // T_REDIRECT_IN, T_REDIRECT_OUT, T_APPEND, T_HEREDOC
+	struct s_redir *next;
+} t_redir;
 
-// bash allows empty command and redirections and outfile
-mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ ./minishell
-minishell$ < infile
-Error: build command list failed test
-mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ < infile
-bash: infile: No such file or directory
+typedef struct s_cmd
+{
+	char **argv;
+	t_redir *redirections;  // <-- list of redirections
+	struct s_cmd *next;
+} t_cmd;
+
+---> Why this:
+- In real Bash, even though only the last redirection affects where the command reads/writes
+- all redirections are processed in order, and errors can occur during any redirection (not just the last).
+- in one cmd, redirectin, redirectout, append and heredoc can appear at the same time for multiple times
+---> what needs to be rewritten:
+- parser
+- redirections
+- exevc_external
+- exev_builtin
+- main
+
+PARSING PART FIXED, print tests done but execute tests not none yet
+------------------------------------------------------
+
+4.signals
+./
+ADDED, but not tested with main and minishell yet
+------------------------------------------------------
+
+5.echo $?
+DONE in parsing, I did it as a normal $VAR
+in exectation, I think we still need to update it after every cmd execution in the env
+------------------------------------------------------
+
+6. possiblye 2 unfinished builtins from lin
+not done, Yuxin can probably look into it on TUesday eve or Wed.
+------------------------------------------------------
+
+7. 
+-    globle status setting in parsing phase,
+-    pre-lexing exit and free exex_envp
+-    no exit, but try to return null up to the main
+FIXED, not existing now, save status to 2 in case of syntax error
+------------------------------------------------------
+
+n. maybe, can try to solve
+echo "$"$"$"$"$"
+zsh: $$$$$
+bash: $$$
+minishell: $$$$$
+GIVEN UP:
+mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo $
+$
+mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo "$"$
+$$
+mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo "$"$"$"
+$$
+mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo "$" $ "$"
+$ $ $
+mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo "$"$ "$"
+$$ $
+mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo "$"$$"$"
+$217485$
+mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo $? $$
+0 217485
+mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo $?$$
+0217485
+mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo $?$?"$"$?"$"
+00$0$
+mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo $?$?"$"$?$"$"
+00$0$
+Maybe, yuxin probaly can solve it in expander, becuase expander is more precise now than before
 
 
+=================================MAX built in edge case tests ==========================
+c2r4p10% bash
+=================================echo -n 234 ==========================
+yuwu@c2r4p10:~$ echo -nnnnnnn 123
+123yuwu@c2r4p10:~$ echo -nnnnnnn -nnnnn -n -nnnn 123
+123yuwu@c2r4p10:~$ echo -nnnnnnn -nnnnn -n -nnnn -n-n 123
+-n-n 123yuwu@c2r4p10:~$ pwd
+/home/yuwu
+yuwu@c2r4p10:~$ cd ..
+yuwu@c2r4p10:/home$ pwd
+/home
+yuwu@c2r4p10:/home$ pwd
+/home
+yuwu@c2r4p10:/home$ unset PWD
+yuwu@c2r4p10:/home$ pwd
+/home
+yuwu@c2r4p10:/home$ export
 
+==============================export nbrs="1 2 3" ==========================
+minishell$ export 77="1 2 3"
 
+============================== exit numeric argument required ==========================
+yuwu@c2r4p10:~$ exit 1 1
+exit
+bash: exit: too many arguments
+yuwu@c2r4p10:~$ exit a 1
+exit
+bash: exit: a: numeric argument required
+c2r4p10% bash
+yuwu@c2r4p10:~$ exit 1
+exit
+c2r4p10% bash
+yuwu@c2r4p10:~$ exit 1111111111111111111111111111111
+exit
+bash: exit: 1111111111111111111111111111111: numeric argument required
+c2r4p10% bash    
+yuwu@c2r4p10:~$ exit 300
+exit
+c2r4p10% echo  $?
+44
+c2r4p10% 300-256
+zsh: command not found: 300-256
 
+=======================================About signal adn exec error in child===============
+（可选但推荐）：子进程出错时是否用 errno？
+
+你目前在 execve 失败时：
+
+perror("execve");
+exit(127);
+
+这是合理的，因为：
+
+    127 是标准 Unix 规定的 “command not found or not executable” 返回值。
+
+    用 errno 更复杂，只适合你要分类处理错误原因的情况，否则没必要。

@@ -1,13 +1,15 @@
 #include "minishell.h"
 
+//I am not sure we need to exit here, maybe not
+//where is this used, is it used ever
 void	error_and_return(const char *msg, t_exec_path *cmd_and_path)
 {
 	perror(msg);
 	free_t_exec_path(cmd_and_path);
 	exit(EXIT_FAILURE);
 }
-//in this function, i think we should free everything(check if line\token_list\cmd_list) instead of just t_exec_path
 
+//lin used in main
 void	free_t_exec_path(t_exec_path *cmd_and_path)
 {
 	if (cmd_and_path)

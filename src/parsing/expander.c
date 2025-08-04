@@ -2,126 +2,127 @@
 #include "minishell.h"
 #include "exec.h"
 
-static char	*expand_variables(char *var_name, char **envp)
-{
-	int		j;
-	char	**split;
-	char	*new_value;
+extern int	g_exit_status;
 
-	j = 0;
-	while (envp[j])
-	{
-		split = ft_split(envp[j], '=');//null chck
-		if (ft_strncmp(split[0], var_name, ft_strlen(split[0])) == 0)
-		{
-			new_value = ft_strdup(split[1]);
-			ft_free_arr(split);
-			return (new_value);
-		}
-		j++;
-		ft_free_arr(split);
-	}
-	return (NULL);
-}
-
-static char	*change_value_part(char *str, int i, char *value)
+// a bash examlpe of variable expandable in a redirection, and this variable is $?
+// ls > output_$?.txt
+// cat output_0.txt
+char	*replace_variable_in_str(char *input, int pos, char **envp)
 {
-	char	*before;
-	char	*after;
-	char	*temp;
-	char	*result;
+	int		start;
 	int		var_len;
+	char	*value;
+	char	*prefix;
+	char	*suffix;
 
-	var_len = 0;
-	while (str[i + var_len]
-		&& ((ft_isalnum(str[i + var_len]) || str[i + var_len] == '_')))
-		var_len++;
-	before = ft_substr(str, 0, i - 1); // everything before the $
-	after = ft_strdup(str + i + var_len); // //null check to do
-	temp = ft_strjoin(before, value); // //null check to do
-	result = ft_strjoin(temp, after); // //null check to do
-	free (temp);
-	free (before);
-	free (after);
-	return (result);
+	start = pos + 1;
+	var_len = 1;
+	if (input[pos + 1] == '?')
+		value = ft_itoa(g_exit_status);
+	else
+	{
+		var_len = 0;
+		while (input[start + var_len] && (ft_isalnum(input[start + var_len]) || input[start + var_len] == '_'))
+			var_len++;
+		value = get_env_value_from_substr(input, start, var_len, envp);
+		if (!value)
+			return (free_malloc_fail_null(input));
+	}
+	prefix = ft_substr(input, 0, pos);
+	suffix = ft_strdup(input + start + var_len);
+	free(input);
+	if (!prefix)
+		return (free_malloc_fail_null(value));
+	if (!suffix)
+	{
+		free(prefix);
+		return (free_malloc_fail_null(value));
+	}
+	return (join_three_and_free(prefix, value, suffix));
 }
 
-/*
-typedef struct s_exec_path
-{
-	t_cmd	*whole_cmd;
-	char	*cmd_path;
-	char	**envp;
-}	t_exec_path;
-exec_cmd.envp
-*/
-//call this after getting the tokens
-//go through all tokens and check all word without single quotes
-//Here I already got the updated, newest array of strings in the exec_cmd.envp
-void	expand_all_tokens(t_token *token_list, t_exec_path exec_cmd)
+char	*expand_variables_in_str(char *input, char **envp)
 {
 	int		i;
-	char	*value;
-	char	*var_name;
-	char	*new_str;
 
-	while (token_list)
+	i = 0;
+	while (input[i])
 	{
-		if (token_list->t_type == 0 && token_list->quote_type != 1)
+		if (input[i] == '$' && input[i + 1] && ((input[i + 1] == '?'
+			|| ft_isalpha(input[i + 1]) || input[i + 1] == '_')))
 		{
+			input = replace_variable_in_str(input, i, envp);
+			if (!input)
+				return (NULL);
 			i = 0;
-			while (token_list->str[i])
-			{
-				if (token_list->str[i] == '$') //find it
-				{
-					i++;
-					var_name = ft_substr(token_list->str, i, ft_strlen(&token_list->str[i]));
-					value = expand_variables(var_name, exec_cmd.envp);
-					if (value)
-					{
-						new_str = change_value_part(token_list->str, i, value);
-						free(token_list->str);
-						token_list->str = new_str;
-						free(value);
-					}
-				}
-				else
-                    i++;
-			}
 		}
-		token_list = token_list->next;
-	}
-}
-
-/*
-// Expands $VAR inside a full line if needed
-char	*expand_heredoc_line(char *line, char **envp)
-{
-	int		i = 0;
-	char	*value;
-	char	*var_name;
-	char	*new_str;
-
-	while (line[i])
-	{
-		if (line[i] == '$')
-		{
-			i++;
-			var_name = ft_substr(line, i, ft_strlen(&line[i]));
-			value = expand_variables(var_name, envp);
-			free(var_name);
-			if (value)
-			{
-				new_str = change_value_part(line, i, value);
-				free(line);
-				line = new_str;
-				free(value);
-				i = 0;
-			}
-		}
+		else if (input[i + 1] == '\0' || (!ft_isalnum(input[i + 1]) && input[i + 1] != '_'))
+			i++; 
 		else
 			i++;
 	}
-	return (line);
-}*/
+	return (input);
+}
 
+void	expand_redirection(t_cmd *cmd_list, char **envp)
+{
+	t_redir	*redir;
+	char	*value;
+
+	redir = cmd_list->redirections;
+	while (redir)
+	{
+		if (redir->type == 5)
+		{
+			redir = redir->next;
+			continue ;
+		}
+		if (redir->file && ft_strchr(redir->file, '$'))
+		{
+			value = expand_variables_in_str(redir->file, envp);
+			if (value)
+			{
+				free(redir->file);
+				redir->file = value;
+			}
+		}
+		redir = redir->next;
+	}
+}
+
+void	expand_argv(char **argv, int *quote_type, char **envp)
+{
+	int		i;
+	char	*value;
+
+	i = 0;
+	while (argv && argv[i])
+	{
+		if  ((!quote_type || quote_type[i] != 1) && ft_strchr(argv[i], '$'))
+		{
+			value = expand_variables_in_str(argv[i], envp);
+			if (value)
+			{
+				free(argv[i]);
+				argv[i] = value;
+			}
+		}
+		i++;
+	}
+}
+
+//call this after getting the cmd list
+//go through all cmd and check all word without single quotes, 
+// not expanding heredocs
+//after this Here I already got the updated cmd list
+void	expand_all_cmds(t_cmd *cmd_list, char **envp)
+{
+	while (cmd_list)
+	{
+		if (cmd_list->argv)
+			expand_argv(cmd_list->argv, cmd_list->quote_type, envp);
+		if (cmd_list->redirections)
+			expand_redirection(cmd_list, envp);
+		cmd_list = cmd_list->next;
+	}
+}

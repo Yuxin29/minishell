@@ -39,13 +39,25 @@ int main(int argc, char **argv, char **envp)
 			//convert line token list
 			token_list = get_token_list(line);
 			free(line);
+
+			// if (!token_list)
+			// {
+			// 	free_env_list(env_list);
+			// 	ft_free_arr(exec_cmd.envp);
+			// 	ft_putstr_fd("Error: get token list failed\n", 2);
+			// 	exit(EXIT_FAILURE);
+			// }
+
+			//yuxin testing__________________________________
 			if (!token_list)
 			{
-				free_env_list(env_list);
 				ft_free_arr(exec_cmd.envp);
 				ft_putstr_fd("Error: get token list failed\n", 2);
-				exit(EXIT_FAILURE);
+				g_exit_status = 258; // syntax error
+				continue;
 			}
+			//yuxin testing__________________________________
+
             //print tokens;
             //print_token_list(token_list);
 
@@ -54,14 +66,27 @@ int main(int argc, char **argv, char **envp)
 			free_token_list(token_list);
             //print cmd
             //print_cmd_list(exec_cmd.whole_cmd);
+
+			// if (!exec_cmd.whole_cmd)
+			// {
+			// 	free_env_list(env_list);
+			// 	ft_free_arr(exec_cmd.envp);
+			// 	ft_putstr_fd("Error: build command list failed\n", 2);
+            //     free_t_exec_path(&exec_cmd);
+			// 	exit(EXIT_FAILURE);
+			// }
+
+			//yuxin testing__________________________________
 			if (!exec_cmd.whole_cmd)
 			{
-				free_env_list(env_list);
 				ft_free_arr(exec_cmd.envp);
 				ft_putstr_fd("Error: build command list failed\n", 2);
-                free_t_exec_path(&exec_cmd);
-				exit(EXIT_FAILURE);
+				//free_t_exec_path(&exec_cmd);
+				g_exit_status = 258; // or 2 depending on your convention
+				continue;
 			}
+			//yuxin testing__________________________________
+
 			//check < infile
 			if (!exec_cmd.whole_cmd->argv || !exec_cmd.whole_cmd->argv[0])
 			{

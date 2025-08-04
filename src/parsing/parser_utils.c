@@ -66,17 +66,23 @@ int	count_argv(t_token *start)
 void	free_redirections(t_cmd *cmd_head)
 {
 	t_redir	*tmp;
+	t_redir *redir;
 
-	while (cmd_head->redirections)
+	if (!cmd_head || !cmd_head->redirections)
+		return ;
+
+	redir = cmd_head->redirections;
+	while (redir)
 	{
-		tmp = cmd_head->redirections->next;
-		if (cmd_head->redirections)
-			free(cmd_head->redirections->file);
-		if (cmd_head->redirections->heredoc_delim)
-			free (cmd_head->redirections->heredoc_delim);
-		free(cmd_head->redirections);
-		cmd_head->redirections = tmp;
+		tmp = redir->next;
+		if (redir->file)
+			free(redir->file);
+		if (redir->heredoc_delim)
+			free(redir->heredoc_delim);
+		free(redir);
+		redir = tmp;
 	}
+	cmd_head->redirections = NULL;
 }
 
 //free a linked list of t_cmd
@@ -89,12 +95,9 @@ void	free_cmd_list(t_cmd *cmd_head)
 	while (cmd_head)
 	{
 		tmp = cmd_head->next;
-		if (cmd_head->argv)
-			ft_free_arr(cmd_head->argv);
-		if (cmd_head->quote_type)
-			free(cmd_head->quote_type);
-		if (cmd_head->redirections)
-			free_redirections(cmd_head);
+		ft_free_arr(cmd_head->argv);
+		free(cmd_head->quote_type);
+		free_redirections(cmd_head);
 		free(cmd_head);
 		cmd_head = tmp;
 	}

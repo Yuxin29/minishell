@@ -227,33 +227,7 @@ lin@EricdeMacBook-Pro minishell % ./minishell
 minishell$ cat out > wc -l
 minishell: -l : command not found
 minishell$ ^D%
-11\  cat < in < out
-lin@EricdeMacBook-Pro minishell % cat < in < out
-zsh: no such file or directory: in
 
-lin@EricdeMacBook-Pro minishell % make
-lin@EricdeMacBook-Pro minishell % ./minishell
-minishell$ cat < in < out
-out: No such file or directory
-$
---------------------------------------
-
-typedef struct s_redir
-{
-	char            *file;
-	int                type; // T_REDIRECT_IN 2, T_REDIRECT_OUT 3, T_APPEND 4, T_HEREDOC 5
-	struct s_redir    *next;
-}	t_redir;
-
-typedef struct s_cmd
-{
-	char            **argv;
-	t_redir            *redirections;  // <-- list of redirections
-	struct s_cmd    *next;
-}	t_cmd;
-
---------------
-modify return msg in get_path(use perror to print first)
 ---------------
 need fix:
 1\
@@ -261,6 +235,10 @@ lin@EricdeMacBook-Pro minishell % ./minishell
 minishell$ echo "hello
 minishell: syntax error: unclosed quotes
 Error: get token list failed
+
 2\ lin changed parsing, should refactor
 3\ don't know how to use expand all cmds
-
+4\ if i delibrately embedded error in open heredoc file, i should press Ctrl+d twice to exit instead of exit directly, why??
+minishell$ cat << 1
+heredoc open failed: Bad address
+minishell$ ^D%

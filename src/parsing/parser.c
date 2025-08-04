@@ -68,7 +68,7 @@ t_token	*parse_redirections(t_cmd *cmd, t_token *tokens)
 
 	while (tokens && tokens->t_type != 1)
 	{
-		if (tokens->t_type >= 2 && tokens->t_type <= 4)
+		if (tokens->t_type >= 2 && tokens->t_type <= 5)
 		{
 			next = tokens->next;
 			if (!next || next->t_type != 0) //too defencive, probably not neccessary
@@ -76,49 +76,27 @@ t_token	*parse_redirections(t_cmd *cmd, t_token *tokens)
 			new_redir = malloc(sizeof(t_redir));
 			if (!new_redir)
 				return ((t_token *)free_malloc_fail_null(NULL));
-			new_redir->file = ft_strndup(next->str, ft_strlen(next->str));
-			if (!new_redir->file)
-			{
-				free(new_redir);
-				return ((t_token *)free_malloc_fail_null(NULL));
-			}
 			new_redir->type = tokens->t_type;
 			new_redir->next = NULL;
-			new_redir->heredoc_delim = NULL;
-			if (!cmd->redirections)
-				cmd->redirections = new_redir;
-			else
+			if (tokens->t_type == 5) // heredoc
 			{
-				last = cmd->redirections;
-				while (last->next)
-					last = last->next;
-				last->next = new_redir;
+				new_redir->heredoc_delim = ft_strndup(next->str, ft_strlen(next->str));
+				if (!new_redir->heredoc_delim)
+					return (free(new_redir), perror("malloc: "), NULL);
+				new_redir->file = creat_heredoc_file(new_redir->heredoc_delim);
+				if (!new_redir->file)
+					return (free(new_redir->heredoc_delim), free(new_redir), NULL);
 			}
-			tokens = next->next;
-		}
-		else if (tokens->t_type == 5)
-		{
-			next = tokens->next;
-			if (!next || next->t_type != 0) //too defencive, probably not neccessary
-				return (NULL);
-			new_redir = malloc(sizeof(t_redir));
-			if (!new_redir)
-				return ((t_token *)free_malloc_fail_null(NULL));
-			new_redir->heredoc_delim = ft_strndup(next->str, ft_strlen(next->str));
-			if (!new_redir->heredoc_delim)
+			else //2-4
 			{
-				free(new_redir);
-				return ((t_token *)free_malloc_fail_null(NULL));
+				new_redir->file = ft_strndup(next->str, ft_strlen(next->str));
+				if (!new_redir->file)
+				{
+					free(new_redir);
+					return ((t_token *)free_malloc_fail_null(NULL));
+				}
+				new_redir->heredoc_delim = NULL;
 			}
-			new_redir->file = creat_heredoc_file(new_redir->heredoc_delim);
-			if (!new_redir->file)
-			{
-				free(new_redir->heredoc_delim);
-				free(new_redir);
-				return ((t_token *)free_malloc_fail_null(NULL));
-			}
-			new_redir->type = tokens->t_type;
-			new_redir->next = NULL;
 			if (!cmd->redirections)
 				cmd->redirections = new_redir;
 			else

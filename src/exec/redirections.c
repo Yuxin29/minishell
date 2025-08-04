@@ -104,6 +104,8 @@ char	*creat_heredoc_file(char *delim)
 	char	*tmp_file;
 
 	tmp_file = get_tmp_filepath();
+	if (!tmp_file)
+		return (perror("malloc: "), NULL);
 	fd = open(tmp_file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if(fd < 0)
 		return (free(tmp_file), perror("heredoc open failed"), NULL);
@@ -122,5 +124,4 @@ char	*creat_heredoc_file(char *delim)
 	}
 	close(fd);
 	return (tmp_file);
-	// return tmpfile, in parsing, check if t_type==5, then cmd_list->infile== tmp_file, then do redirections
 }

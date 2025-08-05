@@ -5,6 +5,7 @@
 extern int g_exit_status;
 
 // if it is a word without quotes, it can not contain special character
+// with quotes, all chars are fine
 int	check_special_characters(t_token *token_head)
 {
 	if (token_head->t_type == 0 && token_head->quote_type == 0)
@@ -16,12 +17,14 @@ int	check_special_characters(t_token *token_head)
 	return (0);
 }
 
-//precheck before build cmd list
-// syntax check:
+// syntaxprecheck before build cmd list
 // can not start or end with a pipe
 // after redirections it can not be followed by pipe or redirectiosn
-// after pipe, it can not be followed by pipe or redirections
+// after pipe, it can not be followed by another pipe
 // at the end of the tokens, it can not be pipe or redirections
+// !!!!!!!!!!!!this one moved, need to reconsider
+// if (token_head->t_type == 1 && token_head->next && token_head->next->t_type > 1)
+// 	errmsg_set_status("minishell: syntax error near unexpected token `newline'");
 int	check_token_syntax(t_token *token_head)
 {
 	if (!token_head)
@@ -34,9 +37,7 @@ int	check_token_syntax(t_token *token_head)
 			errmsg_set_status("minishell: syntax error: special characters");
 		if (token_head->t_type >= 1 && token_head->next && token_head->next->t_type == 1)
 			errmsg_set_status("minishell: ssyntax error near unexpected token `|'");
-		if (token_head->t_type == 1 && token_head->next && token_head->next->t_type > 1)
-			errmsg_set_status("minishell: syntax error near unexpected token `newline'");
-		if (token_head->t_type >= 2 && token_head->next && token_head->next->t_type > 1)
+		if (token_head->t_type >= 2 && token_head->next && token_head->next->t_type >= 2)
 			errmsg_set_status("minishell: syntax error: near unexpected token redirections");
 		if (token_head->t_type == 1 && token_head->next == NULL)
 			errmsg_set_status("minishell: syntax error: near unexpected token `|'");
@@ -63,6 +64,7 @@ int	count_argv(t_token *start)
 	return (count);
 }
 
+//free the linked  redirection list within a cmd
 void	free_redirections(t_cmd *cmd_head)
 {
 	t_redir	*tmp;
@@ -85,7 +87,11 @@ void	free_redirections(t_cmd *cmd_head)
 	cmd_head->redirections = NULL;
 }
 
-//free a linked list of t_cmd
+//free a linked list of t_cmds
+// yuxins version, no need to check null before free somehow, just
+// ft_free_arr(cmd_head->argv);
+// free(cmd_head->quote_type);
+// free_redirections(cmd_head);
 void	free_cmd_list(t_cmd *cmd_head)
 {
 	t_cmd	*tmp;
@@ -95,10 +101,6 @@ void	free_cmd_list(t_cmd *cmd_head)
 	while (cmd_head)
 	{
 		tmp = cmd_head->next;
-		// yuxins version, no need to check null before free somehow
-		// ft_free_arr(cmd_head->argv);
-		// free(cmd_head->quote_type);
-		// free_redirections(cmd_head);
 		if (cmd_head->argv)
 			ft_free_arr(cmd_head->argv);
 		if (cmd_head->quote_type)

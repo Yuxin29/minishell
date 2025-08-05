@@ -4,7 +4,7 @@
 
 extern int	g_exit_status;
 
-// a bash examlpe of variable expandable in a redirection, and this variable is $?
+// examlpe of variable expandable in a redirection, and this variable is $?
 // ls > output_$?.txt
 // cat output_0.txt
 char	*replace_variable_in_str(char *input, int pos, char **envp)
@@ -22,7 +22,8 @@ char	*replace_variable_in_str(char *input, int pos, char **envp)
 	else
 	{
 		var_len = 0;
-		while (input[start + var_len] && (ft_isalnum(input[start + var_len]) || input[start + var_len] == '_'))
+		while (input[start + var_len] && (ft_isalnum(input[start + var_len])
+			|| input[start + var_len] == '_'))
 			var_len++;
 		value = get_env_value_from_substr(input, start, var_len, envp);
 		if (!value)
@@ -33,13 +34,12 @@ char	*replace_variable_in_str(char *input, int pos, char **envp)
 	if (!prefix)
 		return (free_malloc_fail_null(value));
 	if (!suffix)
-	{
-		free(prefix);
-		return (free_malloc_fail_null(value));
-	}
+		return (free(prefix), free_malloc_fail_null(value));
 	return (join_three_and_free(prefix, value, suffix));
 }
 
+// the 2 free (input); 
+//with it, it is still reachable, without it, it is definitly loss
 char	*expand_variables_in_str(char *input, char **envp)
 {
 	int		i;
@@ -53,16 +53,14 @@ char	*expand_variables_in_str(char *input, char **envp)
 		{
 			new_input = replace_variable_in_str(input, i, envp);
 			if (!new_input)
-			{
-				free (input); //with it, it is still reachable. //without it, it is definitly loss
-				return (NULL);
-			}
-			free (input); //with it, it is still reachable. //without it, it is definitly loss
+				return (free (input), NULL);
+			free (input);
 			input = new_input;
 			i = 0;
 		}
-		else if (input[i + 1] == '\0' || (!ft_isalnum(input[i + 1]) && input[i + 1] != '_'))
-			i++; 
+		else if (input[i + 1] == '\0'
+			|| (!ft_isalnum(input[i + 1]) && input[i + 1] != '_'))
+			i++;
 		else
 			i++;
 	}
@@ -103,7 +101,7 @@ void	expand_argv(char **argv, int *quote_type, char **envp)
 	i = 0;
 	while (argv && argv[i])
 	{
-		if  ((!quote_type || quote_type[i] != 1) && ft_strchr(argv[i], '$'))
+		if ((!quote_type || quote_type[i] != 1) && ft_strchr(argv[i], '$'))
 		{
 			value = expand_variables_in_str(argv[i], envp);
 			if (value && value != argv[i])

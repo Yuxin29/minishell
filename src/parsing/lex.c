@@ -50,7 +50,7 @@ t_token	*build_word_token(char *line, int *i)
 		else
 			part = get_unquoted_part(line, i);
 		if (!part)
-			return (NULL);//alreadu perrored
+			return (NULL);
 		temp = ft_strjoin_free(temp, part);
 		if (!temp)
 			return ((t_token *)free_malloc_fail_null(NULL));

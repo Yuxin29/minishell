@@ -1,7 +1,7 @@
 #include "parsing.h"
 #include "minishell.h"
 
-extern int g_exit_status;
+extern int	g_exit_status;
 
 //nothing to free in this whole files functions
 //precheck validity of the raw_line
@@ -80,7 +80,7 @@ void	free_token_list(t_token *token_head)
 }
 
 //non mem involved in this one
-void get_quote_type(t_token *token, char q)
+void	get_quote_type(t_token *token, char q)
 {
 	if (q == '\'')
 		token->quote_type = 1;
@@ -93,7 +93,7 @@ void get_quote_type(t_token *token, char q)
 //return null if fails, null checked when it is used
 char	*get_unquoted_part(char *s, int *i)
 {
-	int	start;
+	int		start;
 	char	*part;
 
 	start = *i;

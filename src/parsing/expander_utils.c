@@ -2,6 +2,8 @@
 #include "minishell.h"
 #include "exec.h"
 
+// return the value of a key from the envp
+// special case: split[1] == NULL (e.g. FOO= in envp).
 char	*get_env_value(char **envp, const char *key)
 {
 	int		j;
@@ -12,16 +14,21 @@ char	*get_env_value(char **envp, const char *key)
 	while (envp[j])
 	{
 		split = ft_split(envp[j], '=');
-		if (!split || !*split)
+		if (!split)
 			return (free_malloc_fail_null(NULL));
+		if (!*split)
+		{
+			ft_free_arr(split);
+			return (free_malloc_fail_null(NULL));
+		}
 		if (ft_strcmp(split[0], (char *)key) == 0)
 		{
 			if (split[1])
-                new_value = ft_strdup(split[1]);
-			else //split[1] == NULL (e.g. FOO= in envp).
-                new_value = ft_strdup("");
-                if (!new_value)
-			{	
+				new_value = ft_strdup(split[1]);
+			else
+				new_value = ft_strdup("");
+			if (!new_value)
+			{
 				ft_free_arr(split);
 				return (free_malloc_fail_null(NULL));
 			}
@@ -47,6 +54,9 @@ char	*get_env_value_from_substr(char *input, int start, int var_len, char **envp
 	return (value);
 }
 
+// a string operation utils.
+// used in expander to join prefix, replaced variable and suffix
+// free the sources within itself, still need to null check after using
 char	*join_three_and_free(char *s1, char *s2, char *s3)
 {
 	char	*temp;

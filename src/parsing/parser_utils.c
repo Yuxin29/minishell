@@ -1,8 +1,7 @@
-
 #include "parsing.h"
 #include "minishell.h"
 
-extern int g_exit_status;
+extern int	g_exit_status;
 
 // if it is a word without quotes, it can not contain special character
 // with quotes, all chars are fine
@@ -22,27 +21,24 @@ int	check_special_characters(t_token *token_head)
 // after redirections it can not be followed by pipe or redirectiosn
 // after pipe, it can not be followed by another pipe
 // at the end of the tokens, it can not be pipe or redirections
-// !!!!!!!!!!!!this one moved, need to reconsider
-// if (token_head->t_type == 1 && token_head->next && token_head->next->t_type > 1)
-// 	errmsg_set_status("minishell: syntax error near unexpected token `newline'");
 int	check_token_syntax(t_token *token_head)
 {
 	if (!token_head)
 		return (1);
 	if (token_head->t_type == 1)
-		errmsg_set_status("minishell: syntax error near unexpected token `|'");
+		errmsg_set_status(SYNTAX_ERR_PIPE);
 	while (token_head)
 	{
 		if (check_special_characters(token_head))
-			errmsg_set_status("minishell: syntax error: special characters");
+			errmsg_set_status(SYNTAX_ERR_SPECIAL_CHARS);
 		if (token_head->t_type >= 1 && token_head->next && token_head->next->t_type == 1)
-			errmsg_set_status("minishell: ssyntax error near unexpected token `|'");
+			errmsg_set_status(SYNTAX_ERR_PIPE);
 		if (token_head->t_type >= 2 && token_head->next && token_head->next->t_type >= 2)
-			errmsg_set_status("minishell: syntax error: near unexpected token redirections");
+			errmsg_set_status(SYNTAX_ERR_REDIR_DOUBLE);
 		if (token_head->t_type == 1 && token_head->next == NULL)
-			errmsg_set_status("minishell: syntax error: near unexpected token `|'");
+			errmsg_set_status(SYNTAX_ERR_PIPE);
 		if (token_head->t_type >= 2 && token_head->next == NULL)
-			errmsg_set_status("minishell: syntax error: missing filename or delimiter after redirection");
+			errmsg_set_status(SYNTAX_ERR_REDIR_FILE_MISSING);
 		token_head = token_head->next;
 	}
 	if (g_exit_status == 2)
@@ -68,11 +64,10 @@ int	count_argv(t_token *start)
 void	free_redirections(t_cmd *cmd_head)
 {
 	t_redir	*tmp;
-	t_redir *redir;
+	t_redir	*redir;
 
 	if (!cmd_head || !cmd_head->redirections)
 		return ;
-
 	redir = cmd_head->redirections;
 	while (redir)
 	{

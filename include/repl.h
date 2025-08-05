@@ -6,5 +6,4 @@
 
 void	repl_loop(void);
 
-
 #endif

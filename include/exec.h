@@ -12,7 +12,6 @@ typedef struct s_env t_env;
 typedef struct s_exec_path
 {
 	t_cmd	*whole_cmd; //whole cmd_list
-	char	*cmd_path; //eg. /bin/ls
 	char	**envp;  //the copy one
 }	t_exec_path;
 
@@ -25,8 +24,8 @@ void	run_builtin_with_redir(t_cmd *cmd, t_env **env_list);
 //execute external cmd (which is different with builtin cmd)
 //char	*get_cmd_path(char *cmd, char **envp);
 char	*get_cmd_path(char *cmd, t_env *env_list);
-//void	execute_single_cmd(t_exec_path *cmd);
-void	execute_single_cmd(t_exec_path *cmd, t_env *env_list);
+void	execute_single_cmd(t_exec_path *cmd);
+//void	execute_single_cmd(t_exec_path *cmd, t_env *env_list);
 void	execute_pipeline(t_exec_path *exec_cmd, t_env *env_list);
 //--------------------
 

@@ -42,6 +42,7 @@ typedef struct s_cmd
 	char			**argv;
 	int				*quote_type; //inherete from t_token: 0: no quote; 1: single quote; 2: double quote
 	t_redir			*redirections;  // <-- list of redirections
+	char			*cmd_path;
 	struct s_cmd	*next;
 }	t_cmd;
 

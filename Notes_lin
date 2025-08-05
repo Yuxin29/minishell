@@ -162,27 +162,6 @@ int	main(void)
 	repl_loop();
 	return (0);
 }
--------------
-Edge Case Table for Parser Error Testing
-
-`	ls`	Starts with pipe
-`ls		wc`
-`ls	`	Ends with pipe
-ls >	Redirection with no target	Syntax error
-ls <	Redirection with no target	Syntax error
-cat < > out.txt	Redirection missing filename	Syntax error
-ls > < out.txt	Multiple redirects with missing target	Syntax error
-echo "foo	Unclosed quote	Syntax error or unterminated error
-echo 'foo	Unclosed quote	Syntax error or unterminated error
-`ls >	wc`	Redirect, then pipe, missing filename
-`ls <	wc`	Input redirect, then pipe, no filename
-`` (empty input)	Blank line	Do nothing / no command
-cat <<	Heredoc with no delimiter	Syntax error
-cat << EOF (unterminated heredoc in script mode)	Heredoc with missing content	Error or warning
-ls > > out.txt	Two > with no filename in between	Syntax error
-ls < in.txt >	Redirect out with missing filename	Syntax error
-ls "foo	Unclosed double quote	Syntax error
-ls 'foo	Unclosed single quote	Syntax error
 ----------------------------
 ✅ When should you use perror?
 File open/read/write errors (e.g., fopen, open, read, write fail)
@@ -201,23 +180,8 @@ Checking if a command string matches something (no error from a system call)
 User input validation errors
 ------------------
 !!!!!!!! should fix 0730;
-1\ also check in lex and parce, can not exit directly, otherwise there is no chance to free the thing we've already malloced. (check_strndup(NULL, cmd, tokens) in parsing)
-3\ same in execute, do not exit directly(except in child process)
 
-5\in this case, continue or exit??
-			exec_cmd.whole_cmd = build_command_list(token_list);
-			free_token_list(token_list);
-			if (!exec_cmd.whole_cmd)
-			{
-				free_env_list(env_list);
-				ft_free_arr(exec_cmd.envp);
-				ft_putstr_fd("Error: build command list failed\n", 2);
-				g_exit_status = 1;
-				continue;
-				//exit(EXIT_FAILURE);
-			}
-7\ changed parse (t_type == 5), but should rewrite and cannot exit
-8\ run echo "hello  ,some memory problen happened
+
 9\can we use errno ??
 10\
 lin@EricdeMacBook-Pro minishell % cat out > wc -l
@@ -311,3 +275,17 @@ prev_pipe == pipe2[0]，现在可以关掉 pipe2[0]（baton 完全传递完）
 没有下一个命令（这是最后一段），不需要新 pipe，prev_pipe = -1
 ---------
 子进程只保留自己要用的那一头（输入/输出），其它全部及时关闭
+------------
+
+!!!should fix
+1\
+lin@EricdeMacBook-Pro minishell % cat Makefile | < in
+zsh: no such file or directory: in
+lin@EricdeMacBook-Pro minishell % ./minishell
+minishell$ cat Makefile | < in
+minishell: syntax error near unexpected token `newline'
+Error: get command list failed from syntax error
+minishell$
+--should check with print cmd_list
+
+

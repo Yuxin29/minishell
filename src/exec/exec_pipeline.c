@@ -64,8 +64,21 @@ void	execute_pipeline(t_exec_path *exec_cmd, t_env *env_list)
 			}
 			else
 			{
-				char *cmd_path = get_cmd_path(cmd->argv[0], env_list);
-				execve(cmd_path, cmd->argv, exec_cmd->envp);
+				if (!cmd->cmd_path)
+				{
+					if (!ft_strchr(cmd->argv[0], '/'))
+					{
+						ft_putstr_fd(cmd->argv[0], 2);
+						ft_putstr_fd(": command not found\n", 2);
+						exit(127);
+					}
+					else
+					{
+						perror(cmd->argv[0]);
+						exit(127);
+					}
+				}
+				execve(cmd->cmd_path, cmd->argv, exec_cmd->envp);
 				//execve(exec_cmd->whole_cmd->argv, cmd->argv, exec_cmd->envp);
 				perror("execve");
 				if (errno == EACCES) //should i use errno?

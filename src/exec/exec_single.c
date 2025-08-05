@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-void	execute_single_cmd(t_exec_path *cmd, t_env *env_list)
+void	execute_single_cmd(t_exec_path *cmd)
 {
 	pid_t	pid;
 	int		status;
@@ -10,8 +10,21 @@ void	execute_single_cmd(t_exec_path *cmd, t_env *env_list)
 	{
 		if (check_and_apply_redirections(cmd->whole_cmd) == -1)
 			exit (EXIT_FAILURE); //once in fork, do not return, must exit
-		cmd->cmd_path = get_cmd_path(cmd->whole_cmd->argv[0], env_list);
-		execve(cmd->cmd_path, cmd->whole_cmd->argv, cmd->envp);
+		if (!cmd->whole_cmd->cmd_path)
+		{
+			if (!ft_strchr(cmd->whole_cmd->argv[0], '/'))
+			{
+				ft_putstr_fd(cmd->whole_cmd->argv[0], 2);
+				ft_putstr_fd(": command not found\n", 2);
+				exit(127);
+			}
+			else
+			{
+				perror(cmd->whole_cmd->argv[0]);
+				exit(127);
+			}
+				}
+		execve(cmd->whole_cmd->cmd_path, cmd->whole_cmd->argv, cmd->envp);
 		perror("execve");
 		//free_t_exec_path(cmd); //free in child??
 		if (errno == EACCES) //should i use errno?

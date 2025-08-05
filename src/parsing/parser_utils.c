@@ -95,6 +95,8 @@ void	free_cmd_list(t_cmd *cmd_head)
 			free(cmd_head->quote_type);
 		if (cmd_head->redirections)
 			free_redirections(cmd_head);
+		if (cmd_head->cmd_path)
+			free(cmd_head->cmd_path);
 		free(cmd_head);
 		cmd_head = tmp;
 	}

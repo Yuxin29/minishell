@@ -382,3 +382,35 @@ exit(127);
     127 是标准 Unix 规定的 “command not found or not executable” 返回值。
 
     用 errno 更复杂，只适合你要分类处理错误原因的情况，否则没必要。
+
+================0806 need to fix===================================
+1. mem leak \ reachable mem in  expander
+minishell$ echo "$USER "$USER" '$USER'" '$USER' "$USER"
+==11177== Invalid free() / delete / delete[] / realloc()
+==11177==    at 0x484988F: free (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==11177==    by 0x10C7C0: expand_argv (in /home/mikko/yuxin_home/minishell/minishell)
+==11177==    by 0x10C849: expand_all_cmds (in /home/mikko/yuxin_home/minishell/minishell)
+==11177==    by 0x10977A: main (in /home/mikko/yuxin_home/minishell/minishell)
+==11177==  Address 0x4b5a440 is 0 bytes inside a block of size 20 free'd
+==11177==    at 0x484988F: free (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==11177==    by 0x10C571: expand_variables_in_str (in /home/mikko/yuxin_home/minishell/minishell)
+==11177==    by 0x10C75D: expand_argv (in /home/mikko/yuxin_home/minishell/minishell)
+==11177==    by 0x10C849: expand_all_cmds (in /home/mikko/yuxin_home/minishell/minishell)
+==11177==    by 0x10977A: main (in /home/mikko/yuxin_home/minishell/minishell)
+==11177==  Block was alloc'd at
+==11177==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==11177==    by 0x10D7F3: ft_strndup (in /home/mikko/yuxin_home/minishell/minishell)
+==11177==    by 0x10BEE0: parse_argv (in /home/mikko/yuxin_home/minishell/minishell)
+==11177==    by 0x10BB37: get_one_new_cmd (in /home/mikko/yuxin_home/minishell/minishell)
+==11177==    by 0x10BA96: build_command_list (in /home/mikko/yuxin_home/minishell/minishell)
+==11177==    by 0x109709: main (in /home/mikko/yuxin_home/minishell/minishell)
+
+2. preparsing checker wrong
+lin@EricdeMacBook-Pro minishell % cat Makefile | < in
+zsh: no such file or directory: in
+lin@EricdeMacBook-Pro minishell % ./minishell
+minishell$ cat Makefile | < in
+minishell: syntax error near unexpected token `newline'
+Error: get command list failed from syntax error
+minishell$
+--should check with print cmd_list

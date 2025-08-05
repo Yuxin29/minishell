@@ -24,7 +24,7 @@ typedef struct      s_token
     t_token_type    t_type;
     int				quote_type;		//0: no quote; 1: single quote; 2: double quote
 	struct s_token  *next;
-}                   t_token;
+}	t_token;
 
 //Parsing: - Taking the token list and Understanding the structure of the command,
 // 			- Grouping tokens into command nodes, pipes, redirections, etc,
@@ -35,15 +35,16 @@ typedef struct s_redir
 	int				type; // T_REDIRECT_IN, T_REDIRECT_OUT, T_APPEND, T_HEREDOC
     char            *heredoc_delim;
 	struct s_redir	*next;
-}					t_redir;
+}	t_redir;
 
 typedef struct s_cmd
 {
 	char			**argv;
-	int		*quote_type; //inherete from t_token: 0: no quote; 1: single quote; 2: double quote
+	int				*quote_type; //inherete from t_token: 0: no quote; 1: single quote; 2: double quote
 	t_redir			*redirections;  // <-- list of redirections
-	struct s_cmd    *next;
-} t_cmd;
+	char			*cmd_path;
+	struct s_cmd	*next;
+}	t_cmd;
 
 // lex_utils.c
 int		check_raw_line_syntax(char *raw_line);

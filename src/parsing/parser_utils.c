@@ -95,9 +95,18 @@ void	free_cmd_list(t_cmd *cmd_head)
 	while (cmd_head)
 	{
 		tmp = cmd_head->next;
-		ft_free_arr(cmd_head->argv);
-		free(cmd_head->quote_type);
-		free_redirections(cmd_head);
+		// yuxins version, no need to check null before free somehow
+		// ft_free_arr(cmd_head->argv);
+		// free(cmd_head->quote_type);
+		// free_redirections(cmd_head);
+		if (cmd_head->argv)
+			ft_free_arr(cmd_head->argv);
+		if (cmd_head->quote_type)
+			free(cmd_head->quote_type);
+		if (cmd_head->redirections)
+			free_redirections(cmd_head);
+		if (cmd_head->cmd_path)
+			free(cmd_head->cmd_path);
 		free(cmd_head);
 		cmd_head = tmp;
 	}

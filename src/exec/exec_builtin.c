@@ -33,7 +33,7 @@ int	execute_builtin_cmd(char **argv, t_env **env) //should handle redir here!!!
 		return (ft_env(*env));
 	// if (ft_strcmp(argv[0], "exit") == 0)
 	// 	return (ft_exit(argv, *env));
-	return (0);
+	return (1);
 }
 
 void	run_builtin_with_redir(t_cmd *cmd, t_env **env_list)

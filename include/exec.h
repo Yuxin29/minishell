@@ -21,11 +21,11 @@ int		execute_builtin_cmd(char **argv, t_env **env);
 void	run_builtin_with_redir(t_cmd *cmd, t_env **env_list);
 //------------------
 
-//execute external cmd (which is different with builtin cmd)
-//char	*get_cmd_path(char *cmd, char **envp);
+//single
 char	*get_cmd_path(char *cmd, t_env *env_list);
 void	execute_single_cmd(t_exec_path *cmd);
-//void	execute_single_cmd(t_exec_path *cmd, t_env *env_list);
+void	print_error_and_exit(t_cmd *cmd);
+//pipline
 void	execute_pipeline(t_exec_path *exec_cmd, t_env *env_list);
 //--------------------
 

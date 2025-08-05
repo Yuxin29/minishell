@@ -65,17 +65,13 @@ int main(int argc, char **argv, char **envp)
 				ft_putstr_fd("Error: env list initialized failed\n", 2);
 				exit(EXIT_FAILURE);
 			}
-
 			token_list = get_token_list(line); //covert line to token list
 			free(line);
 			if (!token_list)
 			{
 				ft_free_arr(exec_cmd.envp);
 				if (g_exit_status == 2)
-				{
-					ft_putstr_fd("Error: get token list failed from syntax error\n", 2);
 					continue;
-				}
 				else
 				{
 					free_env_list(env_list);
@@ -83,17 +79,13 @@ int main(int argc, char **argv, char **envp)
 					exit(EXIT_FAILURE);
 				}
 			}
-
 			exec_cmd.whole_cmd = build_command_list(token_list); //convert token list to command list
 			free_token_list(token_list);
 			if (!exec_cmd.whole_cmd)
 			{
 				ft_free_arr(exec_cmd.envp);
 				if (g_exit_status == 2)
-				{
-					ft_putstr_fd("Error: get command list failed from syntax error\n", 2);
 					continue;
-				}
 				else
 				{
 					free_env_list(env_list);

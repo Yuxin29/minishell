@@ -11,8 +11,7 @@ static void	wait_exit(pid_t last_pid)
 		g_exit_status = 128 + WTERMSIG(status);
 	else
 		g_exit_status = 1;
-	//While there is at least one child process still running, keep waiting for them to finish.if pass NULL, meaning “I don’t care about the exit status.
-	while (wait(NULL) > 0)
+	while (wait(NULL) > 0) //While there is at least one child process still running, keep waiting for them to finish.if pass NULL, meaning “I don’t care about the exit status.
 		;
 }
 
@@ -22,7 +21,7 @@ void	execute_pipeline(t_exec_path *exec_cmd, t_env *env_list)
 	pid_t	pid;
 	int		prev_pipe;
 	t_cmd	*cmd;
-	pid_t		last_pid;
+	pid_t	last_pid;
 
 	prev_pipe = -1;
 	cmd = exec_cmd->whole_cmd;
@@ -65,21 +64,8 @@ void	execute_pipeline(t_exec_path *exec_cmd, t_env *env_list)
 			else
 			{
 				if (!cmd->cmd_path)
-				{
-					if (!ft_strchr(cmd->argv[0], '/'))
-					{
-						ft_putstr_fd(cmd->argv[0], 2);
-						ft_putstr_fd(": command not found\n", 2);
-						exit(127);
-					}
-					else
-					{
-						perror(cmd->argv[0]);
-						exit(127);
-					}
-				}
+					print_error_and_exit(cmd);
 				execve(cmd->cmd_path, cmd->argv, exec_cmd->envp);
-				//execve(exec_cmd->whole_cmd->argv, cmd->argv, exec_cmd->envp);
 				perror("execve");
 				if (errno == EACCES) //should i use errno?
 					exit(126); //permission denied， EACCEA means error:access
@@ -102,5 +88,5 @@ void	execute_pipeline(t_exec_path *exec_cmd, t_env *env_list)
 			cmd = cmd->next;
 		}
 	}
-	wait_exit(last_pid);
+	wait_exit(last_pid); //wait_exit(last_pid); must be called outside the while loop, after all the pipeline commands have been forked.
 }

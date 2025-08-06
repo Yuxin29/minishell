@@ -5,14 +5,17 @@
 //basically, before the pipe is a cmd, after it is pipe.
 //if no pipe, then this is a single cmd
 //no need to null check token head, if null, exited earlier
-t_cmd	*build_command_list(t_token *token_head)
+t_cmd	*build_command_list(t_exec_path *cmd, t_token *token_head)
 {
 	t_cmd	*cmd_head;
 	t_cmd	*cmd_current;
 	t_cmd	*cmd_last;
 
 	if (check_token_syntax(token_head) == 1)
+	{
+		cmd->exit_status = 2;
 		return (NULL);
+	}
 	cmd_head = NULL;
 	cmd_current = NULL;
 	cmd_last = NULL;

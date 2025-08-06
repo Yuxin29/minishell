@@ -4,17 +4,13 @@
 # include "parsing.h"
 # include "minishell.h"
 
-extern int g_exit_status;
 
-typedef struct s_cmd t_cmd; 
-typedef struct s_token t_token; 
-typedef struct s_exec_path t_exec_path; 
+typedef struct s_cmd t_cmd;
+typedef struct s_token t_token;
+typedef struct s_exec_path t_exec_path;
 
-//post_parsing_error_exit.c
-void	error_and_return(const char *msg, t_exec_path *cmd_and_path);
+//free_error_exit.c
 void	free_t_exec_path(t_exec_path *cmd_and_path);
-
-//pre_parsing_error_exit.c
 void	errmsg_set_status(char *msg);
 char	*free_malloc_fail_null(char	*str);
 

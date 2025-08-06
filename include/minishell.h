@@ -6,7 +6,6 @@
 # include "exec.h"
 # include "utils.h"
 # include "../libft/libft.h"
-# include "repl.h"
 # include "signals.h"
 
 # include <unistd.h>         //access, access, close, fork
@@ -14,6 +13,7 @@
 # include <fcntl.h>
 # include <stdio.h>                 //readline
 
-//extern int	g_exit_status; // declare the global exit status
+// #include <setjmp.h> //delete later
+// extern jmp_buf g_jmpbuf;//delete later
 
 #endif

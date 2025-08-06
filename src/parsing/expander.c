@@ -2,12 +2,10 @@
 #include "minishell.h"
 #include "exec.h"
 
-extern int	g_exit_status;
-
 // examlpe of variable expandable in a redirection, and this variable is $?
 // ls > output_$?.txt
 // cat output_0.txt
-char	*replace_variable_in_str(char *input, int pos, char **envp)
+char	*replace_variable_in_str(t_exec_path *cmd, char *input, int pos, char **envp)
 {
 	int		start;
 	int		var_len;
@@ -18,7 +16,7 @@ char	*replace_variable_in_str(char *input, int pos, char **envp)
 	start = pos + 1;
 	var_len = 1;
 	if (input[pos + 1] == '?')
-		value = ft_itoa(g_exit_status);
+		value = ft_itoa(cmd->exit_status);
 	else
 	{
 		var_len = 0;
@@ -38,9 +36,9 @@ char	*replace_variable_in_str(char *input, int pos, char **envp)
 	return (join_three_and_free(prefix, value, suffix));
 }
 
-// the 2 free (input); 
+// the 2 free (input);
 //with it, it is still reachable, without it, it is definitly loss
-char	*expand_variables_in_str(char *input, char **envp)
+char	*expand_variables_in_str(t_exec_path *cmd, char *input, char **envp)
 {
 	int		i;
 	char	*new_input;
@@ -53,7 +51,7 @@ char	*expand_variables_in_str(char *input, char **envp)
 		if (input[i] == '$' && input[i + 1] && ((input[i + 1] == '?'
 			|| ft_isalpha(input[i + 1]) || input[i + 1] == '_')))
 		{
-			new_input = replace_variable_in_str(input, i, envp);
+			new_input = replace_variable_in_str(cmd, input, i, envp);
 			if (!new_input)
 				return (NULL);
 			return (new_input);
@@ -67,7 +65,7 @@ char	*expand_variables_in_str(char *input, char **envp)
 	return (input);
 }
 
-void	expand_redirection(t_cmd *cmd_list, char **envp)
+void	expand_redirection(t_exec_path *cmd, t_cmd *cmd_list, char **envp)
 {
 	t_redir	*redir;
 	char	*value;
@@ -82,7 +80,7 @@ void	expand_redirection(t_cmd *cmd_list, char **envp)
 		}
 		if (redir->file && ft_strchr(redir->file, '$'))
 		{
-			value = expand_variables_in_str(redir->file, envp);
+			value = expand_variables_in_str(cmd, redir->file, envp);
 			if (!value)
 				return ;
 			if (value && value != redir->file)
@@ -95,7 +93,7 @@ void	expand_redirection(t_cmd *cmd_list, char **envp)
 	}
 }
 
-void	expand_argv(char **argv, int *quote_type, char **envp)
+void	expand_argv(t_exec_path *cmd, char **argv, int *quote_type, char **envp)
 {
 	int		i;
 	char	*value;
@@ -105,31 +103,31 @@ void	expand_argv(char **argv, int *quote_type, char **envp)
 	{
 		if ((!quote_type || quote_type[i] != 1) && ft_strchr(argv[i], '$'))
 		{
-			value = expand_variables_in_str(argv[i], envp);
+			value = expand_variables_in_str(cmd, argv[i], envp);
 			if (!value)
 				continue ;
 			if (value != argv[i])
-            {
-                free(argv[i]);
-                argv[i] = value;
-            }
+			{
+				free(argv[i]);
+				argv[i] = value;
+			}
 		}
 		i++;
 	}
 }
 
 //call this after getting the cmd list
-//go through all cmd and check all word without single quotes, 
+//go through all cmd and check all word without single quotes,
 // not expanding heredocs
 //after this Here I already got the updated cmd list
-void	expand_all_cmds(t_cmd *cmd_list, char **envp)
+void	expand_all_cmds(t_exec_path *cmd, t_cmd *cmd_list, char **envp)
 {
 	while (cmd_list)
 	{
 		if (cmd_list->argv)
-			expand_argv(cmd_list->argv, cmd_list->quote_type, envp);
+			expand_argv(cmd, cmd_list->argv, cmd_list->quote_type, envp);
 		if (cmd_list->redirections)
-			expand_redirection(cmd_list, envp);
+			expand_redirection(cmd, cmd_list, envp);
 		cmd_list = cmd_list->next;
 	}
 }

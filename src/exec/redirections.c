@@ -1,5 +1,8 @@
 #include "minishell.h"
 
+#include <readline/readline.h>
+#include <readline/history.h>
+
 // redirections.c
 // after parsing, we got already cmd list.
 // we check here if there are redirections symbles here in each cmd node.

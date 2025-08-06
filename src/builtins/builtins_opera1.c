@@ -65,36 +65,37 @@ int ft_cd(char **argv, t_env **env)
 // do we need to update signals?
 // NAME		exit — cause the shell to exit
 // SYNOPSIS	exit [n]
-int	ft_exit(char **argv, t_env **env) //here ft_exit / exit is a cmd, but not a function
-{
-	int		i;
-	int		status;
 
-	i = 0;
-	while (argv[i])
-		i++;
-	if (i == 2)
-		//this should also exit even no numbers afrer
-	if (i > 2)
-	{
-		ft_putstr_fd("exit: too many arguments\n", 2);
-		return (1);
-	}
-	if (ft_isdigit(argv[1]))
-	{
-		ft_putstr_fd("minishell: exit: argv[1]: numeric argument required", 2);
-		return (1);
-	}
-	status = ft_atoi(argv[1]);
-	// deal with int max
-	// if bigger than int max
-	{
-		ft_putstr_fd("minishell: exit: argv[1]: numeric argument required", 2);
-		return (1);
-	}
-	exit(status); //here exit is not as a cmd, but a function
-	return (0);
-}
+// int	ft_exit(char **argv, t_env **env) //here ft_exit / exit is a cmd, but not a function
+// {
+// 	int		i;
+// 	int		status;
+
+// 	i = 0;
+// 	while (argv[i])
+// 		i++;
+// 	if (i == 2)
+// 		//this should also exit even no numbers afrer
+// 	if (i > 2)
+// 	{
+// 		ft_putstr_fd("exit: too many arguments\n", 2);
+// 		return (1);
+// 	}
+// 	if (ft_isdigit(argv[1]))
+// 	{
+// 		ft_putstr_fd("minishell: exit: argv[1]: numeric argument required", 2);
+// 		return (1);
+// 	}
+// 	status = ft_atoi(argv[1]);
+// 	// deal with int max
+// 	// if bigger than int max
+// 	{
+// 		ft_putstr_fd("minishell: exit: argv[1]: numeric argument required", 2);
+// 		return (1);
+// 	}
+// 	exit(status); //here exit is not as a cmd, but a function
+// 	return (0);
+// }
 
 // pwd
 // The getcwd() function copies an absolute pathname of the current working directory to the array pointed  to by buf, 

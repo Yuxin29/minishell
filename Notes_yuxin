@@ -371,9 +371,7 @@ zsh: command not found: 300-256
 
 =======================================About signal adn exec error in child===============
 （可选但推荐）：子进程出错时是否用 errno？
-
 你目前在 execve 失败时：
-
 perror("execve");
 exit(127);
 
@@ -386,25 +384,8 @@ exit(127);
 ================0806 need to fix===================================
 1. mem leak \ reachable mem in  expander
 minishell$ echo "$USER "$USER" '$USER'" '$USER' "$USER"
-==11177== Invalid free() / delete / delete[] / realloc()
-==11177==    at 0x484988F: free (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11177==    by 0x10C7C0: expand_argv (in /home/mikko/yuxin_home/minishell/minishell)
-==11177==    by 0x10C849: expand_all_cmds (in /home/mikko/yuxin_home/minishell/minishell)
-==11177==    by 0x10977A: main (in /home/mikko/yuxin_home/minishell/minishell)
-==11177==  Address 0x4b5a440 is 0 bytes inside a block of size 20 free'd
-==11177==    at 0x484988F: free (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11177==    by 0x10C571: expand_variables_in_str (in /home/mikko/yuxin_home/minishell/minishell)
-==11177==    by 0x10C75D: expand_argv (in /home/mikko/yuxin_home/minishell/minishell)
-==11177==    by 0x10C849: expand_all_cmds (in /home/mikko/yuxin_home/minishell/minishell)
-==11177==    by 0x10977A: main (in /home/mikko/yuxin_home/minishell/minishell)
-==11177==  Block was alloc'd at
-==11177==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11177==    by 0x10D7F3: ft_strndup (in /home/mikko/yuxin_home/minishell/minishell)
-==11177==    by 0x10BEE0: parse_argv (in /home/mikko/yuxin_home/minishell/minishell)
-==11177==    by 0x10BB37: get_one_new_cmd (in /home/mikko/yuxin_home/minishell/minishell)
-==11177==    by 0x10BA96: build_command_list (in /home/mikko/yuxin_home/minishell/minishell)
-==11177==    by 0x109709: main (in /home/mikko/yuxin_home/minishell/minishell)
-NOT FIXED
+
+FIXED
 
 2. preparsing checker wrong
 lin@EricdeMacBook-Pro minishell % cat Makefile | < in

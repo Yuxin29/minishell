@@ -3,6 +3,10 @@
 
 # define PATH_MAX 4096
 
+//yuxin added for exit
+# define LLONG_MAX_STR "9223372036854775807"
+# define LLONG_MIN_STR "9223372036854775808"
+
 typedef struct s_cmd t_cmd;
 typedef struct s_exec_path t_exec_path;
 

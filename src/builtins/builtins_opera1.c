@@ -59,43 +59,67 @@ int ft_cd(char **argv, t_env **env)
 	return (0);
 }
 
+//yuxin added
+//this one is used for check if exit n is a pure number in the effective range
+// ft_isdigit checks only a char
+// return 1 on error(not numeric) and 0 on ok
+static int ft_is_numeric(char *str)
+{
+	int			n;
+
+	n = 0;
+	if (str[0] == '-' || str[0] == '+')
+		n++;
+	while (str[n])
+	{
+		if (!ft_isdigit(str[n]))
+			return (1);
+		n++;
+	}
+	if (str[0] == '-')
+	{
+		if (ft_strcmp(str, LLONG_MIN_STR) < 0)
+			return (1); // error: too small
+	}
+	else
+	{
+		if (ft_strcmp(LLONG_MAX_STR, str) < 0) // I compare the string direclyt
+			return (1);
+	}
+	return (0);
+}
+
 // yuxin working on this
 // in bash, if we exit, we exit bash into zsh shel
 // so, this should be the same of control+D, exit the whle thing
-// do we need to update signals?
+// do we need to update signals? probably not
 // NAME		exit — cause the shell to exit
 // SYNOPSIS	exit [n]
+// Bash uses strtol() or strtoll() under the hood to parse the number. That means: long long
+// It must be parsable within the range of a 64-bit signed integer (typically):
+// Min: -9223372036854775808
+// Max: 9223372036854775807
+int	ft_exit(char **argv) //here ft_exit / exit is a cmd, but not a function
+{
+	long long	status; //long long definitely enough
 
-// int	ft_exit(char **argv, t_env **env) //here ft_exit / exit is a cmd, but not a function
-// {
-// 	int		i;
-// 	int		status;
-
-// 	i = 0;
-// 	while (argv[i])
-// 		i++;
-// 	if (i == 2)
-// 		//this should also exit even no numbers afrer
-// 	if (i > 2)
-// 	{
-// 		ft_putstr_fd("exit: too many arguments\n", 2);
-// 		return (1);
-// 	}
-// 	if (ft_isdigit(argv[1]))
-// 	{
-// 		ft_putstr_fd("minishell: exit: argv[1]: numeric argument required", 2);
-// 		return (1);
-// 	}
-// 	status = ft_atoi(argv[1]);
-// 	// deal with int max
-// 	// if bigger than int max
-// 	{
-// 		ft_putstr_fd("minishell: exit: argv[1]: numeric argument required", 2);
-// 		return (1);
-// 	}
-// 	exit(status); //here exit is not as a cmd, but a function
-// 	return (0);
-// }
+	if (!argv[1]) //this should also exit even no numbers afrer // it exits with the last cmd's status
+		exit(0); //0 is not correct, should be status
+	if (ft_is_numeric(argv[1]))
+	{
+		ft_putstr_fd("minishell: exit: ", 2);
+		ft_putstr_fd("argv[1]: ", 2);
+		ft_putstr_fd("numeric argument required", 2);
+		exit (255); //fatal error 255
+	}
+	if (argv[2]) //below are case when ac == 2, argv[1] valid and is the last arguement
+	{
+		ft_putstr_fd("exit: too many arguments\n", 2);
+		exit (1); //because the exit 4 a, exit 4 is valid
+	}
+	status = ft_atoi(argv[1]); // need to write out own strtol
+	exit((unsigned char)status); //here exit is not as a cmd, but a function: wrap a long long int to an char between 0 - 255
+}
 
 // pwd
 // The getcwd() function copies an absolute pathname of the current working directory to the array pointed  to by buf, 

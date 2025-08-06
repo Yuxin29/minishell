@@ -42,9 +42,8 @@ int main(int argc, char **argv, char **envp)
 	(void)argc;
 	(void)argv;
 
-    // yuxin added
     rl_catch_signals = 0;   // forbidden readline default signalsm global variables from the readline.h
-	setup_signals();  
+	setup_signals();
 
 	ft_memset(&exec_cmd, 0, sizeof(exec_cmd));
 	env_list = env_list_init(envp);
@@ -69,7 +68,7 @@ int main(int argc, char **argv, char **envp)
 				ft_putstr_fd("Error: env list initialized failed\n", 2);
 				exit(EXIT_FAILURE);
 			}
-			
+
 			token_list = get_token_list(line); //covert line to token list
 			free(line);
 			if (!token_list)
@@ -100,7 +99,6 @@ int main(int argc, char **argv, char **envp)
 				}
 			}
 
-			//yuxin added: expand variables added
 			expand_all_cmds(exec_cmd.whole_cmd, exec_cmd.envp);
 
 			if (check_invalid_cmds(exec_cmd.whole_cmd))
@@ -132,7 +130,7 @@ int main(int argc, char **argv, char **envp)
 			free_t_exec_path(&exec_cmd);
 			continue;
 		}
-		//rl_clear_history();
+		rl_clear_history();
 	}
 	free_env_list(env_list);
 	return (0);

@@ -24,28 +24,77 @@ int	ft_echo(char **argv)
 	return (0);
 }
 
-// yuxin working on this now
-int ft_cd(char **argv)
+// yuxin working on this now; I passed t_env **env into ft_cd
+// NAME		chdir, - change working directory
+// SYNOPSIS	int chdir(const char *path);
+// On success, zero is returned.  On error, -1 is returned, and errno is set appropriately.
+int ft_cd(char **argv, t_env **env)
 {
-	if (!argv[1])
+	char *old;
+	char	*new;
+	int		i;
+
+	i = 0;
+	if (!argv[1]) //yuxin added: yuwu@c2r6p9:~$ cd   it does not do anything, just new prompt
 	{
 		ft_putstr_fd("cd :missing arguments\n", 2);
 		return (1);
 	}
+	old = ft_strdup(argc[1]); //nullcheck later
 	if (chdir(argv[1]) != 0) //On success, zero is returned.  On error, -1 is returned
 	{
 		perror("cd");
 		return (1);
 	}
-	//should updata pwd/oldpwd in envp later
+	while (env[i]) //should updata PWD/OLDPWD in envp later
+	{
+		if (ft_strcmp("OLDPWD", env->key == 0)) //I find old one
+			//replace OLDPWD=xxx with old
+			// I can use this directly: static void	set_env(t_env **env, char *key, char *value)
+			set_env(t_env **env, "OLDPWD", old)
+		if (ft_strcmp("PWD", env->key) == 0) 
+			//replace OLDPWD=xxx with new
+			set_env(t_env **env, "PWD", argv[1])
+		env = env->next;
+	}
 	return (0);
 }
 
 // yuxin working on this
-// int	ft_exit(char **argv, t_env **env)
-// {
+// in bash, if we exit, we exit bash into zsh shel
+// so, this should be the same of control+D, exit the whle thing
+// do we need to update signals?
+// NAME		exit — cause the shell to exit
+// SYNOPSIS	exit [n]
+int	ft_exit(char **argv, t_env **env)
+{
+	int		i;
+	int		status;
 
-// }
+	i = 0;
+	while (argv[i])
+		i++;
+	if (i != 2)
+	{
+		//perror("exit"); or this one
+		ft_putstr_fd("exit: too many arguments\n", 2);
+		return (1);
+	}
+	if (ft_isdigit(argv[1]))
+	{
+		ft_putstr_fd("minishell: exit: argv[1]: numeric argument required", 2);
+		return (1);
+	}
+	status = ft_atoi(argv[1]);
+	// deal with int max
+	// if bigger than int max
+	{
+		ft_putstr_fd("minishell: exit: argv[1]: numeric argument required", 2);
+		return (1);
+	}
+	exit(status)
+	return (0);
+}
 
 // pwd
 // The getcwd() function copies an absolute pathname of the current working directory to the array pointed  to by buf, 

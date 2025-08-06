@@ -22,7 +22,7 @@ int	execute_builtin_cmd(char **argv, t_env **env) //should handle redir here!!!
 	if (ft_strcmp(argv[0], "echo") == 0)
 		return (ft_echo(argv));
 	if (ft_strcmp(argv[0], "cd") == 0)
-		return (ft_cd(argv));
+		return (ft_cd(argv, env));
 	if (ft_strcmp(argv[0], "pwd") == 0)
 		return (ft_pwd());
 	if (ft_strcmp(argv[0], "export") == 0)

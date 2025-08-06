@@ -29,17 +29,17 @@ static void	exec_single_child(t_exec_path *cmd)
 		exit(127);
 }
 
-static void	wait_child_and_exit(pid_t pid)
+static void	wait_child_and_exit(t_exec_path *cmd, pid_t pid)
 {
 	int	status;
 
 	waitpid(pid, &status, 0);
 	if (WIFEXITED(status)) //if ture, meaning the process exit correctly
-		g_exit_status = WEXITSTATUS(status); //get exit code
+		cmd->exit_status = WEXITSTATUS(status); //get exit code
 	else if (WIFSIGNALED(status)) //if child process be killed by signal
-		g_exit_status = 128 + WTERMSIG(status); // killed by which signal, if killed by SIGINT(2),return 130 (128+2)
+		cmd->exit_status = 128 + WTERMSIG(status); // killed by which signal, if killed by SIGINT(2),return 130 (128+2)
 	else
-		g_exit_status = 1; //show there's some problem
+		cmd->exit_status = 1; //show there's some problem
 }
 
 void	execute_single_cmd(t_exec_path *cmd)
@@ -50,10 +50,10 @@ void	execute_single_cmd(t_exec_path *cmd)
 	if (pid == 0)
 		exec_single_child(cmd);
 	else if (pid > 0)
-		wait_child_and_exit(pid);
+		wait_child_and_exit(cmd, pid);
 	else
 	{
 		perror("fork");
-		g_exit_status = 1;
+		cmd->exit_status = 1;
 	}
 }

@@ -26,6 +26,6 @@ void	handle_sigint(int sig)
 	rl_replace_line("", 0);            // empty this line
 	rl_on_new_line();                  // prompt change to next line
 	rl_redisplay();                    // display the new prompt
-	g_exit_status = 130;
+	//g_exit_status = 130;
 }
 

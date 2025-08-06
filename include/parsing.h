@@ -67,7 +67,7 @@ char	*get_unquoted_part(char *s, int *i);
 
 // lex.c
 // get a raw line and change it to a linked list of minimal unit(tokens)
-t_token	*get_token_list(char *raw_line);
+t_token	*get_token_list(t_exec_path *cmd, char *raw_line);
 t_token	*build_word_token(char *line, int *i);
 t_token *build_operator_token(char *line, int *i);
 t_token	*build_token_from_next_word(char *line, int *i);
@@ -85,7 +85,7 @@ void	free_cmd_list(t_cmd *cmd_head);
 // - Taking the token list and Understanding the structure of the command,
 // - Grouping tokens into command nodes, pipes, redirections, etc,
 // - Building a linked list of command objects (t_cmd)
-t_cmd	*build_command_list(t_token *tokens);
+t_cmd	*build_command_list(t_exec_path *cmd, t_token *tokens);
 t_token	*get_one_new_cmd(t_token    *token_head, t_cmd *cmd_current);
 t_token	*parse_redirections(t_cmd *cmd, t_token *tokens);
 t_token	*parse_argv(t_cmd *cmd, t_token *tokens);
@@ -96,12 +96,12 @@ char	*get_env_value(char **envp, const char *key);
 char	*get_env_value_from_substr(char *input, int start, int var_len, char **envp);
 char	*join_three_and_free(char *s1, char *s2, char *s3);
 
-// expander.c 
+// expander.c
 // called after parsing, expanding every thing but not heredocs
-char	*replace_variable_in_str(char *input, int pos, char **envp);
-char	*expand_variables_in_str(char *input, char **envp);
-void	expand_redirection(t_cmd *cmd_list, char **envp);
-void	expand_argv(char **argv, int *quote_type, char **envp);
-void	expand_all_cmds(t_cmd *cmd_list, char **envp);
+char	*replace_variable_in_str(t_exec_path *cmd, char *input, int pos, char **envp);
+char	*expand_variables_in_str(t_exec_path *cmd, char *input, char **envp);
+void	expand_redirection(t_exec_path *cmd, t_cmd *cmd_list, char **envp);
+void	expand_argv(t_exec_path *cmd, char **argv, int *quote_type, char **envp);
+void	expand_all_cmds(t_exec_path *cmd, t_cmd *cmd_list, char **envp);
 
 #endif

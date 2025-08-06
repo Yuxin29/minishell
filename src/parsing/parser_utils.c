@@ -1,8 +1,6 @@
 #include "parsing.h"
 #include "minishell.h"
 
-extern int	g_exit_status;
-
 // if it is a word without quotes, it can not contain special character
 // with quotes, all chars are fine
 int	check_special_characters(t_token *token_head)
@@ -30,19 +28,17 @@ int	check_token_syntax(t_token *token_head)
 	while (token_head)
 	{
 		if (check_special_characters(token_head))
-			errmsg_set_status(SYNTAX_ERR_SPECIAL_CHARS);
+			return (errmsg_set_status(SYNTAX_ERR_SPECIAL_CHARS), 1);
 		if (token_head->t_type >= 1 && token_head->next && token_head->next->t_type == 1)
-			errmsg_set_status(SYNTAX_ERR_PIPE);
+			return (errmsg_set_status(SYNTAX_ERR_PIPE), 1);
 		if (token_head->t_type >= 2 && token_head->next && token_head->next->t_type >= 2)
-			errmsg_set_status(SYNTAX_ERR_REDIR_DOUBLE);
+			return (errmsg_set_status(SYNTAX_ERR_REDIR_DOUBLE), 1);
 		if (token_head->t_type == 1 && token_head->next == NULL)
-			errmsg_set_status(SYNTAX_ERR_PIPE);
+			return (errmsg_set_status(SYNTAX_ERR_PIPE), 1);
 		if (token_head->t_type >= 2 && token_head->next == NULL)
-			errmsg_set_status(SYNTAX_ERR_REDIR_FILE_MISSING);
+			return (errmsg_set_status(SYNTAX_ERR_REDIR_FILE_MISSING), 1);
 		token_head = token_head->next;
 	}
-	if (g_exit_status == 2)
-		return (1);
 	return (0);
 }
 

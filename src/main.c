@@ -1,8 +1,7 @@
 #include "minishell.h"
 
-int	g_exit_status = 0;
 
-static int	check_invalid_cmds(t_cmd *cmd_list)
+static int	check_invalid_cmds(t_exec_path *exec_cmd, t_cmd *cmd_list)
 {
 	t_cmd	*cur;
 
@@ -14,15 +13,15 @@ static int	check_invalid_cmds(t_cmd *cmd_list)
 			if (cur->redirections)
 			{
 				if (check_and_apply_redirections(cur) == -1)
-					g_exit_status = 1;
+					exec_cmd->exit_status = 1;
 				else
-					g_exit_status = 0;
+					exec_cmd->exit_status = 0;
 				return (1);
 			}
 			else
 			{
 				ft_putstr_fd("minishell: : command not found\n", 2);
-				g_exit_status = 127;
+				exec_cmd->exit_status = 127;
 				return (1);
 			}
 		}
@@ -43,7 +42,7 @@ int main(int argc, char **argv, char **envp)
 	(void)argv;
 
     rl_catch_signals = 0;   // forbidden readline default signalsm global variables from the readline.h
-	setup_signals();
+	//setup_signals();
 
 	ft_memset(&exec_cmd, 0, sizeof(exec_cmd));
 	env_list = env_list_init(envp);
@@ -69,12 +68,12 @@ int main(int argc, char **argv, char **envp)
 				exit(EXIT_FAILURE);
 			}
 
-			token_list = get_token_list(line); //covert line to token list
+			token_list = get_token_list(&exec_cmd, line); //covert line to token list
 			free(line);
 			if (!token_list)
 			{
 				ft_free_arr(exec_cmd.envp);
-				if (g_exit_status == 2)
+				if (exec_cmd.exit_status == 2)
 					continue;
 				else
 				{
@@ -84,12 +83,12 @@ int main(int argc, char **argv, char **envp)
 				}
 			}
 
-			exec_cmd.whole_cmd = build_command_list(token_list); //convert token list to command list
+			exec_cmd.whole_cmd = build_command_list(&exec_cmd, token_list); //convert token list to command list
 			free_token_list(token_list);
 			if (!exec_cmd.whole_cmd)
 			{
 				ft_free_arr(exec_cmd.envp);
-				if (g_exit_status == 2)
+				if (exec_cmd.exit_status == 2)
 					continue;
 				else
 				{
@@ -99,9 +98,9 @@ int main(int argc, char **argv, char **envp)
 				}
 			}
 
-			expand_all_cmds(exec_cmd.whole_cmd, exec_cmd.envp);
+			expand_all_cmds(&exec_cmd, exec_cmd.whole_cmd, exec_cmd.envp);
 
-			if (check_invalid_cmds(exec_cmd.whole_cmd))
+			if (check_invalid_cmds(&exec_cmd, exec_cmd.whole_cmd))
 			{
 				free_t_exec_path(&exec_cmd);
 				continue;
@@ -119,7 +118,7 @@ int main(int argc, char **argv, char **envp)
 			//if bulitin and no pipe, no need to find cmd_path, just execute(need to deal with other things in it)
 			if (is_builtin(exec_cmd.whole_cmd->argv[0]) && !exec_cmd.whole_cmd->next)
 			{
-				run_builtin_with_redir(exec_cmd.whole_cmd, &env_list);
+				run_builtin_with_redir(&exec_cmd, &env_list);
 				free_t_exec_path(&exec_cmd);
 				continue;
 			}

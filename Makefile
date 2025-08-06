@@ -23,7 +23,6 @@ SRCS := \
 	$(SRC_DIR)/utils/post_parsing_perror_exit.c \
 	$(SRC_DIR)/utils/pre_parsing_error_exit.c \
 	$(SRC_DIR)/utils/str_utils.c \
-	$(SRC_DIR)/repl/repl.c \
 	$(SRC_DIR)/signals/signals.c
 
 OBJS := $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)

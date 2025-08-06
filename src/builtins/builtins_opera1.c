@@ -24,6 +24,7 @@ int	ft_echo(char **argv)
 	return (0);
 }
 
+// yuxin working on this now
 int ft_cd(char **argv)
 {
 	if (!argv[1])
@@ -40,11 +41,19 @@ int ft_cd(char **argv)
 	return (0);
 }
 
+// yuxin working on this
 // int	ft_exit(char **argv, t_env **env)
 // {
 
 // }
 
+// pwd
+// The getcwd() function copies an absolute pathname of the current working directory to the array pointed  to by buf, 
+// which is of length size
+// On  success,  these  functions return a pointer to a string containing the pathname of the current working directory.
+// In the case of getcwd() and getwd() this is the same value as buf.
+// On failure, these functions return NULL, and errno is set to indicate the error.  The contents of the  array  pointed
+// to by buf are undefined on error.
 int	ft_pwd()
 {
 	char buf[PATH_MAX];
@@ -57,14 +66,8 @@ int	ft_pwd()
 	perror("pwd");
 	return (1);
 }
-/*The getcwd() function copies an absolute pathname of the current working directory to the array pointed  to by buf, which is of length size
 
-On  success,  these  functions return a pointer to a string containing the pathname of the current working directory.
-In the case of getcwd() and getwd() this is the same value as buf.
-On failure, these functions return NULL, and errno is set to indicate the error.  The contents of the  array  pointed
-to by buf are undefined on error.
-*/
-
+//env
 int	ft_env(t_env *env)
 {
 	while (env)

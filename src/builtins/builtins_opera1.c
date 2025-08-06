@@ -28,35 +28,34 @@ int	ft_echo(char **argv)
 // NAME		chdir, - change working directory
 // SYNOPSIS	int chdir(const char *path);
 // On success, zero is returned.  On error, -1 is returned, and errno is set appropriately.
+// I can use this directly:  void	set_env(t_env **env, char *key, char *value)
+// buf is a local mem, path pointing to it, so need need to free path ever
 int ft_cd(char **argv, t_env **env)
 {
-	char *old;
-	char	*new;
-	int		i;
+	char *path;
+	char buf[1024];
 
-	i = 0;
-	if (!argv[1]) //yuxin added: yuwu@c2r6p9:~$ cd   it does not do anything, just new prompt
+	if (!argv[1])
+		return (0);
+	path = getcwd(buf, sizeof(buf));
+	if (!path)
 	{
-		ft_putstr_fd("cd :missing arguments\n", 2);
+		perror("cd: getcwd (old)");
 		return (1);
 	}
-	old = ft_strdup(argc[1]); //nullcheck later
-	if (chdir(argv[1]) != 0) //On success, zero is returned.  On error, -1 is returned
+	if (chdir(argv[1]) != 0)
 	{
 		perror("cd");
 		return (1);
 	}
-	while (env[i]) //should updata PWD/OLDPWD in envp later
+	set_env(env, "OLDPWD", path);
+	path = getcwd(buf, sizeof(buf));
+	if (!path)
 	{
-		if (ft_strcmp("OLDPWD", env->key == 0)) //I find old one
-			//replace OLDPWD=xxx with old
-			// I can use this directly: static void	set_env(t_env **env, char *key, char *value)
-			set_env(t_env **env, "OLDPWD", old)
-		if (ft_strcmp("PWD", env->key) == 0) 
-			//replace OLDPWD=xxx with new
-			set_env(t_env **env, "PWD", argv[1])
-		env = env->next;
+		perror("cd: getcwd (new)");
+		return (1);
 	}
+	set_env(env, "PWD", path);
 	return (0);
 }
 
@@ -66,7 +65,7 @@ int ft_cd(char **argv, t_env **env)
 // do we need to update signals?
 // NAME		exit — cause the shell to exit
 // SYNOPSIS	exit [n]
-int	ft_exit(char **argv, t_env **env)
+int	ft_exit(char **argv, t_env **env) //here ft_exit / exit is a cmd, but not a function
 {
 	int		i;
 	int		status;
@@ -74,9 +73,10 @@ int	ft_exit(char **argv, t_env **env)
 	i = 0;
 	while (argv[i])
 		i++;
-	if (i != 2)
+	if (i == 2)
+		//this should also exit even no numbers afrer
+	if (i > 2)
 	{
-		//perror("exit"); or this one
 		ft_putstr_fd("exit: too many arguments\n", 2);
 		return (1);
 	}
@@ -92,7 +92,7 @@ int	ft_exit(char **argv, t_env **env)
 		ft_putstr_fd("minishell: exit: argv[1]: numeric argument required", 2);
 		return (1);
 	}
-	exit(status)
+	exit(status); //here exit is not as a cmd, but a function
 	return (0);
 }
 

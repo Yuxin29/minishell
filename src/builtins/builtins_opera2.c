@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-static void	set_env(t_env **env, char *key, char *value)
+void	set_env(t_env **env, char *key, char *value)
 {
 	t_env	*cur;
 	t_env	*new_node;

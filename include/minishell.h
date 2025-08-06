@@ -14,9 +14,6 @@
 # include <fcntl.h>
 # include <stdio.h>                 //readline
 
-#include <setjmp.h> //delete later
-extern jmp_buf g_jmpbuf;//delete later
-
-extern int	g_exit_status; // declare the global exit status
+//extern int	g_exit_status; // declare the global exit status
 
 #endif

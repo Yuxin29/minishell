@@ -15,7 +15,7 @@ typedef struct	s_env
 }	t_env;
 
 //exec 7 builtin cmds
-int		ft_cd(char **argv);
+int		ft_cd(char **argv, t_env **env);
 int		ft_echo(char **argv);
 int		ft_pwd(void);
 int		ft_env(t_env *env);
@@ -30,5 +30,8 @@ t_env	*env_new_node(char *key, char *value);
 t_env	*env_list_init(char **envp);
 char	**env_list_to_envp(t_env *head);
 void	free_env_list(t_env *head);
+
+//yuxin added: changed this one from static to non static, because I need to use it in cd
+void	set_env(t_env **env, char *key, char *value)
 
 #endif

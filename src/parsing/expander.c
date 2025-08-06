@@ -2,7 +2,6 @@
 #include "minishell.h"
 #include "exec.h"
 
-
 // examlpe of variable expandable in a redirection, and this variable is $?
 // ls > output_$?.txt
 // cat output_0.txt
@@ -31,9 +30,9 @@ char	*replace_variable_in_str(t_exec_path *cmd, char *input, int pos, char **env
 	prefix = ft_substr(input, 0, pos);
 	suffix = ft_strdup(input + start + var_len);
 	if (!prefix)
-		return (free_malloc_fail_null(value));
+		return (free(value), free_malloc_fail_null(suffix));
 	if (!suffix)
-		return (free(prefix), free_malloc_fail_null(value));
+		return (free(value), free_malloc_fail_null(prefix));
 	return (join_three_and_free(prefix, value, suffix));
 }
 
@@ -45,6 +44,8 @@ char	*expand_variables_in_str(t_exec_path *cmd, char *input, char **envp)
 	char	*new_input;
 
 	i = 0;
+	if (!input)
+		return (NULL);
 	while (input[i])
 	{
 		if (input[i] == '$' && input[i + 1] && ((input[i + 1] == '?'
@@ -52,10 +53,8 @@ char	*expand_variables_in_str(t_exec_path *cmd, char *input, char **envp)
 		{
 			new_input = replace_variable_in_str(cmd, input, i, envp);
 			if (!new_input)
-				return (free (input), NULL);
-			free (input);
-			input = new_input;
-			i = 0;
+				return (NULL);
+			return (new_input);
 		}
 		else if (input[i + 1] == '\0'
 			|| (!ft_isalnum(input[i + 1]) && input[i + 1] != '_'))
@@ -82,6 +81,8 @@ void	expand_redirection(t_exec_path *cmd, t_cmd *cmd_list, char **envp)
 		if (redir->file && ft_strchr(redir->file, '$'))
 		{
 			value = expand_variables_in_str(cmd, redir->file, envp);
+			if (!value)
+				return ;
 			if (value && value != redir->file)
 			{
 				free(redir->file);
@@ -103,10 +104,11 @@ void	expand_argv(t_exec_path *cmd, char **argv, int *quote_type, char **envp)
 		if ((!quote_type || quote_type[i] != 1) && ft_strchr(argv[i], '$'))
 		{
 			value = expand_variables_in_str(cmd, argv[i], envp);
-			if (value && value != argv[i])
+			if (!value)
+				continue ;
+			if (value != argv[i])
 			{
-				if (argv[i])
-					free(argv[i]);
+				free(argv[i]);
 				argv[i] = value;
 			}
 		}

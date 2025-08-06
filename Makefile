@@ -20,8 +20,7 @@ SRCS := \
 	$(SRC_DIR)/parsing/lex.c $(SRC_DIR)/parsing/lex_utils.c $(SRC_DIR)/parsing/parser.c \
 	$(SRC_DIR)/parsing/parser_utils.c $(SRC_DIR)/parsing/expander.c \
 	$(SRC_DIR)/parsing/expander_utils.c \
-	$(SRC_DIR)/utils/post_parsing_perror_exit.c \
-	$(SRC_DIR)/utils/pre_parsing_error_exit.c \
+	$(SRC_DIR)/utils/free_error_exit.c \
 	$(SRC_DIR)/utils/str_utils.c \
 	$(SRC_DIR)/signals/signals.c
 

@@ -48,7 +48,11 @@ void	execute_single_cmd(t_exec_path *cmd)
 
 	pid = fork();
 	if (pid == 0)
+	{
+		signal(SIGINT, SIG_DFL);
+		signal(SIGQUIT, SIG_DFL);
 		exec_single_child(cmd);
+	}
 	else if (pid > 0)
 		wait_child_and_exit(cmd, pid);
 	else

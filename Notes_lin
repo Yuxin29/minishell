@@ -279,13 +279,14 @@ prev_pipe == pipe2[0]，现在可以关掉 pipe2[0]（baton 完全传递完）
 
 !!!should fix
 1\
-lin@EricdeMacBook-Pro minishell % cat Makefile | < in
-zsh: no such file or directory: in
-lin@EricdeMacBook-Pro minishell % ./minishell
-minishell$ cat Makefile | < in
-minishell: syntax error near unexpected token `newline'
-Error: get command list failed from syntax error
-minishell$
---should check with print cmd_list
+export and echo:
+
+export:
+export
+export 123=minishell
+export foo
+
+echo:
+echo -nnnn -nnnn -nnnn minishell
 
 

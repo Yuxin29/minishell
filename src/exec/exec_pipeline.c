@@ -43,6 +43,8 @@ void	execute_pipeline(t_exec_path *exec_cmd, t_env *env_list)
 		}
 		if (pid == 0)
 		{
+			signal(SIGINT, SIG_DFL);
+			signal(SIGQUIT, SIG_DFL);
 			if (prev_pipe != -1)
 			{
 				dup2(prev_pipe, STDIN_FILENO);

@@ -1,7 +1,5 @@
 #include "minishell.h"
 
-volatile sig_atomic_t	g_signal = 0;
-
 static int	check_invalid_cmds(t_exec_path *exec_cmd, t_cmd *cmd_list)
 {
 	t_cmd	*cur;

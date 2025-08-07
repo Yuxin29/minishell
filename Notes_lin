@@ -281,12 +281,12 @@ prev_pipe == pipe2[0]，现在可以关掉 pipe2[0]（baton 完全传递完）
 1\
 export and echo:
 
-export:
+-export:
 export
 export 123=minishell
 export foo
 
-echo:
+-echo:
 echo -nnnn -nnnn -nnnn minishell
 
 

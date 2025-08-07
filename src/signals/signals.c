@@ -12,7 +12,6 @@ SIGUSR1、SIGUSR2: defined
 void	signal_handler(	int signo)
 {
 	g_signal = signo;
-
 }
 
 int	check_signanl_and_reset(char *line)

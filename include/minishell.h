@@ -14,6 +14,7 @@
 # include <fcntl.h>
 # include <stdio.h>                 //readline
 
+extern volatile sig_atomic_t g_sig_num;
 #include <setjmp.h> //delete later
 extern jmp_buf g_jmpbuf;//delete later
 

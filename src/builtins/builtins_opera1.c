@@ -59,52 +59,19 @@ int ft_cd(char **argv, t_env **env)
 	return (0);
 }
 
-//yuxin added
-//this one is used for check if exit n is a pure number in the effective range
-// ft_isdigit checks only a char
-// return 1 on error(not numeric) and 0 on ok
-static int ft_is_numeric(char *str)
-{
-	int			n;
-
-	n = 0;
-	if (str[0] == '-' || str[0] == '+')
-		n++;
-	while (str[n])
-	{
-		if (!ft_isdigit(str[n]))
-			return (1);
-		n++;
-	}
-	if (str[0] == '-')
-	{
-		if (ft_strcmp(str, LLONG_MIN_STR) < 0)
-			return (1); // error: too small
-	}
-	else
-	{
-		if (ft_strcmp(LLONG_MAX_STR, str) < 0) // I compare the string direclyt
-			return (1);
-	}
-	return (0);
-}
-
 // yuxin working on this
 // in bash, if we exit, we exit bash into zsh shel
 // so, this should be the same of control+D, exit the whle thing
 // do we need to update signals? probably not
-// NAME		exit — cause the shell to exit
-// SYNOPSIS	exit [n]
-// Bash uses strtol() or strtoll() under the hood to parse the number. That means: long long
-// It must be parsable within the range of a 64-bit signed integer (typically):
-// Min: -9223372036854775808
-// Max: 9223372036854775807
+// NAME		exit — cause the shell to exit			SYNOPSIS	exit [n]
+// Bash uses strtol() or strtoll() under the hood to parse the number. That means: long long (the range of a 64-bit signed integer)
 int	ft_exit(char **argv) //here ft_exit / exit is a cmd, but not a function
 {
 	long long	status; //long long definitely enough
 
 	if (!argv[1]) //this should also exit even no numbers afrer // it exits with the last cmd's status
 		exit(0); //0 is not correct, should be status
+	//int ft_exit(char **argv, t_exec_path *exec_cmd), need to pass the cmd->status in. need to check with lin Friday first
 	if (ft_is_numeric(argv[1]))
 	{
 		ft_putstr_fd("minishell: exit: ", 2);
@@ -117,9 +84,19 @@ int	ft_exit(char **argv) //here ft_exit / exit is a cmd, but not a function
 		ft_putstr_fd("exit: too many arguments\n", 2);
 		exit (1); //because the exit 4 a, exit 4 is valid
 	}
-	status = ft_atoi(argv[1]); // need to write out own strtol
-	exit((unsigned char)status); //here exit is not as a cmd, but a function: wrap a long long int to an char between 0 - 255
+	status = ft_atoll(argv[1]); // need to write out own strtol
+
+	// re move these lines later
+	write(2, "CHECK\n", 7);
+	char *nbr = ft_itoa((int)status); 
+	write(2, nbr, ft_strlen(nbr));
+	write(2, "\n", 2);
+	free (nbr);
+	//in the terminal, echo $? to check the (unsigned char)status
+
+	exit((unsigned char)status); //here exit as a function: wrap a long long int to an char between 0 - 255
 }
+// minishell process ends with a specific exit code, and the parent shell (bash/zsh) automatically stores that exit code in the special variable $?.
 
 // pwd
 // The getcwd() function copies an absolute pathname of the current working directory to the array pointed  to by buf, 

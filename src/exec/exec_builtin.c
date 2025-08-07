@@ -31,8 +31,8 @@ int	execute_builtin_cmd(char **argv, t_env **env) //should handle redir here!!!
 		return (ft_unset(argv, env));
 	if (ft_strcmp(argv[0], "env") == 0)
 		return (ft_env(*env));
-	// if (ft_strcmp(argv[0], "exit") == 0)
-	// 	return (ft_exit(argv, *env));
+	if (ft_strcmp(argv[0], "exit") == 0)
+	 	return (ft_exit(argv)); //int ft_exit(char **argv, t_exec_path *exec_cmd) need to change later
 	return (1);
 }
 

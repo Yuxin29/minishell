@@ -1,10 +1,9 @@
 #include "parsing.h"
 #include "minishell.h"
 
-//nothing to free in this whole files functions
 //precheck validity of the raw_line
 //return 1 on errors and 1 on okei
-//in case of the quotes not close,
+//in case of the quotes not close, bash waits for the second quotes
 // but we treat it as syntax error
 // nothing need to be freed here
 int	check_raw_line_syntax(char *raw_line)

@@ -1,17 +1,5 @@
 #include "minishell.h"
 
-//why is this necessary
-//it is probably not needed, delete later
-char	*check_strdup(char *dup, char *original)
-{
-	if (!dup)
-	{
-		free(original);
-		perror("strdup");
-	}
-	return (NULL);
-}
-
 //no need to null check in ft_strjoin, it will return null if failed
 //but need to null check when calling ft_strjoin_free
 char	*ft_strjoin_free(char *s1, char *s2)

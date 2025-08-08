@@ -65,18 +65,18 @@ int ft_cd(char **argv, t_env **env)
 // do we need to update signals? probably not
 // NAME		exit — cause the shell to exit			SYNOPSIS	exit [n]
 // Bash uses strtol() or strtoll() under the hood to parse the number. That means: long long (the range of a 64-bit signed integer)
-int	ft_exit(char **argv) //here ft_exit / exit is a cmd, but not a function
+int	ft_exit(char **argv, t_exec_path *exec_cmd) //here ft_exit / exit is a cmd, but not a function
 {
 	long long	status; //long long definitely enough
 
 	if (!argv[1]) //this should also exit even no numbers afrer // it exits with the last cmd's status
-		exit(0); //0 is not correct, should be status
+		exit(exec_cmd->exit_status); //0 is not correct, should be status
 	//int ft_exit(char **argv, t_exec_path *exec_cmd), need to pass the cmd->status in. need to check with lin Friday first
 	if (ft_is_numeric(argv[1]))
 	{
 		ft_putstr_fd("minishell: exit: ", 2);
-		ft_putstr_fd("argv[1]: ", 2);
-		ft_putstr_fd("numeric argument required", 2);
+		ft_putstr_fd(argv[1], 2);
+		ft_putstr_fd(": numeric argument required", 2);
 		exit (255); //fatal error 255
 	}
 	if (argv[2]) //below are case when ac == 2, argv[1] valid and is the last arguement

@@ -16,8 +16,8 @@ int	is_builtin(char *cmd)
 				|| ft_strcmp(cmd, "env") == 0
 				|| ft_strcmp(cmd, "exit") == 0);
 }
-
-int	execute_builtin_cmd(char **argv, t_env **env) //should handle redir here!!!
+//yuxin changed
+int	execute_builtin_cmd(char **argv, t_env **env, t_exec_path *exec_cmd) //should handle redir here!!!
 {
 	if (ft_strcmp(argv[0], "echo") == 0)
 		return (ft_echo(argv));
@@ -32,7 +32,7 @@ int	execute_builtin_cmd(char **argv, t_env **env) //should handle redir here!!!
 	if (ft_strcmp(argv[0], "env") == 0)
 		return (ft_env(*env));
 	if (ft_strcmp(argv[0], "exit") == 0)
-	 	return (ft_exit(argv)); //int ft_exit(char **argv, t_exec_path *exec_cmd) need to change later
+	 	return (ft_exit(argv, exec_cmd)); //int ft_exit(char **argv, t_exec_path *exec_cmd) need to change later
 	return (1);
 }
 
@@ -58,7 +58,7 @@ void	run_builtin_with_redir(t_exec_path *exec_cmd, t_env **env_list)
 		exec_cmd->exit_status = 1;
 		return ;
 	}
-	exec_cmd->exit_status = execute_builtin_cmd(exec_cmd->whole_cmd->argv, env_list);
+	exec_cmd->exit_status = execute_builtin_cmd(exec_cmd->whole_cmd->argv, env_list, exec_cmd);
 	dup2(orig_stdin, STDIN_FILENO);
 	dup2(orig_stdout, STDOUT_FILENO);
 	close(orig_stdin);

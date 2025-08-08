@@ -43,6 +43,8 @@ void	execute_pipeline(t_exec_path *exec_cmd, t_env *env_list)
 		}
 		if (pid == 0)
 		{
+			signal(SIGINT, SIG_DFL);
+			signal(SIGQUIT, SIG_DFL);
 			if (prev_pipe != -1)
 			{
 				dup2(prev_pipe, STDIN_FILENO);
@@ -58,7 +60,7 @@ void	execute_pipeline(t_exec_path *exec_cmd, t_env *env_list)
 				exit(EXIT_FAILURE);
 			if (is_builtin(cmd->argv[0]))
 			{
-				exec_cmd->exit_status = execute_builtin_cmd(cmd->argv, &env_list);
+				exec_cmd->exit_status = execute_builtin_cmd(cmd->argv, &env_list, exec_cmd);
 				exit(exec_cmd->exit_status);
 			}
 			else

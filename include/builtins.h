@@ -22,7 +22,7 @@ int		ft_cd(char **argv, t_env **env);
 int		ft_echo(char **argv);
 int		ft_pwd(void);
 int		ft_env(t_env *env);
-int		ft_exit(char **argv); //int ft_exit(char **argv, t_exec_path *exec_cmd)
+int		ft_exit(char **argv, t_exec_path *exec_cmd);
 int		ft_export(char **argv, t_env **env);
 int		ft_unset(char **argv, t_env **env);
 //-------------

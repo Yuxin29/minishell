@@ -43,10 +43,8 @@ int main(int argc, char **argv, char **envp)
 	(void)argc;
 	(void)argv;
 
-    rl_catch_signals = 0;   // forbidden readline default signalsm global variables from the readline.h
-	//setup_signals();
-
 	ft_memset(&exec_cmd, 0, sizeof(exec_cmd));
+	init_signals();
 	env_list = env_list_init(envp);
 	if (!env_list)
 	{
@@ -56,8 +54,13 @@ int main(int argc, char **argv, char **envp)
 	while (1)
 	{
 		line = readline("minishell$ ");
+		if (check_signanl_and_reset(line))
+			continue ;
 		if (!line)
-			break ;
+		{
+			printf("exit\n");
+			break;
+		}
 		if(*line)
 		{
 			add_history(line);
@@ -107,6 +110,7 @@ int main(int argc, char **argv, char **envp)
 				free_t_exec_path(&exec_cmd);
 				continue;
 			}
+
 			tmp = exec_cmd.whole_cmd;
 			while (tmp)
 			{
@@ -117,17 +121,15 @@ int main(int argc, char **argv, char **envp)
 				tmp = tmp->next;
 			}
 
-			//if bulitin and no pipe, no need to find cmd_path, just execute(need to deal with other things in it)
-			if (is_builtin(exec_cmd.whole_cmd->argv[0]) && !exec_cmd.whole_cmd->next)
+			if (!exec_cmd.whole_cmd->next)
 			{
-				run_builtin_with_redir(&exec_cmd, &env_list);
-				free_t_exec_path(&exec_cmd);
-				continue;
+				if (is_builtin(exec_cmd.whole_cmd->argv[0]))
+					run_builtin_with_redir(&exec_cmd, &env_list);
+				else
+					execute_single_cmd(&exec_cmd);
 			}
-			if (exec_cmd.whole_cmd->next)
-				execute_pipeline(&exec_cmd, env_list); //should check if builtin or external in it
 			else
-				execute_single_cmd(&exec_cmd);
+				execute_pipeline(&exec_cmd, env_list);
 			free_t_exec_path(&exec_cmd);
 			continue;
 		}

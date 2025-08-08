@@ -17,7 +17,8 @@ typedef struct s_exec_path
 
 //execute builtins cmd with redir
 int		is_builtin(char *cmd);
-int		execute_builtin_cmd(char **argv, t_env **env);
+//int		execute_builtin_cmd(char **argv, t_env **env);
+int		execute_builtin_cmd(char **argv, t_env **env, t_exec_path *exec_cmd);
 void	run_builtin_with_redir(t_exec_path *exec_cmd, t_env **env_list);
 //------------------
 

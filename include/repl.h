@@ -4,6 +4,4 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 
-void	repl_loop(void);
-
 #endif

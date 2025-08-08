@@ -13,8 +13,14 @@
 # include <stdlib.h>         //malloc, free
 # include <fcntl.h>
 # include <stdio.h>                 //readline
+# include <signal.h>
+# include <sys/types.h>
 
-extern volatile sig_atomic_t g_sig_num;
+extern volatile sig_atomic_t g_signal;
+
+int	check_signal_and_reset(char **line);
+void	init_signals(void);
+
 #include <setjmp.h> //delete later
 extern jmp_buf g_jmpbuf;//delete later
 

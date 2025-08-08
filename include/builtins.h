@@ -10,6 +10,7 @@ typedef struct	s_env
 {
 	char			*key;  //eg. USER
 	char			*value; // eg. LinLiu
+	int				exported;
 	struct s_env	*next;
 }	t_env;
 

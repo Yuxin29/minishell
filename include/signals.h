@@ -6,9 +6,11 @@ extern volatile sig_atomic_t g_sig_num;
 
 //sig_atomic_t: An integer type which can be accessed as an atomic entity even in the presence of asynchronous interrupts.
 
-int		check_signal_and_reset(char **line);
-void	init_signals(void);
-
+// int		check_signal_and_reset(char **line);
+// void	init_signals(void);
+void	signal_init(void);
+//void	signal_heredoc(void);
+void	signal_default(void);
 
 #endif
 

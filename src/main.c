@@ -3,6 +3,78 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
+
+// static void print_cmd_list(t_cmd *head)
+// {
+//     int cmd_i = 0;
+//     if (!head)
+//     {
+//         printf("Commands list is empty\n");
+//         return;
+//     }
+
+//     while (head)
+//     {
+//         printf("Command[%d]:\n", cmd_i++);
+
+//         // Print argv array and corresponding quote_type array
+//         if (!head->argv)
+//         {
+//             printf("  argv: (null)\n");
+//         }
+//         else
+//         {
+//             printf("  argv:\n");
+//             for (int i = 0; head->argv[i] != NULL; i++)
+//             {
+//                 printf("    argv[%d]: '%s'", i, head->argv[i]);
+//                 if (head->quote_type)
+//                 {
+//                     int q = head->quote_type[i];
+//                     if (q == 0)      printf(" (quote=NONE)");
+//                     else if (q == 1) printf(" (quote=SINGLE_QUOTE)");
+//                     else if (q == 2) printf(" (quote=DOUBLE_QUOTE)");
+//                     else             printf(" (quote=UNKNOWN %d)", q);
+//                 }
+//                 printf("\n");
+//             }
+//         }
+
+//         // Print redirections
+//         if (!head->redirections)
+//         {
+//             printf("  redirections: (none)\n");
+//         }
+//         else
+//         {
+//             printf("  redirections:\n");
+//             t_redir *r = head->redirections;
+//             int r_i = 0;
+//             while (r)
+//             {
+//                 printf("    redir[%d]: ", r_i++);
+//                 if (r->type == T_REDIRECT_IN)       printf("type=T_REDIRECT_IN (2), ");
+//                 else if (r->type == T_REDIRECT_OUT) printf("type=T_REDIRECT_OUT (3), ");
+//                 else if (r->type == T_APPEND)        printf("type=T_APPEND (4), ");
+//                 else if (r->type == T_HEREDOC)       printf("type=T_HEREDOC (5), ");
+//                 else                                printf("type=UNKNOWN (%d), ", r->type);
+
+//                 printf("file='%s'", r->file ? r->file : "(null)");
+//                 if (r->type == T_HEREDOC)
+//                     printf(", heredoc_delim='%s'", r->heredoc_delim ? r->heredoc_delim : "(null)");
+
+//                 printf("\n");
+//                 r = r->next;
+//             }
+//         }
+
+//         head = head->next;
+//     }
+// }
+
+
+volatile sig_atomic_t	g_signal = 0;
+
 static int	check_invalid_cmds(t_exec_path *exec_cmd, t_cmd *cmd_list)
 {
 	t_cmd	*cur;
@@ -44,7 +116,6 @@ int main(int argc, char **argv, char **envp)
 	(void)argv;
 
 	ft_memset(&exec_cmd, 0, sizeof(exec_cmd));
-	init_signals();
 	env_list = env_list_init(envp);
 	if (!env_list)
 	{
@@ -53,9 +124,20 @@ int main(int argc, char **argv, char **envp)
 	}
 	while (1)
 	{
+		init_signals();
 		line = readline("minishell$ ");
-		if (check_signanl_and_reset(line))
-			continue ;
+		// if (check_signal_and_reset(&line))
+		// 	continue ;
+		if ((!line && errno == EINTR) || g_signal == SIGINT)   // <<< 放到最前面
+		{
+			write(1, "\n", 1);
+			rl_replace_line("", 0);
+			rl_on_new_line();
+			rl_redisplay();
+			g_signal = 0;
+			if (line) { free(line); line = NULL; }
+			continue;
+		}
 		if (!line)
 		{
 			printf("exit\n");
@@ -90,19 +172,20 @@ int main(int argc, char **argv, char **envp)
 
 			exec_cmd.whole_cmd = build_command_list(&exec_cmd, token_list); //convert token list to command list
 			free_token_list(token_list);
-			if (!exec_cmd.whole_cmd)
+			if (!exec_cmd.whole_cmd || exec_cmd.exit_status == 2)
 			{
 				ft_free_arr(exec_cmd.envp);
 				if (exec_cmd.exit_status == 2)
 					continue;
 				else
 				{
+					ft_putstr_fd("check aaaa\n", 2);
 					free_env_list(env_list);
 					ft_putstr_fd("Error: build command list failed from memory failure\n", 2);
 					exit(EXIT_FAILURE);
 				}
 			}
-
+			
 			expand_all_cmds(&exec_cmd, exec_cmd.whole_cmd, exec_cmd.envp);
 
 			if (check_invalid_cmds(&exec_cmd, exec_cmd.whole_cmd))

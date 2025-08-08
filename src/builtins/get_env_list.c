@@ -36,6 +36,7 @@ t_env	*env_new_node(char *key, char *value)
 	node = malloc(sizeof(t_env));
 	if (!node)
 		return (NULL);
+	node->exported = 0;
 	node->key = ft_strdup(key);
 	if (!node->key)
 		return (free(node), NULL);

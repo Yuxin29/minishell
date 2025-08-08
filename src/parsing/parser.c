@@ -11,14 +11,14 @@ t_cmd	*build_command_list(t_exec_path *cmd, t_token *token_head)
 	t_cmd	*cmd_current;
 	t_cmd	*cmd_last;
 
+	cmd_head = NULL;
+	cmd_current = NULL;
+	cmd_last = NULL;
 	if (check_token_syntax(token_head) == 1)
 	{
 		cmd->exit_status = 2;
 		return (NULL);
 	}
-	cmd_head = NULL;
-	cmd_current = NULL;
-	cmd_last = NULL;
 	while (token_head)
 	{
 		cmd_current = malloc(sizeof(t_cmd));

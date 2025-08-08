@@ -436,3 +436,100 @@ FIXED
 // sigaddset
 // #include <signal.h>         //signal, sigaction,
 // # include <sys/wait.h>
+
+
+========================================Dany
+yuwu@c2r6p13:~/42/Rank3_minishell$ make
+make: Nothing to be done for 'all'.
+yuwu@c2r6p13:~/42/Rank3_minishell$ ls
+include  libft	Makefile  minishell  Notes_lin	Notes_yuxin  obj  src
+yuwu@c2r6p13:~/42/Rank3_minishell$ ./minishell
+minishell$ ls
+include  libft	Makefile  minishell  Notes_lin	Notes_yuxin  obj  src
+minishell$ exit
+yuwu@c2r6p13:~/42/Rank3_minishell$ ls
+include  libft	Makefile  minishell  Notes_lin	Notes_yuxin  obj  src
+yuwu@c2r6p13:~/42/Rank3_minishell$ ls
+include  libft	Makefile  minishell  Notes_lin	Notes_yuxin  obj  src
+yuwu@c2r6p13:~/42/Rank3_minishell$ export A="     a       b     "
+yuwu@c2r6p13:~/42/Rank3_minishell$ ls
+include  libft	Makefile  minishell  Notes_lin	Notes_yuxin  obj  src
+yuwu@c2r6p13:~/42/Rank3_minishell$ echo $A
+a b
+yuwu@c2r6p13:~/42/Rank3_minishell$ echo -n $A
+a byuwu@c2r6p13:~/42/Rank3_minishell$ echo -n "$A"
+     a       b     yuwu@c2r6p13:~/42/Rank3_minishell$ echo "$A"
+     a       b     
+yuwu@c2r6p13:~/42/Rank3_minishell$ ls
+include  libft	Makefile  minishell  Notes_lin	Notes_yuxin  obj  src
+yuwu@c2r6p13:~/42/Rank3_minishell$ ./minishell 
+minishell$ ls
+include  libft	Makefile  minishell  Notes_lin	Notes_yuxin  obj  src
+minishell$ export A="    a     b     "
+minishell$ echo $A
+    a     b     
+minishell$ echo "$A"
+    a     b     
+minishell$ echo -n "$A"
+    a     b     minishell$ 
+--------------------------
+c2r6p13% ls
+42	 Documents  goinfre  Music     Public	  Videos
+Desktop  Downloads  max      Pictures  Templates
+c2r6p13% bash
+yuwu@c2r6p13:~$ ls
+42	 Documents  goinfre  Music     Public	  Videos
+Desktop  Downloads  max      Pictures  Templates
+yuwu@c2r6p13:~$ echo << $ABC"" | grep abc
+> $USER
+> abc sdfkljsdfkjl
+> $USER"abc"
+> fgjkfgjk
+> fgkljfghklj
+> abcok
+> $ABC
+yuwu@c2r6p13:~$ cat << $ABC"" | grep abc
+$USER
+abc sdfkljsdfkjl
+$USER"abc"
+fgjkfgjk
+fgkljfghklj
+abcok
+$ABC
+abc sdfkljsdfkjl
+$USER"abc"
+abcok
+yuwu@c2r6p13:~$ cat << $ABC"" | grep abc
+> $ABC abc
+> dfgjkdflgj
+> dflgkjjdfgkj
+> abcok
+> $USER abc
+> fdgkjdg
+> abcok
+> $ABC
+$ABC abc
+abcok
+$USER abc
+abcok
+yuwu@c2r6p13:~$ cat << $ABC | grep abc
+> $USER abc
+> $USER
+> abcok
+> dfgjklfdgjkl
+> $ABC
+yuwu abc
+abcok
+
+=========================Anton
+c2r6p13% bash
+yuwu@c2r6p13:~$ cat << $USER
+> sdkfh
+> yuwu
+> $USER
+sdkfh
+yuwu
+yuwu@c2r6p13:~$ cat << ""$USER
+> ksdjf
+> $USER
+ksdjf

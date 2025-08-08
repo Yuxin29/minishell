@@ -24,7 +24,10 @@ int	check_token_syntax(t_token *token_head)
 	if (!token_head)
 		return (1);
 	if (token_head->t_type == 1)
+	{
 		errmsg_set_status(SYNTAX_ERR_PIPE);
+		return (1);
+	}
 	while (token_head)
 	{
 		if (check_special_characters(token_head))

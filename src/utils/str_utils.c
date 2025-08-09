@@ -32,3 +32,13 @@ char	*ft_strjoin_free(char *s1, char *s2)
 		free(s2);
 	return (joined);
 }
+
+int	hd_is_interrupted(void)
+{
+	if (g_signal)
+	{
+		g_signal = 0;
+		return (1);
+	}
+	return (0);
+}

@@ -104,3 +104,18 @@ void	free_cmd_list(t_cmd *cmd_head)
 		cmd_head = tmp;
 	}
 }
+
+void	free_cmd_node(t_cmd *c)
+{
+	if (!c)
+		return ;
+	if (c->argv)
+		ft_free_arr(c->argv);
+	if (c->quote_type)
+		free(c->quote_type);
+	if (c->redirections)
+		free_redirections(c);
+	if (c->cmd_path)
+		free(c->cmd_path);
+	free(c);
+}

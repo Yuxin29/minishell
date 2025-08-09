@@ -102,17 +102,22 @@ char	*creat_heredoc_file(char *delim)
 	int		fd;
 	char	*line;
 	char	*tmp_file;
+	int		saved_stdin;
 
 	tmp_file = get_tmp_filepath();
 	if (!tmp_file)
 		return (perror("malloc: "), NULL);
-	fd = open(tmp_file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	fd = open(tmp_file, O_WRONLY | O_CREAT | O_TRUNC, 0600);
 	if(fd < 0)
 		return (free(tmp_file), perror("heredoc open failed"), NULL);
+	saved_stdin = dup(STDIN_FILENO);
+	if (saved_stdin < 0)
+		return (close(fd), free(tmp_file), perror("dup"), NULL);
+	signal_heredoc();
 	while (1)
 	{
 		line = readline("minishell heredoc> ");
-		if (!line)
+		if (g_signal == 1 || !line)
 			break ;
 		if (ft_strcmp(line, delim) == 0)
 		{
@@ -122,6 +127,18 @@ char	*creat_heredoc_file(char *delim)
 		ft_putendl_fd(line, fd);
 		free(line);
 	}
+	signal_init();
+	dup2(saved_stdin, STDIN_FILENO);
+	close(saved_stdin);
 	close(fd);
+	if(g_signal == 1)
+	{
+		unlink(tmp_file);
+		free(tmp_file);
+        //g_exit_status = 130;  /* 符合 bash：被 SIGINT 中断 */
+		return (NULL);
+	}
 	return (tmp_file);
 }
+
+

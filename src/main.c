@@ -1,7 +1,5 @@
 #include "minishell.h"
 
-volatile sig_atomic_t	g_signal = 0;
-
 static int	check_invalid_cmds(t_exec_path *exec_cmd, t_cmd *cmd_list)
 {
 	t_cmd	*cur;
@@ -92,6 +90,8 @@ int main(int argc, char **argv, char **envp)
 			{
 				ft_free_arr(exec_cmd.envp);
 				if (exec_cmd.exit_status == 2)
+					continue;
+				else if (exec_cmd.exit_status == 130)
 					continue;
 				else
 				{

@@ -17,5 +17,5 @@ char	*free_malloc_fail_null(char	*str);
 //str_utils.c
 char	*check_strdup(char *dup, char *original);
 char	*ft_strjoin_free(char *s1, char *s2);
-
+int		hd_is_interrupted(void);
 #endif

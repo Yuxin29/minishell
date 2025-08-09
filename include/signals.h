@@ -9,8 +9,8 @@ extern volatile sig_atomic_t g_sig_num;
 // int		check_signal_and_reset(char **line);
 // void	init_signals(void);
 void	signal_init(void);
-//void	signal_heredoc(void);
 void	signal_default(void);
+void	signal_heredoc(void);
 
 #endif
 

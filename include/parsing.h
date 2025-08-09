@@ -79,7 +79,7 @@ int		check_token_syntax(t_token *tokens);
 int		count_argv(t_token *start);
 void	free_redirections(t_cmd *cmd_head);
 void	free_cmd_list(t_cmd *cmd_head);
-
+void	free_cmd_node(t_cmd *c);
 // parser.c
 // change token_list to command list and free the original tokens
 // - Taking the token list and Understanding the structure of the command,

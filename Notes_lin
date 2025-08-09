@@ -289,4 +289,22 @@ export foo
 -echo:
 echo -nnnn -nnnn -nnnn minishell
 
-
+----------
+父进程
+  │
+  ├── 调用 waitpid(pid, &status, 0)
+  │
+  ├── 等待子进程结束...
+  │
+  ├──[信号来了！]──► waitpid 被中断
+  │                     │
+  │                     ├── 返回值: -1
+  │                     └── errno: EINTR (Interrupted system call)
+  │
+  ├── 检查: (返回值 == -1 && errno == EINTR) ?
+  │         ├── 是 → 再次调用 waitpid (重试等待)
+  │         └── 否 → 继续处理退出状态
+  │
+  ├── 最终拿到子进程状态
+  │
+  └── 根据 WIFEXITED / WIFSIGNALED 设置 exit_status

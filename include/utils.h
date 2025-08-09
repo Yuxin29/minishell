@@ -10,7 +10,8 @@ typedef struct s_token t_token;
 typedef struct s_exec_path t_exec_path;
 
 //free_error_exit.c
-void		errmsg_set_status(char *msg); //preparsing
+// void		errmsg_set_status(char *msg); //preparsing
+int	errmsg_return_one(char *msg);
 char		*free_malloc_fail_null(char	*str);//preparsing
 void		free_t_exec_path(t_exec_path *cmd_and_path);//post_parsing
 

@@ -24,22 +24,19 @@ int	check_token_syntax(t_token *token_head)
 	if (!token_head)
 		return (1);
 	if (token_head->t_type == 1)
-	{
-		errmsg_set_status(SYNTAX_ERR_PIPE);
-		return (1);
-	}
+		return (errmsg_return_one(SYNTAX_ERR_PIPE));
 	while (token_head)
 	{
 		if (check_special_characters(token_head))
-			return (errmsg_set_status(SYNTAX_ERR_SPECIAL_CHARS), 1);
+			return (errmsg_return_one(SYNTAX_ERR_SPECIAL_CHARS));
 		if (token_head->t_type >= 1 && token_head->next && token_head->next->t_type == 1)
-			return (errmsg_set_status(SYNTAX_ERR_PIPE), 1);
+			return (errmsg_return_one(SYNTAX_ERR_PIPE));
 		if (token_head->t_type >= 2 && token_head->next && token_head->next->t_type >= 2)
-			return (errmsg_set_status(SYNTAX_ERR_REDIR_DOUBLE), 1);
+			return (errmsg_return_one(SYNTAX_ERR_REDIR_DOUBLE));
 		if (token_head->t_type == 1 && token_head->next == NULL)
-			return (errmsg_set_status(SYNTAX_ERR_PIPE), 1);
+			return (errmsg_return_one(SYNTAX_ERR_PIPE));
 		if (token_head->t_type >= 2 && token_head->next == NULL)
-			return (errmsg_set_status(SYNTAX_ERR_REDIR_FILE_MISSING), 1);
+			return (errmsg_return_one(SYNTAX_ERR_REDIR_FILE_MISSING));
 		token_head = token_head->next;
 	}
 	return (0);

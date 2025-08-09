@@ -438,11 +438,7 @@ FIXED
 // # include <sys/wait.h>
 
 
-========================================Dany
-yuwu@c2r6p13:~/42/Rank3_minishell$ make
-make: Nothing to be done for 'all'.
-yuwu@c2r6p13:~/42/Rank3_minishell$ ls
-include  libft	Makefile  minishell  Notes_lin	Notes_yuxin  obj  src
+========================================Danny
 yuwu@c2r6p13:~/42/Rank3_minishell$ ./minishell
 minishell$ ls
 include  libft	Makefile  minishell  Notes_lin	Notes_yuxin  obj  src

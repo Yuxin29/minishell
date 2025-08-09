@@ -1,4 +1,6 @@
 #include "minishell.h"
+# include "parsing.h"
+# include "utils.h"
 
 //no need to null check in ft_strjoin, it will return null if failed
 //but need to null check when calling ft_strjoin_free

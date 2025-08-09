@@ -28,10 +28,7 @@ int	check_raw_line_syntax(char *raw_line)
 				i++;
 		}
 		if (!raw_line[i])
-		{
-			errmsg_set_status("minishell: syntax error: unclosed quotes");
-			return (1);
-		}
+			return (errmsg_return_one("minishell: syntax error: unclosed quotes"));
 		i++;
 	}
 	return (0);

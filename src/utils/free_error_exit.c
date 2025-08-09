@@ -1,11 +1,12 @@
 #include "minishell.h"
 
 //functions are are all called only before parsing and during parsing
-// used in pre leving/pre parsign checkings
-void	errmsg_set_status(char *msg)
+// used in pre lexing/pre parsign checkings
+int	errmsg_return_one(char *msg)
 {
 	if (msg)
 		ft_putendl_fd(msg, 2);
+	return (1);
 }
 
 //used in checking malloc strs or strdup, strjoin and so on

@@ -3,7 +3,6 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
-
 // static void print_cmd_list(t_cmd *head)
 // {
 //     int cmd_i = 0;
@@ -72,8 +71,8 @@
 //     }
 // }
 
-
 volatile sig_atomic_t	g_signal = 0;
+
 
 static int	check_invalid_cmds(t_exec_path *exec_cmd, t_cmd *cmd_list)
 {
@@ -116,6 +115,8 @@ int main(int argc, char **argv, char **envp)
 	(void)argv;
 
 	ft_memset(&exec_cmd, 0, sizeof(exec_cmd));
+	rl_catch_signals = 0;
+	signal_init();
 	env_list = env_list_init(envp);
 	if (!env_list)
 	{
@@ -124,20 +125,7 @@ int main(int argc, char **argv, char **envp)
 	}
 	while (1)
 	{
-		init_signals();
 		line = readline("minishell$ ");
-		// if (check_signal_and_reset(&line))
-		// 	continue ;
-		if ((!line && errno == EINTR) || g_signal == SIGINT)   // <<< 放到最前面
-		{
-			write(1, "\n", 1);
-			rl_replace_line("", 0);
-			rl_on_new_line();
-			rl_redisplay();
-			g_signal = 0;
-			if (line) { free(line); line = NULL; }
-			continue;
-		}
 		if (!line)
 		{
 			printf("exit\n");
@@ -176,6 +164,8 @@ int main(int argc, char **argv, char **envp)
 			{
 				ft_free_arr(exec_cmd.envp);
 				if (exec_cmd.exit_status == 2)
+					continue;
+				else if (exec_cmd.exit_status == 130)
 					continue;
 				else
 				{

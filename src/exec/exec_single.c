@@ -33,11 +33,15 @@ static void	wait_child_and_exit(t_exec_path *cmd, pid_t pid)
 {
 	int	status;
 
-	waitpid(pid, &status, 0);
+	while (waitpid(pid, &status, 0) == -1 && errno == EINTR) //Interrupted system call
+		continue ;//even id the waitpid be interupted by ctrl c, the waitpid still need to goning on
 	if (WIFEXITED(status)) //if ture, meaning the process exit correctly
 		cmd->exit_status = WEXITSTATUS(status); //get exit code
-	else if (WIFSIGNALED(status)) //if child process be killed by signal
-		cmd->exit_status = 128 + WTERMSIG(status); // killed by which signal, if killed by SIGINT(2),return 130 (128+2)
+	else if (WIFSIGNALED(status)) ///if child process be killed by signal
+	{
+		write(STDOUT_FILENO, "\n", 1);
+		cmd->exit_status = 128 + WTERMSIG(status); //// killed by which signal, if killed by SIGINT(2),return 130 (128+2)
+	}
 	else
 		cmd->exit_status = 1; //show there's some problem
 }
@@ -49,12 +53,16 @@ void	execute_single_cmd(t_exec_path *cmd)
 	pid = fork();
 	if (pid == 0)
 	{
-		signal(SIGINT, SIG_DFL);
-		signal(SIGQUIT, SIG_DFL);
+		signal_default();
 		exec_single_child(cmd);
 	}
 	else if (pid > 0)
+	{
+		signal(SIGINT, SIG_IGN); //avoid being killed by ctrl c
+		signal(SIGQUIT, SIG_IGN);
 		wait_child_and_exit(cmd, pid);
+		signal_init();
+	}
 	else
 	{
 		perror("fork");

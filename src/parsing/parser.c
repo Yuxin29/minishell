@@ -23,13 +23,28 @@ t_cmd	*build_command_list(t_exec_path *cmd, t_token *token_head)
 	{
 		cmd_current = malloc(sizeof(t_cmd));
 		if (!cmd_current)
-			return ((t_cmd *)free_malloc_fail_null(NULL));
-		ft_bzero(cmd_current, sizeof(t_cmd));
-		token_head = get_one_new_cmd(token_head, cmd_current);
-		if (!token_head && (!cmd_current->argv && !cmd_current->redirections))
 		{
 			free_cmd_list(cmd_head);
-			return (NULL);
+			return ((t_cmd *)free_malloc_fail_null(NULL));
+		}
+			//return ((t_cmd *)free_malloc_fail_null(NULL));
+		ft_bzero(cmd_current, sizeof(t_cmd));
+		token_head = get_one_new_cmd(token_head, cmd_current);
+		if (!token_head)
+		{
+			if (hd_is_interrupted())
+			{
+				free_cmd_node(cmd_current);
+				free_cmd_list(cmd_head);
+				cmd->exit_status = 130;
+				return (NULL);
+			}
+			if (!cmd_current->argv && !cmd_current->redirections)
+			{
+				free_cmd_node(cmd_current); //because when an error happens before you link cmd_current onto the list, that node is not reachable from cmd_head. Only free_cmd_node() can clean it up.
+				free_cmd_list(cmd_head);
+				return (NULL);
+			}
 		}
 		if (!cmd_head)
 			cmd_head = cmd_current;

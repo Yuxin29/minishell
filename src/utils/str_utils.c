@@ -77,3 +77,13 @@ int ft_is_numeric(char *str)
 	}
 	return (0);
 }
+
+int	hd_is_interrupted(void)
+{
+	if (g_signal)
+	{
+		g_signal = 0;
+		return (1);
+	}
+	return (0);
+}

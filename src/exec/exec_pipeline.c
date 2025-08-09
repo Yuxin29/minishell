@@ -1,18 +1,41 @@
 #include "minishell.h"
 
+void	wait_diff_status(int status, int *last_exit)
+{
+	if (WIFEXITED(status))
+		*last_exit = WEXITSTATUS(status);
+	else if (WIFSIGNALED(status))
+	{
+		write(STDOUT_FILENO, "\n", 1);
+		*last_exit = 128 + WTERMSIG(status);
+	}
+	else
+		*last_exit = 1;
+}
+
 static void	wait_exit(t_exec_path *exec_cmd, pid_t last_pid)
 {
-	int	status;
+	int		status;
+	pid_t	wpid;
+	int		last_exit;
 
-	waitpid(last_pid, &status, 0);
-	if (WIFEXITED(status))
-		exec_cmd->exit_status = WEXITSTATUS(status);
-	else if (WIFSIGNALED(status))
-		exec_cmd->exit_status = 128 + WTERMSIG(status);
-	else
-		exec_cmd->exit_status = 1;
-	while (wait(NULL) > 0) //While there is at least one child process still running, keep waiting for them to finish.if pass NULL, meaning “I don’t care about the exit status.
-		;
+	last_exit = 1;
+	while (1) //While there is at least one child process still running, keep waiting for them to finish.if pass NULL, meaning “I don’t care about the exit status.
+	{
+		wpid = waitpid(-1, &status, 0);
+		if (wpid == -1)
+		{
+			if (errno == EINTR) //interrupt
+				continue ;
+			if (errno == ECHILD) //no mroe child
+				break ;
+			exec_cmd->exit_status = 1; //other errors
+			return ;
+		}
+		if (wpid == last_pid)
+			wait_diff_status(status, &last_exit);
+	}
+	exec_cmd->exit_status = last_exit;
 }
 
 void	execute_pipeline(t_exec_path *exec_cmd, t_env *env_list)
@@ -43,8 +66,7 @@ void	execute_pipeline(t_exec_path *exec_cmd, t_env *env_list)
 		}
 		if (pid == 0)
 		{
-			signal(SIGINT, SIG_DFL);
-			signal(SIGQUIT, SIG_DFL);
+			signal_default();
 			if (prev_pipe != -1)
 			{
 				dup2(prev_pipe, STDIN_FILENO);
@@ -90,5 +112,8 @@ void	execute_pipeline(t_exec_path *exec_cmd, t_env *env_list)
 			cmd = cmd->next;
 		}
 	}
+	signal(SIGINT, SIG_IGN);
+	signal(SIGQUIT, SIG_IGN);
 	wait_exit(exec_cmd, last_pid); //wait_exit(last_pid); must be called outside the while loop, after all the pipeline commands have been forked.
+	signal_init();
 }

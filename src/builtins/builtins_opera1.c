@@ -87,11 +87,11 @@ int	ft_exit(char **argv, t_exec_path *exec_cmd) //here ft_exit / exit is a cmd, 
 	status = ft_atoll(argv[1]); // need to write out own strtol
 
 	// re move these lines later
-	write(2, "CHECK\n", 7);
-	char *nbr = ft_itoa((int)status); 
-	write(2, nbr, ft_strlen(nbr));
-	write(2, "\n", 2);
-	free (nbr);
+	// write(2, "CHECK\n", 7);
+	// char *nbr = ft_itoa((int)status); 
+	// write(2, nbr, ft_strlen(nbr));
+	// write(2, "\n", 2);
+	// free (nbr);
 	//in the terminal, echo $? to check the (unsigned char)status
 
 	exit((unsigned char)status); //here exit as a function: wrap a long long int to an char between 0 - 255

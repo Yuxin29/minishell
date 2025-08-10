@@ -3,76 +3,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
-// static void print_cmd_list(t_cmd *head)
-// {
-//     int cmd_i = 0;
-//     if (!head)
-//     {
-//         printf("Commands list is empty\n");
-//         return;
-//     }
-
-//     while (head)
-//     {
-//         printf("Command[%d]:\n", cmd_i++);
-
-//         // Print argv array and corresponding quote_type array
-//         if (!head->argv)
-//         {
-//             printf("  argv: (null)\n");
-//         }
-//         else
-//         {
-//             printf("  argv:\n");
-//             for (int i = 0; head->argv[i] != NULL; i++)
-//             {
-//                 printf("    argv[%d]: '%s'", i, head->argv[i]);
-//                 if (head->quote_type)
-//                 {
-//                     int q = head->quote_type[i];
-//                     if (q == 0)      printf(" (quote=NONE)");
-//                     else if (q == 1) printf(" (quote=SINGLE_QUOTE)");
-//                     else if (q == 2) printf(" (quote=DOUBLE_QUOTE)");
-//                     else             printf(" (quote=UNKNOWN %d)", q);
-//                 }
-//                 printf("\n");
-//             }
-//         }
-
-//         // Print redirections
-//         if (!head->redirections)
-//         {
-//             printf("  redirections: (none)\n");
-//         }
-//         else
-//         {
-//             printf("  redirections:\n");
-//             t_redir *r = head->redirections;
-//             int r_i = 0;
-//             while (r)
-//             {
-//                 printf("    redir[%d]: ", r_i++);
-//                 if (r->type == T_REDIRECT_IN)       printf("type=T_REDIRECT_IN (2), ");
-//                 else if (r->type == T_REDIRECT_OUT) printf("type=T_REDIRECT_OUT (3), ");
-//                 else if (r->type == T_APPEND)        printf("type=T_APPEND (4), ");
-//                 else if (r->type == T_HEREDOC)       printf("type=T_HEREDOC (5), ");
-//                 else                                printf("type=UNKNOWN (%d), ", r->type);
-
-//                 printf("file='%s'", r->file ? r->file : "(null)");
-//                 if (r->type == T_HEREDOC)
-//                     printf(", heredoc_delim='%s'", r->heredoc_delim ? r->heredoc_delim : "(null)");
-
-//                 printf("\n");
-//                 r = r->next;
-//             }
-//         }
-
-//         head = head->next;
-//     }
-// }
-
 volatile sig_atomic_t	g_signal = 0;
-
 
 static int	check_invalid_cmds(t_exec_path *exec_cmd, t_cmd *cmd_list)
 {
@@ -107,6 +38,7 @@ int main(int argc, char **argv, char **envp)
 {
 	t_env		*env_list;
 	char		*line;
+	char		*expanded_line;
 	t_token		*token_list;
 	t_exec_path	exec_cmd;
 	t_cmd		*tmp;
@@ -142,9 +74,21 @@ int main(int argc, char **argv, char **envp)
 				ft_putstr_fd("Error: env list initialized failed\n", 2);
 				exit(EXIT_FAILURE);
 			}
-
-			token_list = get_token_list(&exec_cmd, line); //covert line to token list
+			
+			//yuxin added this part
+			expanded_line = pre_expand_line(&exec_cmd, line, exec_cmd.envp); //null check this one
+			if (!expanded_line)
+			{
+				ft_free_arr(exec_cmd.envp);
+				free_env_list(env_list);
+				free(line);
+				ft_putstr_fd("Error: pre expanding failure\n", 2);
+				exit(EXIT_FAILURE);
+			}
 			free(line);
+
+			token_list = get_token_list(&exec_cmd, expanded_line); //covert line to token list
+			free(expanded_line);
 			if (!token_list)
 			{
 				ft_free_arr(exec_cmd.envp);

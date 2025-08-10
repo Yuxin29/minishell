@@ -13,6 +13,9 @@
 #define SYNTAX_ERR_REDIR_FILE_MISSING	"minishell: syntax error: missing filename or delimiter after redirection"
 #define SYNTAX_ERR_SPECIAL_CHARS		"minishell: syntax error: special characters"
 
+//common shell cmd line length
+#define BUF_SIZE 8192
+
 // 	T_WORD,			0    "string" 	string				a cmd, a arguement
 // 	T_PIPE,			1    |      	pipe
 // 	T_REDIRECT_IN,	2     <      	input redirection   Reads from a file
@@ -57,6 +60,9 @@ typedef struct s_cmd
 	char			*cmd_path;
 	struct s_cmd	*next;
 }	t_cmd;
+
+//pre_expander.c
+char *pre_expand_line(t_exec_path *cmd, char *raw_line, char **envp);
 
 // lex_utils.c
 int		check_raw_line_syntax(char *raw_line);

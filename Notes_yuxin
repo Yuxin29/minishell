@@ -429,7 +429,10 @@ FIXED
 
 // #include <unistd.h>         //access, access, close, fork
 // #include <stdlib.h>         //malloc, free
-// #include <fcntl.h>
+// #include <fcntl.h
+> $USER
+ksdjf
+>
 // #include <stdio.h>  //readline, printf
 // #include <string.h>
 // # include <errno.h>
@@ -438,44 +441,21 @@ FIXED
 // # include <sys/wait.h>
 
 
-========================================Danny
-yuwu@c2r6p13:~/42/Rank3_minishell$ ./minishell
-minishell$ ls
-include  libft	Makefile  minishell  Notes_lin	Notes_yuxin  obj  src
-minishell$ exit
-yuwu@c2r6p13:~/42/Rank3_minishell$ ls
-include  libft	Makefile  minishell  Notes_lin	Notes_yuxin  obj  src
-yuwu@c2r6p13:~/42/Rank3_minishell$ ls
-include  libft	Makefile  minishell  Notes_lin	Notes_yuxin  obj  src
+========================================Danny testes
+1. SOLVED
 yuwu@c2r6p13:~/42/Rank3_minishell$ export A="     a       b     "
 yuwu@c2r6p13:~/42/Rank3_minishell$ ls
 include  libft	Makefile  minishell  Notes_lin	Notes_yuxin  obj  src
 yuwu@c2r6p13:~/42/Rank3_minishell$ echo $A
 a b
 yuwu@c2r6p13:~/42/Rank3_minishell$ echo -n $A
-a byuwu@c2r6p13:~/42/Rank3_minishell$ echo -n "$A"
-     a       b     yuwu@c2r6p13:~/42/Rank3_minishell$ echo "$A"
+a b
+yuwu@c2r6p13:~/42/Rank3_minishell$ echo -n "$A"
      a       b     
-yuwu@c2r6p13:~/42/Rank3_minishell$ ls
-include  libft	Makefile  minishell  Notes_lin	Notes_yuxin  obj  src
-yuwu@c2r6p13:~/42/Rank3_minishell$ ./minishell 
-minishell$ ls
-include  libft	Makefile  minishell  Notes_lin	Notes_yuxin  obj  src
-minishell$ export A="    a     b     "
-minishell$ echo $A
-    a     b     
-minishell$ echo "$A"
-    a     b     
-minishell$ echo -n "$A"
-    a     b     minishell$ 
---------------------------
-c2r6p13% ls
-42	 Documents  goinfre  Music     Public	  Videos
-Desktop  Downloads  max      Pictures  Templates
-c2r6p13% bash
-yuwu@c2r6p13:~$ ls
-42	 Documents  goinfre  Music     Public	  Videos
-Desktop  Downloads  max      Pictures  Templates
+yuwu@c2r6p13:~/42/Rank3_minishell$ echo "$A"
+     a       b     
+----------------
+2.
 yuwu@c2r6p13:~$ echo << $ABC"" | grep abc
 > $USER
 > abc sdfkljsdfkjl

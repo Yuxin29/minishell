@@ -51,7 +51,7 @@ t_token	*build_word_token(char *line, int *i)
 	{
 		if (line[*i] == '$' && line[*i + 1] == '"')
 		{
-			(*i)++// consume '$'
+			(*i)++; // consume '$'
 			part = get_quoted_part(line, i);
 			part_quote = 3; // special $" quote type
 		}

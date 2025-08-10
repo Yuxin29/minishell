@@ -165,6 +165,7 @@ t_token	*parse_argv(t_cmd *cmd, t_token *tokens)
 		if (!cmd->argv[i])
 		{
 			ft_free_arr(cmd->argv);
+			free(cmd->quote_type);
 			return ((t_token *)free_malloc_fail_null(NULL));
 		}
 		tokens = tokens->next;

@@ -38,7 +38,7 @@ int	try_expand_env_var(char *raw_line, int *i, char *res, int *j, char **envp)
 			k = 0;
 			while (val[k])
 				res[(*j)++] = val[k++];
-			//free (value);
+			free (val);
 		}
 		*i += len + 1;
 		return (1);

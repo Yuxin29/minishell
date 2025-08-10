@@ -105,12 +105,6 @@ int	ft_exit(char **argv, t_exec_path *exec_cmd)
 // minishell process ends with a specific exit code,
 // and the parent shell (bash/zsh) automatically stores 
 // that exit code in the special variable $?.
-// re move these lines later
-// write(2, "CHECK\n", 7);
-// char *nbr = ft_itoa((int)status); 
-// write(2, nbr, ft_strlen(nbr));
-// write(2, "\n", 2);
-// free (nbr);
 //in the terminal, echo $? to check the (unsigned char)status
 
 // pwd

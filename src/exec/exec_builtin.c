@@ -18,7 +18,8 @@ int	is_builtin(char *cmd)
 }
 
 //yuxin changed
-int	execute_builtin_cmd(char **argv, t_env **env, t_exec_path *exec_cmd) //should handle redir here!!!
+//should handle redir here!!!
+int	execute_builtin_cmd(char **argv, t_env **env, t_exec_path *exec_cmd)
 {
 	if (ft_strcmp(argv[0], "echo") == 0)
 		return (ft_echo(argv));
@@ -33,7 +34,7 @@ int	execute_builtin_cmd(char **argv, t_env **env, t_exec_path *exec_cmd) //shoul
 	if (ft_strcmp(argv[0], "env") == 0)
 		return (ft_env(*env));
 	if (ft_strcmp(argv[0], "exit") == 0)
-	 	return (ft_exit(argv, exec_cmd)); //int ft_exit(char **argv, t_exec_path *exec_cmd) need to change later
+	 	return (ft_exit(argv, exec_cmd));
 	return (1);
 }
 

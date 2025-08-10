@@ -58,7 +58,6 @@ int main(int argc, char **argv, char **envp)
 	while (1)
 	{
 		line = readline("minishell$ ");
-
 		if (!line)
 		{
 			printf("exit\n");
@@ -78,15 +77,14 @@ int main(int argc, char **argv, char **envp)
 			
 			//yuxin added this part
 			expanded_line = pre_expand_line(&exec_cmd, line, exec_cmd.envp); //null check this one
+			free(line);
 			if (!expanded_line)
 			{
 				ft_free_arr(exec_cmd.envp);
 				free_env_list(env_list);
-				free(line);
 				ft_putstr_fd("Error: pre expanding failure\n", 2);
 				exit(EXIT_FAILURE);
 			}
-			free(line);
 
 			token_list = get_token_list(&exec_cmd, expanded_line); //covert line to token list
 			free(expanded_line);

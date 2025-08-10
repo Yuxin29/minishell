@@ -384,7 +384,6 @@ exit(127);
 ================0806 need to fix===================================
 1. mem leak \ reachable mem in  expander
 minishell$ echo "$USER "$USER" '$USER'" '$USER' "$USER"
-
 FIXED
 
 2. preparsing checker wrong
@@ -444,8 +443,6 @@ ksdjf
 ========================================Danny testes
 1. SOLVED
 yuwu@c2r6p13:~/42/Rank3_minishell$ export A="     a       b     "
-yuwu@c2r6p13:~/42/Rank3_minishell$ ls
-include  libft	Makefile  minishell  Notes_lin	Notes_yuxin  obj  src
 yuwu@c2r6p13:~/42/Rank3_minishell$ echo $A
 a b
 yuwu@c2r6p13:~/42/Rank3_minishell$ echo -n $A
@@ -455,7 +452,7 @@ yuwu@c2r6p13:~/42/Rank3_minishell$ echo -n "$A"
 yuwu@c2r6p13:~/42/Rank3_minishell$ echo "$A"
      a       b     
 ----------------
-2.
+2. NOT SOLVED 
 yuwu@c2r6p13:~$ echo << $ABC"" | grep abc
 > $USER
 > abc sdfkljsdfkjl
@@ -545,3 +542,38 @@ mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell/tester_lukas$ echo $HOME
 mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell/tester_lukas$ cd
 mikko@mikko-desktop-ubuntu:~$ pwd
 /home/mikko
+
+
+===========================Yuxin NOT fixed ont the wkend
+2. syntax error code 2 is not passed to $? correctly.
+mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ ./minishell 
+minishell$ echo ss
+ss
+minishell$ echo $?
+0
+minishell$ echo <as
+as: No such file or directory
+minishell$ echo $?
+1
+minishell$ <
+minishell: syntax error: missing filename or delimiter after redirection
+minishell$ echo $?
+minishell$ echo aa
+minishell$ echo $?
+
+3.Yuxin needs to fix
+mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ cat << ""$USER
+> asd
+> sdfg
+> mikko
+> $USER
+asd
+sdfg
+mikko
+mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ ./minishell 
+minishell$ cat << ""$USER
+minishell heredoc> sdf
+minishell heredoc> mikko
+sdf
+
+

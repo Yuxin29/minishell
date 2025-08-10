@@ -17,6 +17,7 @@ t_cmd	*build_command_list(t_exec_path *cmd, t_token *token_head)
 	if (check_token_syntax(token_head) == 1)
 	{
 		cmd->exit_status = 2;
+		//ft_putendl_fd("status set to 2\n", 1);
 		return (NULL);
 	}
 	while (token_head)
@@ -56,25 +57,24 @@ t_cmd	*build_command_list(t_exec_path *cmd, t_token *token_head)
 }
 
 // //generate on single cmd struct
-t_token *get_one_new_cmd(t_token *token_head, t_cmd *cmd_current)
+t_token	*get_one_new_cmd(t_token *token_head, t_cmd *cmd_current)
 {
 	if (token_head && token_head->t_type == 0)
 	{
- 		token_head = parse_argv(cmd_current, token_head);
- 		if (!token_head)
- 		 	return (NULL);
+		token_head = parse_argv(cmd_current, token_head);
+		if (!token_head)
+			return (NULL);
 	}
 	while (token_head && token_head->t_type >= 2 && token_head->t_type <= 5)
 	{
- 		token_head = parse_redirections(cmd_current, token_head);
- 		if (!token_head)
- 		 	return (NULL);
+		token_head = parse_redirections(cmd_current, token_head);
+		if (!token_head)
+			return (NULL);
 	}
 	if (token_head && token_head->t_type == 1)
- 		token_head = token_head->next;
+		token_head = token_head->next;
 	return (token_head);
 }
-
 
 static t_redir	*create_redir_node(t_token *redir_tok, t_token *file_tok)
 {

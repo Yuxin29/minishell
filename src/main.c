@@ -58,7 +58,7 @@ int main(int argc, char **argv, char **envp)
 	while (1)
 	{
 		line = readline("minishell$ ");
-		
+
 		if (!line)
 		{
 			printf("exit\n");
@@ -120,7 +120,7 @@ int main(int argc, char **argv, char **envp)
 					exit(EXIT_FAILURE);
 				}
 			}
-			
+
 			expand_all_cmds(&exec_cmd, exec_cmd.whole_cmd, exec_cmd.envp);
 
 			if (check_invalid_cmds(&exec_cmd, exec_cmd.whole_cmd))

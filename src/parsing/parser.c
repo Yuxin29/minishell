@@ -55,28 +55,26 @@ t_cmd	*build_command_list(t_exec_path *cmd, t_token *token_head)
 	return (cmd_head);
 }
 
-//generate on single cmd struct
-t_token	*get_one_new_cmd(t_token *token_head, t_cmd *cmd_current)
+// //generate on single cmd struct
+t_token *get_one_new_cmd(t_token *token_head, t_cmd *cmd_current)
 {
-	while (token_head && token_head->t_type != 1)
+	if (token_head && token_head->t_type == 0)
 	{
-		if (token_head->t_type == 0)
-		{
-			token_head = parse_argv(cmd_current, token_head);
-			if (!token_head)
-				return (NULL);
-		}
-		else if (token_head->t_type >= 2 && token_head->t_type <= 5)
-		{
-			token_head = parse_redirections(cmd_current, token_head);
-			if (!token_head)
-				return (NULL);
-		}
+ 		token_head = parse_argv(cmd_current, token_head);
+ 		if (!token_head)
+ 		 	return (NULL);
+	}
+	while (token_head && token_head->t_type >= 2 && token_head->t_type <= 5)
+	{
+ 		token_head = parse_redirections(cmd_current, token_head);
+ 		if (!token_head)
+ 		 	return (NULL);
 	}
 	if (token_head && token_head->t_type == 1)
-		token_head = token_head->next;
+ 		token_head = token_head->next;
 	return (token_head);
 }
+
 
 static t_redir	*create_redir_node(t_token *redir_tok, t_token *file_tok)
 {
@@ -161,13 +159,13 @@ t_token	*parse_argv(t_cmd *cmd, t_token *tokens)
 	while (i < len && tokens && tokens->t_type == 0)
 	{
 		cmd->argv[i] = ft_strndup(tokens->str, ft_strlen(tokens->str));
-		cmd->quote_type[i] = tokens->quote_type;
 		if (!cmd->argv[i])
 		{
 			ft_free_arr(cmd->argv);
 			free(cmd->quote_type);
 			return ((t_token *)free_malloc_fail_null(NULL));
 		}
+		cmd->quote_type[i] = tokens->quote_type;
 		tokens = tokens->next;
 		i++;
 	}

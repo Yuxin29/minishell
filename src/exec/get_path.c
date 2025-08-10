@@ -18,7 +18,7 @@
 // 	return (NULL);
 // }
 
-static char	*get_env(t_env *env, char *key)
+char	*get_env(t_env *env, char *key)
 {
 	while (env)
 	{

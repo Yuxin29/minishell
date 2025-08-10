@@ -9,8 +9,8 @@ int	var_name_len(const char *str)
 	int	len;
 
 	len = 0;
-	if (str[len] == '$')
-		len++;
+	// if (str[len] == '$')
+	// 	len++;
 	while (str[len] && (ft_isalnum(str[len]) || str[len] == '_'))
 		len++;
 	return (len);
@@ -125,14 +125,24 @@ char	*pre_expand_line(t_exec_path *cmd, char *raw_line, char **envp)
 			res[j++] = raw_line[i++];
 			continue ;
 		}
+		if (raw_line[i] == '$' && raw_line[i + 1] == '"')
+		{
+			res[j++] = raw_line[i++];
+			res[j++] = raw_line[i++];
+			while (raw_line[i] && raw_line[i] != '"')
+				res[j++] = raw_line[i++];
+			if (raw_line[i] == '"')
+				res[j++] = raw_line[i++];
+			continue;
+		}
 		if ((try_expand_env_var(raw_line, &i, res, &j, envp)))
 			continue ;
 		else
 		{
-            res[j] = raw_line[i];
-            j++;
-            i++;
-        }
+			res[j] = raw_line[i];
+			j++;
+			i++;
+		}
 	}
 	res[j] = '\0';
 	return (res);

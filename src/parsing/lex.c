@@ -43,17 +43,39 @@ t_token	*build_word_token(char *line, int *i)
 	char	*temp;
 	char	*part;
 	char	q;
+	char part_quote;
 
+	q = 0;
 	temp = NULL;
 	while (line[*i] && !ft_isspace(line[*i]) && line[*i] != '<' && line[*i] != '>' && line[*i] != '|')
 	{
-		q = line[*i];
-		if (line[*i] == '\'' || line[*i] == '"')
+		if (line[*i] == '$' && line[*i + 1] == '"')
+		{
+			(*i)++; // consume '$'
 			part = get_quoted_part(line, i);
+			part_quote = 3; // special $" quote type
+		}
+		else if (line[*i] == '\'')
+		{
+			part = get_quoted_part(line, i);
+			part_quote = 1;
+		}
+		else if (line[*i] == '"')
+		{
+			part = get_quoted_part(line, i);
+			part_quote = 2;
+		}
 		else
+		{
 			part = get_unquoted_part(line, i);
+			part_quote = 0;
+		}
 		if (!part)
 			return (NULL);
+		if (q == 0)
+			q = part_quote;
+		else if (q != part_quote)
+			q = 0; // mixed quotes => no quote
 		temp = ft_strjoin_free(temp, part);
 		if (!temp)
 			return ((t_token *)free_malloc_fail_null(NULL));
@@ -62,7 +84,7 @@ t_token	*build_word_token(char *line, int *i)
 	if (!token)
 		return ((t_token *)free_malloc_fail_null(temp));
 	token->str = temp;
-	get_quote_type(token, q);
+	token->quote_type = q;
 	token->next = NULL;
 	get_token_type(token);
 	return (token);

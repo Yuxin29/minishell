@@ -5,8 +5,17 @@
 // with quotes, all chars are fine
 int	check_special_characters(t_token *token_head)
 {
+	const char *s;
+	
 	if (token_head->t_type == 0 && token_head->quote_type == 0)
 	{
+		s = token_head->str;
+		while (*s)
+		{
+			if (*s == '\'' || *s == '\"')
+				return (0);
+			s++;
+		}
 		if (ft_strchr((const char *)token_head->str, ';')
 			|| ft_strchr((const char *)token_head->str, '\\'))
 			return (1);

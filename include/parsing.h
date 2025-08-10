@@ -32,12 +32,12 @@ typedef enum e_token_type
 	T_HEREDOC,
 }	t_token_type;
 
-//quote_type;		//0: no quote; 1: single quote; 2: double quote
+//quote_type;		//0: no quote; 1: single quote; 2: double quote, 3: QUOTE_DOLLAR_DOUBLE
 typedef struct		s_token
 {
 	char			*str;
 	t_token_type	t_type;
-	int				quote_type;
+	int				quote_type; 
 	struct s_token	*next;
 }	t_token;
 

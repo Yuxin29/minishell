@@ -509,3 +509,39 @@ yuwu@c2r6p13:~$ cat << ""$USER
 > ksdjf
 > $USER
 ksdjf
+
+
+========================================tester lukas
+Test  26: ❌ export A- 
+mini exit code = 0
+bash exit code = 1
+mini error = ()
+bash error = ( not a valid identifier)
+Test  30: ❌ export HELLO-=123 
+mini exit code = 0
+bash exit code = 1
+mini error = ()
+bash error = ( not a valid identifier)
+Test  31: ❌ export = 
+mini exit code = 0
+bash exit code = 1
+mini error = ()
+bash error = ( not a valid identifier)
+Test  32: ❌ export 123 
+mini exit code = 0
+bash exit code = 1
+mini error = ()
+bash error = ( not a valid identifier)
+--> to be fixed in built in export??
+
+
+
+===========================Yuxin fixed ont the wkend
+1/ cd. cd without argv[1] means change home
+mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell/tester_lukas$ pwd
+/home/mikko/yuxin_home/minishell/tester_lukas
+mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell/tester_lukas$ echo $HOME
+/home/mikko
+mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell/tester_lukas$ cd
+mikko@mikko-desktop-ubuntu:~$ pwd
+/home/mikko

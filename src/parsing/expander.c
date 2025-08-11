@@ -1,6 +1,4 @@
-#include "parsing.h"
 #include "minishell.h"
-#include "exec.h"
 
 //to deal with echo $"HOME"
 static int should_expand(const char *str, int quote_type)
@@ -65,7 +63,7 @@ char	*expand_variables_in_str(t_exec_path *cmd, char *input, char **envp)
 			i += 2;
 			continue;
 		}
-		if (input[i] == '$' && input[i + 1] && 
+		if (input[i] == '$' && input[i + 1] &&
 			(input[i + 1] == '?' || ft_isalpha(input[i + 1]) || input[i + 1] == '_'))
 		{
 			if (input[i + 1] == '?')

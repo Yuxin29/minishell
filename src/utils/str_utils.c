@@ -1,6 +1,6 @@
 #include "minishell.h"
-# include "parsing.h"
-# include "utils.h"
+//# include "parsing.h"
+//# include "utils.h"
 
 //no need to null check in ft_strjoin, it will return null if failed
 //but need to null check when calling ft_strjoin_free
@@ -74,16 +74,6 @@ int ft_is_numeric(char *str)
 	{
 		if (ft_strcmp(LLONG_MAX_STR, str) < 0) // I compare the string direclyt
 			return (1);
-	}
-	return (0);
-}
-
-int	hd_is_interrupted(void)
-{
-	if (g_signal)
-	{
-		g_signal = 0;
-		return (1);
 	}
 	return (0);
 }

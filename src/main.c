@@ -1,8 +1,5 @@
 #include "minishell.h"
 
-#include <readline/readline.h>
-#include <readline/history.h>
-
 volatile sig_atomic_t	g_signal = 0;
 
 static int	check_invalid_cmds(t_exec_path *exec_cmd, t_cmd *cmd_list)
@@ -74,7 +71,7 @@ int main(int argc, char **argv, char **envp)
 				ft_putstr_fd("Error: env list initialized failed\n", 2);
 				exit(EXIT_FAILURE);
 			}
-			
+
 			//yuxin added this part
 			expanded_line = pre_expand_line(&exec_cmd, line, exec_cmd.envp); //null check this one
 			free(line);

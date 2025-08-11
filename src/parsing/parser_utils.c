@@ -1,4 +1,3 @@
-#include "parsing.h"
 #include "minishell.h"
 
 // if it is a word without quotes, it can not contain special character

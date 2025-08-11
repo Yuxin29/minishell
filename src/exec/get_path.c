@@ -1,23 +1,5 @@
 #include "minishell.h"
 
-// static char	*find_path_in_envp(char **envp)
-// {
-// 	char	*path_value;
-
-// 	if(!envp)
-// 		return (NULL);
-// 	while(*envp) //get path
-// 	{
-// 		if (ft_strncmp(*envp, "PATH=", 5) == 0) //
-// 		{
-// 			path_value = *envp + 5;
-// 			return (path_value);
-// 		}
-// 		envp++;
-// 	}
-// 	return (NULL);
-// }
-
 char	*get_env(t_env *env, char *key)
 {
 	while (env)
@@ -52,6 +34,7 @@ static char	*match_cmd_in_path(char **paths, char *cmd)
 	}
 	return (NULL);
 }
+
 char	*get_cmd_path(char *cmd, t_env *env_list)
 {
 	char	**paths;

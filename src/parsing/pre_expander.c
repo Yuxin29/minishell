@@ -1,6 +1,4 @@
-#include "parsing.h"
 #include "minishell.h"
-#include "exec.h"
 
 //return the length of a valid variable name
 //ft_isalnum, not sure, it should be only uppper case
@@ -30,7 +28,7 @@ int	try_expand_env_var(char *raw_line, int *i, char *res, int *j, char **envp)
 		len = var_name_len(raw_line + *i + 1);
 		key = ft_substr(raw_line, *i + 1, len);
 		if (!key)
-			return (0); //malloc fails, need to perror here 
+			return (0); //malloc fails, need to perror here
 		val = get_env_value(envp, key); //null check, failure check
 		free (key);
 		if (val)

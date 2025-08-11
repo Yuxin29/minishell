@@ -1,11 +1,10 @@
 #ifndef PARSING_H
 # define PARSING_H
 
-# include <unistd.h>         //access, access, close, fork
-# include <stdlib.h>         //malloc, free
-# include <fcntl.h>
-# include <stdio.h>
-# include "exec.h"
+// # include <unistd.h>         //access, access, close, fork
+// # include <stdlib.h>         //malloc, free
+// # include <fcntl.h>
+// # include <stdio.h>
 
 // syntax error ms macors
 #define SYNTAX_ERR_PIPE					"minishell: syntax error near unexpected token `|'"
@@ -15,6 +14,7 @@
 
 //common shell cmd line length
 #define BUF_SIZE 8192
+typedef struct s_exec_path t_exec_path;
 
 // 	T_WORD,			0    "string" 	string				a cmd, a arguement
 // 	T_PIPE,			1    |      	pipe
@@ -37,7 +37,7 @@ typedef struct		s_token
 {
 	char			*str;
 	t_token_type	t_type;
-	int				quote_type; 
+	int				quote_type;
 	struct s_token	*next;
 }	t_token;
 

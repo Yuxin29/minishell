@@ -1,27 +1,5 @@
 #include "minishell.h"
 
-void	set_env(t_env **env, char *key, char *value)
-{
-	t_env	*cur;
-	t_env	*new_node;
-
-	cur = *env;
-	while (cur)
-	{
-		if (ft_strcmp(cur->key, key) == 0)
-		{
-			free(cur->value);
-			cur->value = ft_strdup(value);
-			return ;
-		}
-		cur = cur->next;
-	}
-	// if no exit node, create a new one
-	new_node = env_new_node(key, value);
-	new_node->next = *env;
-	*env = new_node;
-}
-
 static void	unset_env(t_env **env, char *key)
 {
 	t_env *cur;
@@ -47,28 +25,27 @@ static void	unset_env(t_env **env, char *key)
 	}
 }
 
-int	ft_export(char **argv, t_env **env)
+// pwd
+// The getcwd() function copies an absolute pathname
+// of the current working directory
+// to the array pointed to by buf,
+// which is of length size
+// On success,  these functions return a pointer to a string
+// containing the pathname of the current working directory.
+// In the case of getcwd() and getwd() this is the same value as buf.
+// On failure, these functions return NULL, and errno is set.
+// The contents of the  array  pointed to by buf are undefined on error.
+int	ft_pwd()
 {
-	int		i;
-	char	*tmp;
-	char	*key;
-	char	*value;
+	char	buf[PATH_MAX];
 
-	i = 1;
-	while (argv[i])
+	if (getcwd(buf, sizeof(buf)))
 	{
-		tmp = ft_strchr(argv[i], '=');
-		if (tmp)
-		{
-			*tmp = '\0';
-			key = argv[i];
-			value = tmp + 1;
-			set_env(env, key, value);
-			*tmp = '=';
-		}
-		i++;
+		printf("%s\n", buf);
+		return (0);
 	}
-	return (0);
+	perror("pwd");
+	return (1);
 }
 
 int	ft_unset(char **argv, t_env **env)
@@ -80,6 +57,17 @@ int	ft_unset(char **argv, t_env **env)
 	{
 		unset_env(env, argv[i]);
 		i++;
+	}
+	return (0);
+}
+
+int	ft_env(t_env *env)
+{
+	while (env)
+	{
+		if (env->key && env->value)
+			printf("%s=%s\n", env->key, env->value);
+		env = env->next;
 	}
 	return (0);
 }

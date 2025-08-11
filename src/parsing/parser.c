@@ -1,4 +1,3 @@
-#include "parsing.h"
 #include "minishell.h"
 
 //to find / recognize a cmd, we need to find a pipe

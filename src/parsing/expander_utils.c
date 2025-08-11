@@ -1,6 +1,4 @@
-#include "parsing.h"
 #include "minishell.h"
-#include "exec.h"
 
 // return the value of a key from the envp
 // special case: split[1] == NULL (e.g. FOO= in envp).

@@ -1,10 +1,6 @@
 #ifndef UTILS_H
 # define UTILS_H
 
-# include "parsing.h"
-# include "minishell.h"
-
-
 typedef struct s_cmd t_cmd;
 typedef struct s_token t_token;
 typedef struct s_exec_path t_exec_path;
@@ -21,7 +17,5 @@ char		*ft_strjoin_free(char *s1, char *s2);
 //needed for builtin
 long long	ft_atoll(char *str);
 int			ft_is_numeric(char *str);
-//needed for signal
-int		hd_is_interrupted(void);
 
 #endif

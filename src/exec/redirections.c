@@ -1,11 +1,5 @@
 #include "minishell.h"
 
-#include <readline/readline.h>
-#include <readline/history.h>
-
-// redirections.c
-// after parsing, we got already cmd list.
-// we check here if there are redirections symbles here in each cmd node.
 static int	apply_infile(t_redir *redir)
 {
 	int	fd;
@@ -138,7 +132,6 @@ char	*creat_heredoc_file(char *delim)
 	{
 		unlink(tmp_file);
 		free(tmp_file);
-        //g_exit_status = 130;  /* 符合 bash：被 SIGINT 中断 */
 		return (NULL);
 	}
 	return (tmp_file);

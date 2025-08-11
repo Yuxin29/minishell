@@ -1,16 +1,4 @@
-#include "parsing.h"
 #include "minishell.h"
-#include "exec.h"
-
-//to deal with echo $"HOME"
-static int should_expand(const char *str, int quote_type)
-{
-	if (quote_type == 1) // single quotes: no expansion
-		return (0);
-	if (quote_type == 2 && str && str[0] == '$' && str[1] == '"')
-		return (0); // skip expansion for $"..."
-	return (1); // otherwise expand
-}
 
 // examlpe of variable expandable in a redirection, and this variable is $?
 // ls > output_$?.txt
@@ -30,13 +18,12 @@ char	*replace_variable_in_str(t_exec_path *cmd, char *input, int pos, char **env
 	else
 	{
 		var_len = 0;
-		while (input[start + var_len] && (ft_isalnum(input[start + var_len])
-			|| input[start + var_len] == '_'))
+		while (input[start + var_len] && (ft_isalnum(input[start + var_len]) || input[start + var_len] == '_'))
 			var_len++;
 		value = get_env_value_from_substr(input, start, var_len, envp);
 		if (!value)
-			value = ft_strdup("");  // instead of returning NULL
-			//return (free_malloc_fail_null(NULL));
+			value = ft_strdup("");
+			// instead of returning NULL, return an empty str, but need to null check this strdup, or a MACRO
 	}
 	prefix = ft_substr(input, 0, pos);
 	suffix = ft_strdup(input + start + var_len);
@@ -63,10 +50,10 @@ char	*expand_variables_in_str(t_exec_path *cmd, char *input, char **envp)
 		if (input[i] == '$' && input[i + 1] == '"')
 		{
 			i += 2;
-			continue;
+			continue ;
 		}
-		if (input[i] == '$' && input[i + 1] && 
-			(input[i + 1] == '?' || ft_isalpha(input[i + 1]) || input[i + 1] == '_'))
+		if (input[i] == '$' && input[i + 1]
+			&& (input[i + 1] == '?' || ft_isalpha(input[i + 1]) || input[i + 1] == '_'))
 		{
 			if (input[i + 1] == '?')
 				var_len = 1;

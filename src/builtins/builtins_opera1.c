@@ -1,6 +1,19 @@
 #include "minishell.h"
 
-//echo -n world
+static int	is_n_flag(char *s)
+{
+	int	i;
+
+	if (ft_strncmp(s, "-n", 2) != 0)
+		return (0);
+	i = 2;
+	while (s[i] == 'n')
+		i++;
+	if (s[i] != '\0')
+		return (0);
+	return (1);
+}
+
 int	ft_echo(char **argv)
 {
 	int	flag;
@@ -8,7 +21,7 @@ int	ft_echo(char **argv)
 
 	flag = 0;
 	i = 1;
-	if (argv[i] && ft_strncmp(argv[1], "-n", 2) == 0)
+	while (argv[i] && is_n_flag(argv[i]))
 	{
 		flag = 1;
 		i++;
@@ -76,9 +89,9 @@ int	ft_cd(char **argv, t_env **env)
 // in bash, if we exit, we exit bash into zsh shel
 // so, this should be the same of control+D, exit the whle thing
 // do we need to update signals? probably not
-// NAME		exit — cause the shell to exit			
+// NAME		exit — cause the shell to exit
 // SYNOPSIS	exit [n]
-// Bash uses strtol() or strtoll() under the hood to parse the number. 
+// Bash uses strtol() or strtoll() under the hood to parse the number.
 // That means: long long (the range of a 64-bit signed integer)
 //if (ft_is_numeric(argv[1])) fatal error 255 / exit 2 ?
 int	ft_exit(char **argv, t_exec_path *exec_cmd)
@@ -103,41 +116,8 @@ int	ft_exit(char **argv, t_exec_path *exec_cmd)
 	exit((unsigned char)status);
 }
 // minishell process ends with a specific exit code,
-// and the parent shell (bash/zsh) automatically stores 
+// and the parent shell (bash/zsh) automatically stores
 // that exit code in the special variable $?.
 //in the terminal, echo $? to check the (unsigned char)status
 
-// pwd
-// The getcwd() function copies an absolute pathname 
-// of the current working directory 
-// to the array pointed to by buf, 
-// which is of length size
-// On success,  these functions return a pointer to a string 
-// containing the pathname of the current working directory.
-// In the case of getcwd() and getwd() this is the same value as buf.
-// On failure, these functions return NULL, and errno is set.  
-// The contents of the  array  pointed to by buf are undefined on error.
-int	ft_pwd()
-{
-	char	buf[PATH_MAX];
 
-	if (getcwd(buf, sizeof(buf)))
-	{
-		printf("%s\n", buf);
-		return (0);
-	}
-	perror("pwd");
-	return (1);
-}
-
-//env
-int	ft_env(t_env *env)
-{
-	while (env)
-	{
-		if (env->key && env->value)
-			printf("%s=%s\n", env->key, env->value);
-		env = env->next;
-	}
-	return (0);
-}

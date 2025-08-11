@@ -1,4 +1,3 @@
-#include "parsing.h"
 #include "minishell.h"
 
 //to find / recognize a cmd, we need to find a pipe
@@ -17,7 +16,6 @@ t_cmd	*build_command_list(t_exec_path *cmd, t_token *token_head)
 	if (check_token_syntax(token_head) == 1)
 	{
 		cmd->exit_status = 2;
-		//ft_putendl_fd("status set to 2\n", 1);
 		return (NULL);
 	}
 	while (token_head)
@@ -28,7 +26,6 @@ t_cmd	*build_command_list(t_exec_path *cmd, t_token *token_head)
 			free_cmd_list(cmd_head);
 			return ((t_cmd *)free_malloc_fail_null(NULL));
 		}
-			//return ((t_cmd *)free_malloc_fail_null(NULL));
 		ft_bzero(cmd_current, sizeof(t_cmd));
 		token_head = get_one_new_cmd(token_head, cmd_current);
 		if (!token_head)
@@ -42,7 +39,7 @@ t_cmd	*build_command_list(t_exec_path *cmd, t_token *token_head)
 			}
 			if (!cmd_current->argv && !cmd_current->redirections)
 			{
-				free_cmd_node(cmd_current); //because when an error happens before you link cmd_current onto the list, that node is not reachable from cmd_head. Only free_cmd_node() can clean it up.
+				free_cmd_node(cmd_current);
 				free_cmd_list(cmd_head);
 				return (NULL);
 			}
@@ -67,16 +64,16 @@ t_token	*get_one_new_cmd(t_token *token_head, t_cmd *cmd_current)
 			if (!token_head)
 				return (NULL);
 		}
-		else if (token_head->t_type >= 2 && token_head->t_type <= 5) // redirection
+		else if (token_head->t_type >= 2 && token_head->t_type <= 5)
 		{
 			token_head = parse_redirections(cmd_current, token_head);
 			if (!token_head)
 				return (NULL);
 		}
 		else
-			break;
+			break ;
 	}
-	if (token_head && token_head->t_type == 1) // skip pipe token
+	if (token_head && token_head->t_type == 1)
 		token_head = token_head->next;
 	return (token_head);
 }
@@ -162,30 +159,29 @@ t_token	*parse_argv(t_cmd *cmd, t_token *tokens)
 		return ((t_token *)free_malloc_fail_null(NULL));
 	}
 	while (tokens && tokens->t_type != 1 && i < len)
-    {
-        if (tokens->t_type == 0)
-        {
-            cmd->argv[i] = ft_strndup(tokens->str, ft_strlen(tokens->str));
-            if (!cmd->argv[i])
-            {
-                ft_free_arr(cmd->argv);
-                free(cmd->quote_type);
-                return ((t_token *)free_malloc_fail_null(NULL));
-            }
-            cmd->quote_type[i] = tokens->quote_type;
-            i++;
-            tokens = tokens->next;
-        }
-        else if (tokens->t_type >= 2 && tokens->t_type <= 5) // 
-        {
-            tokens = tokens->next; //  redirection
-            if (tokens)
-                tokens = tokens->next; // skip redirection file token
-        }
-        else
-            break;
-    }
+	{
+		if (tokens->t_type == 0)
+		{
+			cmd->argv[i] = ft_strndup(tokens->str, ft_strlen(tokens->str));
+			if (!cmd->argv[i])
+			{
+				ft_free_arr(cmd->argv);
+				free(cmd->quote_type);
+				return ((t_token *)free_malloc_fail_null(NULL));
+			}
+			cmd->quote_type[i] = tokens->quote_type;
+			i++;
+			tokens = tokens->next;
+		}
+		else if (tokens->t_type >= 2 && tokens->t_type <= 5)
+		{
+			tokens = tokens->next;
+			if (tokens)
+				tokens = tokens->next;
+		}
+		else
+			break ;
+	}
 	cmd->argv[i] = NULL;
 	return (tokens);
 }
-

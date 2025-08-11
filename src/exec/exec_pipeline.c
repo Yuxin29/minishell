@@ -93,8 +93,7 @@ void	execute_pipeline(t_exec_path *exec_cmd, t_env *env_list)
 				perror("execve");
 				if (errno == EACCES) //should i use errno?
 					exit(126); //permission denied， EACCEA means error:access
-				else
-					exit(127);
+				exit(127);
 			}
 		}
 		if (pid > 0)
@@ -112,8 +111,9 @@ void	execute_pipeline(t_exec_path *exec_cmd, t_env *env_list)
 			cmd = cmd->next;
 		}
 	}
-	signal(SIGINT, SIG_IGN);
-	signal(SIGQUIT, SIG_IGN);
+	signal_ignore();
 	wait_exit(exec_cmd, last_pid); //wait_exit(last_pid); must be called outside the while loop, after all the pipeline commands have been forked.
 	signal_init();
 }
+
+

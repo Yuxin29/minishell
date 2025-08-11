@@ -1,6 +1,4 @@
-#include "parsing.h"
 #include "minishell.h"
-#include "exec.h"
 
 // return the value of a key from the envp
 // special case: split[1] == NULL (e.g. FOO= in envp).
@@ -70,4 +68,15 @@ char	*join_three_and_free(char *s1, char *s2, char *s3)
 	}
 	result = ft_strjoin_free(temp, s3);
 	return (result);
+}
+
+//to deal with echo $"HOME", should not expand like this
+// 1 for should expand, 0 for not expand
+int	should_expand(const char *str, int quote_type)
+{
+	if (quote_type == 1)
+		return (0);
+	if (quote_type == 2 && str && str[0] == '$' && str[1] == '"')
+		return (0);
+	return (1);
 }

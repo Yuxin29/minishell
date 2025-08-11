@@ -1,20 +1,21 @@
 #ifndef PARSING_H
 # define PARSING_H
 
-# include <unistd.h>         //access, access, close, fork
-# include <stdlib.h>         //malloc, free
-# include <fcntl.h>
-# include <stdio.h>
-# include "exec.h"
-
 // syntax error ms macors
 #define SYNTAX_ERR_PIPE					"minishell: syntax error near unexpected token `|'"
 #define SYNTAX_ERR_REDIR_DOUBLE			"minishell: syntax error: near unexpected token redirections"
 #define SYNTAX_ERR_REDIR_FILE_MISSING	"minishell: syntax error: missing filename or delimiter after redirection"
 #define SYNTAX_ERR_SPECIAL_CHARS		"minishell: syntax error: special characters"
+#define SYNTAX_ERR_QUOTES				"minishell: syntax error: unclosed quotes"
 
 //common shell cmd line length
 #define BUF_SIZE 8192
+
+//needed for expand
+#define EMPTY ""
+
+//Needed from exec.h
+typedef struct s_exec_path t_exec_path;
 
 // 	T_WORD,			0    "string" 	string				a cmd, a arguement
 // 	T_PIPE,			1    |      	pipe
@@ -37,7 +38,7 @@ typedef struct		s_token
 {
 	char			*str;
 	t_token_type	t_type;
-	int				quote_type; 
+	int				quote_type;
 	struct s_token	*next;
 }	t_token;
 
@@ -102,6 +103,7 @@ t_token	*parse_argv(t_cmd *cmd, t_token *tokens);
 char	*get_env_value(char **envp, const char *key);
 char	*get_env_value_from_substr(char *input, int start, int var_len, char **envp);
 char	*join_three_and_free(char *s1, char *s2, char *s3);
+int		should_expand(const char *str, int quote_type);
 
 // expander.c
 // called after parsing, expanding every thing but not heredocs

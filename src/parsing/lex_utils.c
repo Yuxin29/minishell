@@ -1,4 +1,3 @@
-#include "parsing.h"
 #include "minishell.h"
 
 //precheck validity of the raw_line
@@ -28,7 +27,7 @@ int	check_raw_line_syntax(char *raw_line)
 				i++;
 		}
 		if (!raw_line[i])
-			return (errmsg_return_one("minishell: syntax error: unclosed quotes"));
+			return (errmsg_return_one(SYNTAX_ERR_QUOTES));
 		i++;
 	}
 	return (0);

@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-static void	split_env(char *str, char **key, char **value)
+static int	split_env(char *str, char **key, char **value)
 {
 	char *eq;
 
@@ -9,24 +9,21 @@ static void	split_env(char *str, char **key, char **value)
 	{
 		*key = ft_strdup(str);
 		if (!*key)
-			return ;
+			return (0);
 		*value = ft_strdup(""); // FOO
 		if (!*value)
-		{
-			free(*key);
-			return ;
-		}
-		return ;
+			return (free(*key), 0);
 	}
-	*key = ft_strndup(str, eq - str);
-	if (!*key)
-		return ;
-	*value = ft_strdup(eq + 1);
-	if (!*value)
+	else
 	{
-		free(*key);
-		return ;
+		*key = ft_strndup(str, eq - str);
+		if (!*key)
+			return (0);
+		*value = ft_strdup(eq + 1);
+		if (!*value)
+			return (free(*key), 0);
 	}
+	return (1);
 }
 
 t_env	*env_new_node(char *key, char *value)
@@ -36,7 +33,7 @@ t_env	*env_new_node(char *key, char *value)
 	node = malloc(sizeof(t_env));
 	if (!node)
 		return (NULL);
-	node->exported = 0;
+	node->exported = 1;
 	node->key = ft_strdup(key);
 	if (!node->key)
 		return (free(node), NULL);
@@ -57,7 +54,8 @@ static t_env	*split_envp_create_node(char *env_str)
 	char	*key;
 	char	*value;
 
-	split_env(env_str, &key, &value);
+	if (!split_env(env_str, &key, &value))
+		return (NULL);
 	new_node = env_new_node(key, value);
 	free(key);
 	free(value);

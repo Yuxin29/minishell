@@ -1,4 +1,3 @@
-#include "parsing.h"
 #include "minishell.h"
 
 // loop through raw_line and build token list
@@ -51,9 +50,9 @@ t_token	*build_word_token(char *line, int *i)
 	{
 		if (line[*i] == '$' && line[*i + 1] == '"')
 		{
-			(*i)++; // consume '$'
+			(*i)++;
 			part = get_quoted_part(line, i);
-			part_quote = 3; // special $" quote type
+			part_quote = 3;
 		}
 		else if (line[*i] == '\'')
 		{
@@ -75,12 +74,12 @@ t_token	*build_word_token(char *line, int *i)
 		if (q == 0)
 			q = part_quote;
 		else if (q != part_quote)
-			q = 0; // mixed quotes => no quote
+			q = 0;
 		temp = ft_strjoin_free(temp, part);
 		if (!temp)
 			return ((t_token *)free_malloc_fail_null(NULL));
 		if ((part_quote == 1 || part_quote == 2 || part_quote == 3) && (line[*i] == '$' || line[*i] == '<' || line[*i] == '>' || line[*i] == '|' || ft_isspace(line[*i]) || line[*i] == '\0'))
-			break;
+			break ;
 	}
 	token = malloc(sizeof(t_token));
 	if (!token)

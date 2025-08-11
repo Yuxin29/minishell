@@ -58,8 +58,7 @@ void	execute_single_cmd(t_exec_path *cmd)
 	}
 	else if (pid > 0)
 	{
-		signal(SIGINT, SIG_IGN); //avoid being killed by ctrl c
-		signal(SIGQUIT, SIG_IGN);
+		signal_ignore();
 		wait_child_and_exit(cmd, pid);
 		signal_init();
 	}

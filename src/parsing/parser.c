@@ -13,6 +13,7 @@ t_cmd	*build_command_list(t_exec_path *cmd, t_token *token_head)
 	cmd_head = NULL;
 	cmd_current = NULL;
 	cmd_last = NULL;
+	cmd->exit_status = 0;
 	if (check_token_syntax(token_head) == 1)
 	{
 		cmd->exit_status = 2;

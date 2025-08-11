@@ -92,7 +92,7 @@ int	handle_heredoc_skip(char *raw_line, int *i, int *skip_expand, char *res, int
 // used before lexing, to solve presaved cmd like $A = "echo hello"
 // can handle $A$B$C as well
 // not doing anything to << heredoc
-char	*pre_expand_line(t_exec_path *cmd, char *raw_line, char **envp)
+char	*pre_expand_line(t_exec_path *cmd, char *raw_line, char **envp, int last_exit_status)
 {
 	char	*res;
 	int		i;
@@ -100,6 +100,10 @@ char	*pre_expand_line(t_exec_path *cmd, char *raw_line, char **envp)
 	int		quotes[2];
 	int		skip_expand;
 
+	char	*exit_status_str;
+	exit_status_str = ft_itoa(last_exit_status); 
+
+	(void)last_exit_status; //I don’t use it yet but want to keep the parameter for interface consistency, so I mark it unused:
 	(void)cmd;
 	i = 0;
 	j = 0;
@@ -133,11 +137,21 @@ char	*pre_expand_line(t_exec_path *cmd, char *raw_line, char **envp)
 				res[j++] = raw_line[i++];
 			continue ;
 		}
+		// cchinese: 特殊处理 $?，替换为 last_exit_status 字符串
+		if (raw_line[i] == '$' && raw_line[i + 1] == '?')
+		{
+			int k = 0;
+			while (exit_status_str[k])
+				res[j++] = exit_status_str[k++];
+			i += 2;
+			continue ;
+		}
 		if ((try_expand_env_var(raw_line, &i, res, &j, envp)))
 			continue ;
 		else
 			res[j++] = raw_line[i++];
 	}
 	res[j] = '\0';
+	free(exit_status_str);
 	return (res);
 }

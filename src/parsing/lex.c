@@ -12,6 +12,7 @@ t_token	*get_token_list(t_exec_path *cmd, char *raw_line)
 	head = NULL;
 	last = NULL;
 	i = 0;
+	cmd->exit_status = 0;
 	if (check_raw_line_syntax(raw_line) == 1)
 	{
 		cmd->exit_status = 2;

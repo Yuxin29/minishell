@@ -11,7 +11,7 @@
 //common shell cmd line length
 #define BUF_SIZE 8192
 
-//needed for expand
+//needed for expand, bit used yet
 #define EMPTY ""
 
 //Needed from exec.h
@@ -63,7 +63,8 @@ typedef struct s_cmd
 }	t_cmd;
 
 //pre_expander.c
-char *pre_expand_line(t_exec_path *cmd, char *raw_line, char **envp);
+//char *pre_expand_line(t_exec_path *cmd, char *raw_line, char **envp);
+char	*pre_expand_line(t_exec_path *cmd, char *raw_line, char **envp, int last_exit_status);
 
 // lex_utils.c
 int		check_raw_line_syntax(char *raw_line);

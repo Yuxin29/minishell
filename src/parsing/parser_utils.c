@@ -57,11 +57,14 @@ int	count_argv(t_token *start)
 	int	count;
 
 	count = 0;
-	while (start && start->t_type == 0)
-	{
-		count++;
-		start = start->next;
-	}
+    while (start && start->t_type != 1)
+    {
+        if (start->t_type == 0)
+            count++;
+        else if (start->t_type >= 2 && start->t_type <= 5)
+            start = start->next;
+        start = start->next;
+    }
 	return (count);
 }
 

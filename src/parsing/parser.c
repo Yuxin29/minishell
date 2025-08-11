@@ -59,19 +59,24 @@ t_cmd	*build_command_list(t_exec_path *cmd, t_token *token_head)
 // //generate on single cmd struct
 t_token	*get_one_new_cmd(t_token *token_head, t_cmd *cmd_current)
 {
-	if (token_head && token_head->t_type == 0)
+	while (token_head && token_head->t_type != 1)
 	{
-		token_head = parse_argv(cmd_current, token_head);
-		if (!token_head)
-			return (NULL);
+		if (token_head && token_head->t_type == 0)
+		{
+			token_head = parse_argv(cmd_current, token_head);
+			if (!token_head)
+				return (NULL);
+		}
+		else if (token_head->t_type >= 2 && token_head->t_type <= 5) // redirection
+		{
+			token_head = parse_redirections(cmd_current, token_head);
+			if (!token_head)
+				return (NULL);
+		}
+		else
+			break;
 	}
-	while (token_head && token_head->t_type >= 2 && token_head->t_type <= 5)
-	{
-		token_head = parse_redirections(cmd_current, token_head);
-		if (!token_head)
-			return (NULL);
-	}
-	if (token_head && token_head->t_type == 1)
+	if (token_head && token_head->t_type == 1) // skip pipe token
 		token_head = token_head->next;
 	return (token_head);
 }
@@ -156,19 +161,31 @@ t_token	*parse_argv(t_cmd *cmd, t_token *tokens)
 		ft_free_arr(cmd->argv);
 		return ((t_token *)free_malloc_fail_null(NULL));
 	}
-	while (i < len && tokens && tokens->t_type == 0)
-	{
-		cmd->argv[i] = ft_strndup(tokens->str, ft_strlen(tokens->str));
-		if (!cmd->argv[i])
-		{
-			ft_free_arr(cmd->argv);
-			free(cmd->quote_type);
-			return ((t_token *)free_malloc_fail_null(NULL));
-		}
-		cmd->quote_type[i] = tokens->quote_type;
-		tokens = tokens->next;
-		i++;
-	}
+	while (tokens && tokens->t_type != 1 && i < len)
+    {
+        if (tokens->t_type == 0)
+        {
+            cmd->argv[i] = ft_strndup(tokens->str, ft_strlen(tokens->str));
+            if (!cmd->argv[i])
+            {
+                ft_free_arr(cmd->argv);
+                free(cmd->quote_type);
+                return ((t_token *)free_malloc_fail_null(NULL));
+            }
+            cmd->quote_type[i] = tokens->quote_type;
+            i++;
+            tokens = tokens->next;
+        }
+        else if (tokens->t_type >= 2 && tokens->t_type <= 5) // 
+        {
+            tokens = tokens->next; //  redirection
+            if (tokens)
+                tokens = tokens->next; // skip redirection file token
+        }
+        else
+            break;
+    }
 	cmd->argv[i] = NULL;
 	return (tokens);
 }
+

@@ -577,3 +577,35 @@ minishell heredoc> mikko
 sdf
 
 
+===================================
+———————————— redirects
+Test  57: ✅ grep hi <./test_files/infile 
+Test  58: ❌ grep hi "<infile" <         ./test_files/infile 
+mini exit code =
+bash exit code = 2
+Test  59: ❌ echo hi < ./test_files/infile bye bye 
+mini output = ()
+bash output = (hi bye bye)
+mini exit code = 127
+bash exit code = 0
+mini error = ( command not found)
+bash error = ()
+Test  60: ✅ grep hi <./test_files/infile_big <./test_files/infile 
+Test  61: ❌ echo <"./test_files/infile" "bonjour       42" 
+mini output = ()
+bash output = (bonjour 42)
+mini exit code = 127
+bash exit code = 0
+mini error = ( command not found)
+bash error = ()
+Test  62: ✅ cat <"./test_files/file name with spaces" 
+Test  63: ❌ cat <./test_files/infile_big ./test_files/infile 
+mini output = ()
+bash output = (hi hello world 42)
+mini exit code = 127
+bash exit code = 0
+mini error = ( Permission denied Broken pipe)
+bash error = ()
+
+
+

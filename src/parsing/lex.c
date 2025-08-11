@@ -79,6 +79,8 @@ t_token	*build_word_token(char *line, int *i)
 		temp = ft_strjoin_free(temp, part);
 		if (!temp)
 			return ((t_token *)free_malloc_fail_null(NULL));
+		if ((part_quote == 1 || part_quote == 2 || part_quote == 3) && (line[*i] == '$' || line[*i] == '<' || line[*i] == '>' || line[*i] == '|' || ft_isspace(line[*i]) || line[*i] == '\0'))
+			break;
 	}
 	token = malloc(sizeof(t_token));
 	if (!token)

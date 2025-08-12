@@ -10,8 +10,8 @@ int	check_raw_line_syntax(char *raw_line)
 	int	i;
 
 	i = 0;
-	if (!raw_line || !raw_line[i])
-		return (1);
+	// if (!raw_line || !raw_line[i])
+	// 	return (1);
 	while (raw_line[i])
 	{
 		if (raw_line[i] == '"')

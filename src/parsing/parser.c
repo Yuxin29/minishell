@@ -42,6 +42,7 @@ t_cmd	*build_command_list(t_exec_path *cmd, t_token *token_head)
 			{
 				free_cmd_node(cmd_current);
 				free_cmd_list(cmd_head);
+				cmd->exit_status = 0;
 				return (NULL);
 			}
 		}
@@ -61,19 +62,25 @@ t_token	*get_one_new_cmd(t_token *token_head, t_cmd *cmd_current)
 	{
 		if (token_head && token_head->t_type == 0)
 		{
-			token_head = parse_argv(cmd_current, token_head);
-			if (!token_head)
-				return (NULL);
+			t_token *argv_tok = token_head;
+			parse_argv(cmd_current, argv_tok); //this function has a return value
+		}
+		if (token_head && token_head->t_type == 0)
+		{
+			while (token_head && token_head->t_type == 0)
+				token_head = token_head->next;
 		}
 		else if (token_head->t_type >= 2 && token_head->t_type <= 5)
-		//while (token_head->t_type >= 2 && token_head->t_type <= 5)
 		{
 			token_head = parse_redirections(cmd_current, token_head);
 			if (!token_head)
 				return (NULL);
 		}
-		else
-			break ;
+		if (token_head && token_head->t_type == 0)
+		{
+			while (token_head && token_head->t_type == 0)
+				token_head = token_head->next;
+		}
 	}
 	if (token_head && token_head->t_type == 1)
 		token_head = token_head->next;

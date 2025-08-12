@@ -18,6 +18,11 @@ t_token	*get_token_list(t_exec_path *cmd, char *raw_line)
 		cmd->exit_status = 2;
 		return (NULL);
 	}
+	if (raw_line[0] == '\0')  // $EMPTY
+    {
+        cmd->exit_status = 0;  //not error
+        return (NULL);
+    }
 	while (raw_line[i])
 	{
 		while (raw_line[i] && ft_isspace(raw_line[i]))

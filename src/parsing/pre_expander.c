@@ -31,6 +31,9 @@ int	try_expand_env_var(char *raw_line, int *i, char *res, int *j, char **envp)
 			return (0); //malloc fails, need to perror here
 		val = get_env_value(envp, key); //should null check, failure check
 		free (key);
+		*i += len + 1;
+		if (!val) //not good, need to make sure it is not from malloc failure
+            val = strdup(""); 
 		if (val)
 		{
 			k = 0;
@@ -38,7 +41,7 @@ int	try_expand_env_var(char *raw_line, int *i, char *res, int *j, char **envp)
 				res[(*j)++] = val[k++];
 			free (val);
 		}
-		*i += len + 1;
+		
 		return (1);
 	}
 	return (0);
@@ -137,7 +140,6 @@ char	*pre_expand_line(t_exec_path *cmd, char *raw_line, char **envp, int last_ex
 				res[j++] = raw_line[i++];
 			continue ;
 		}
-		// cchinese: 特殊处理 $?，替换为 last_exit_status 字符串
 		if (raw_line[i] == '$' && raw_line[i + 1] == '?')
 		{
 			int k = 0;

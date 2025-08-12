@@ -29,8 +29,8 @@ int	check_special_characters(t_token *token_head)
 // at the end of the tokens, it can not be pipe or redirections
 int	check_token_syntax(t_token *token_head)
 {
-	if (!token_head)
-		return (1);
+	// if (!token_head)
+	// 	return (1);
 	if (token_head->t_type == 1)
 		return (errmsg_return_one(SYNTAX_ERR_PIPE));
 	while (token_head)

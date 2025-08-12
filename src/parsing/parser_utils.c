@@ -30,8 +30,7 @@ int	check_special_characters(t_token *token_head)
 int	check_token_syntax(t_token *token_head)
 {
 	if (!token_head)
-		//return (1);
-		return (0);
+		return (1);
 	if (token_head->t_type == 1)
 		return (errmsg_return_one(SYNTAX_ERR_PIPE));
 	while (token_head)
@@ -67,25 +66,6 @@ int	count_argv(t_token *start)
 	}
 	return (count);
 }
-// int	count_argv(t_token *start)
-// {
-// 	int	count;
-
-// 	count = 0;
-// 	while (start && start->t_type != 1)
-// 	{
-// 		if (start->t_type == 0)
-// 		{
-// 			count++;
-// 			start = start->next;
-// 		}
-// 		else if (start->t_type >= 2 && start->t_type <= 5)
-// 			break ;
-// 		else
-// 			break ;
-// 	}
-// 	return (count);
-// }
 
 //free the linked  redirection list within a cmd
 void	free_redirections(t_cmd *cmd_head)

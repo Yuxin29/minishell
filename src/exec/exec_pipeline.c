@@ -45,7 +45,6 @@ void	execute_pipeline(t_exec_path *exec_cmd, t_env *env_list)
 	int		prev_pipe;
 	t_cmd	*cmd;
 	pid_t	last_pid;
-	struct	stat st;
 
 	prev_pipe = -1;
 	cmd = exec_cmd->whole_cmd;
@@ -81,8 +80,6 @@ void	execute_pipeline(t_exec_path *exec_cmd, t_env *env_list)
 			}
 			if (check_and_apply_redirections(cmd) == -1)
 				exit(EXIT_FAILURE);
-			if (!cmd->argv || !cmd->argv[0])
-				exit(0);
 			if (is_builtin(cmd->argv[0]))
 			{
 				exec_cmd->exit_status = execute_builtin_cmd(cmd->argv, &env_list, exec_cmd);
@@ -90,31 +87,16 @@ void	execute_pipeline(t_exec_path *exec_cmd, t_env *env_list)
 			}
 			else
 			{
+				if (!cmd->argv || !cmd->argv[0])
+					exit(0);
+				if (cmd->argv[0][0] == '\0')
+				{
+					ft_putstr_fd(": command not found\n", 2);
+					exit(127);
+				}
 				if (!cmd->cmd_path)
 					print_error_and_exit(cmd);
-				//
-				{
-					//struct stat st;
-					if (stat(cmd->cmd_path, &st) == -1)
-					{
-						ft_putstr_fd(cmd->cmd_path, 2);
-						ft_putstr_fd(": No such file or directory\n", 2);
-						exit(127);
-					}
-					if (S_ISDIR(st.st_mode))
-					{
-						ft_putstr_fd(cmd->cmd_path, 2);
-						ft_putstr_fd(": Is a directory\n", 2);
-						exit(126);
-					}
-					if (access(cmd->cmd_path, X_OK) == -1)
-					{
-						ft_putstr_fd(cmd->cmd_path, 2);
-						ft_putstr_fd(": Permission denied\n", 2);
-						exit(126);
-					}
-				}
-				//
+				precheck_path_or_exit(cmd->cmd_path);//
 				execve(cmd->cmd_path, cmd->argv, exec_cmd->envp);
 				perror("execve");
 				if (errno == EACCES) //should i use errno?

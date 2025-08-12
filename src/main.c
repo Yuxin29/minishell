@@ -41,9 +41,11 @@ int main(int argc, char **argv, char **envp)
 				ft_putstr_fd("Error: env list initialized failed\n", 2);
 				exit(EXIT_FAILURE);
 			}
+
 			//yuxin added this part
 			expanded_line = pre_expand_line(&exec_cmd, line, exec_cmd.envp, exec_cmd.exit_status); //null check this one
 			free(line);
+
 			if (!expanded_line)
 			{
 				ft_free_arr(exec_cmd.envp);
@@ -66,6 +68,7 @@ int main(int argc, char **argv, char **envp)
 					exit(EXIT_FAILURE);
 				}
 			}
+
 			exec_cmd.whole_cmd = build_command_list(&exec_cmd, token_list); //convert token list to command list
 			free_token_list(token_list);
 			if (!exec_cmd.whole_cmd || exec_cmd.exit_status == 2)
@@ -82,6 +85,7 @@ int main(int argc, char **argv, char **envp)
 					exit(EXIT_FAILURE);
 				}
 			}
+
 			expand_all_cmds(&exec_cmd, exec_cmd.whole_cmd, exec_cmd.envp);
 			tmp = exec_cmd.whole_cmd;
 			while (tmp)

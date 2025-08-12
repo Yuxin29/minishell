@@ -66,6 +66,7 @@ t_token	*get_one_new_cmd(t_token *token_head, t_cmd *cmd_current)
 				return (NULL);
 		}
 		else if (token_head->t_type >= 2 && token_head->t_type <= 5)
+		//while (token_head->t_type >= 2 && token_head->t_type <= 5)
 		{
 			token_head = parse_redirections(cmd_current, token_head);
 			if (!token_head)

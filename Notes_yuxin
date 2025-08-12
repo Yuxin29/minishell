@@ -607,5 +607,13 @@ bash exit code = 0
 mini error = ( Permission denied Broken pipe)
 bash error = ()
 
+=====================
+1.
+Test  55: ❌ cat minishell.h | grep ");"$ 
+yuxin Parsing, $ is with extra " " before it
 
+2.
+Test  80: ✅⚠️  echo <123 <456 hi | echo 42 
+echo <123 hi, parse argv changed directlt to hi, <123 lost
 
+3.

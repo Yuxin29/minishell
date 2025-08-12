@@ -11,6 +11,7 @@ void	print_error_and_exit(t_cmd *cmd)
 	else
 	{
 		perror(cmd->argv[0]);
+		// ft_putendl_fd("debug chekc", 2); here is the bug
 		exit(127);
 	}
 }

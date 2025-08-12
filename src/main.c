@@ -2,33 +2,54 @@
 
 volatile sig_atomic_t	g_signal = 0;
 
-static int	check_invalid_cmds(t_exec_path *exec_cmd, t_cmd *cmd_list)
-{
-	t_cmd	*cur;
+// static int	check_invalid_cmds(t_exec_path *exec_cmd, t_cmd *cmd_list)
+// {
+// 	t_cmd	*cur;
 
-	cur = cmd_list;
+// 	cur = cmd_list;
+// 	while (cur)
+// 	{
+// 		if (!cur->argv || !cur->argv[0] || cur->argv[0][0] == '\0')
+// 		{
+// 			if (cur->redirections)
+// 			{
+// 				if (check_and_apply_redirections(cur) == -1)
+// 					exec_cmd->exit_status = 1;
+// 				else
+// 					exec_cmd->exit_status = 0;
+// 				return (1);
+// 			}
+// 			else
+// 			{
+// 				ft_putstr_fd("minishell: : command not found\n", 2);
+// 				exec_cmd->exit_status = 127;
+// 				return (1);
+// 			}
+// 		}
+// 		cur = cur->next;
+// 	}
+// 	return (0);
+// }
+
+static int  check_invalid_cmds(t_exec_path *exec_cmd, t_cmd *cmd_list)
+{
+	t_cmd *cur = cmd_list;
+
 	while (cur)
 	{
 		if (!cur->argv || !cur->argv[0] || cur->argv[0][0] == '\0')
 		{
 			if (cur->redirections)
-			{
-				if (check_and_apply_redirections(cur) == -1)
-					exec_cmd->exit_status = 1;
-				else
-					exec_cmd->exit_status = 0;
-				return (1);
-			}
+				return 0;
 			else
 			{
-				ft_putstr_fd("minishell: : command not found\n", 2);
-				exec_cmd->exit_status = 127;
-				return (1);
+				exec_cmd->exit_status = 0;
+				return 1;
 			}
 		}
 		cur = cur->next;
 	}
-	return (0);
+	return 0;
 }
 
 int main(int argc, char **argv, char **envp)
@@ -125,10 +146,21 @@ int main(int argc, char **argv, char **envp)
 				continue;
 			}
 
+			//tmp = exec_cmd.whole_cmd;
+			// while (tmp)
+			// {
+			// 	if (!is_builtin(tmp->argv[0]))
+			// 		tmp->cmd_path = get_cmd_path(tmp->argv[0], env_list);
+			// 	else
+			// 		tmp->cmd_path = NULL;
+			// 	tmp = tmp->next;
+			// }
 			tmp = exec_cmd.whole_cmd;
 			while (tmp)
 			{
-				if (!is_builtin(tmp->argv[0]))
+				if (!tmp->argv || !tmp->argv[0])
+					tmp->cmd_path = NULL;
+				else if (!is_builtin(tmp->argv[0]))
 					tmp->cmd_path = get_cmd_path(tmp->argv[0], env_list);
 				else
 					tmp->cmd_path = NULL;
@@ -137,13 +169,25 @@ int main(int argc, char **argv, char **envp)
 
 			if (!exec_cmd.whole_cmd->next)
 			{
-				if (is_builtin(exec_cmd.whole_cmd->argv[0]))
+				if (!exec_cmd.whole_cmd->argv || !exec_cmd.whole_cmd->argv[0])
+					execute_single_cmd(&exec_cmd);
+				else if (is_builtin(exec_cmd.whole_cmd->argv[0]))
 					run_builtin_with_redir(&exec_cmd, &env_list);
 				else
 					execute_single_cmd(&exec_cmd);
 			}
 			else
 				execute_pipeline(&exec_cmd, env_list);
+
+			// if (!exec_cmd.whole_cmd->next)
+			// {
+			// 	if (is_builtin(exec_cmd.whole_cmd->argv[0]))
+			// 		run_builtin_with_redir(&exec_cmd, &env_list);
+			// 	else
+			// 		execute_single_cmd(&exec_cmd);
+			// }
+			// else
+			// 	execute_pipeline(&exec_cmd, env_list);
 			free_t_exec_path(&exec_cmd);
 			continue;
 		}

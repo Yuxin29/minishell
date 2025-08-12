@@ -18,6 +18,7 @@
 #include <readline/history.h>
 # include <sys/wait.h>
 # include <errno.h> //？？
+#include <sys/stat.h>
 
 extern volatile sig_atomic_t g_signal;
 

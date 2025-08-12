@@ -52,21 +52,6 @@ int	check_token_syntax(t_token *token_head)
 }
 
 //used in parse_argv, for malloc str of strs
-// int	count_argv(t_token *start)
-// {
-// 	int	count;
-
-// 	count = 0;
-// 	while (start && start->t_type != 1)
-// 	{
-// 		if (start->t_type == 0)
-// 			count++;
-// 		else if (start->t_type >= 2 && start->t_type <= 5)
-// 			start = start->next;
-// 		start = start->next;
-// 	}
-// 	return (count);
-// }
 int	count_argv(t_token *start)
 {
 	int	count;
@@ -75,17 +60,32 @@ int	count_argv(t_token *start)
 	while (start && start->t_type != 1)
 	{
 		if (start->t_type == 0)
-		{
 			count++;
-			start = start->next;
-		}
 		else if (start->t_type >= 2 && start->t_type <= 5)
-			break ;
-		else
-			break ;
+			start = start->next;
+		start = start->next;
 	}
 	return (count);
 }
+// int	count_argv(t_token *start)
+// {
+// 	int	count;
+
+// 	count = 0;
+// 	while (start && start->t_type != 1)
+// 	{
+// 		if (start->t_type == 0)
+// 		{
+// 			count++;
+// 			start = start->next;
+// 		}
+// 		else if (start->t_type >= 2 && start->t_type <= 5)
+// 			break ;
+// 		else
+// 			break ;
+// 	}
+// 	return (count);
+// }
 
 //free the linked  redirection list within a cmd
 void	free_redirections(t_cmd *cmd_head)

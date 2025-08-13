@@ -1,52 +1,5 @@
 #include "minishell.h"
 
-//yuxin ddebug
-// void	print_cmd_list(t_cmd *cmd_list)
-// {
-// 	int		i;
-// 	t_redir	*r;
-// 	t_cmd	*cmd;
-
-// 	cmd = cmd_list;
-// 	while (cmd)
-// 	{
-// 		printf("=== Command ===\n");
-
-// 		// argv + quote_type
-// 		if (cmd->argv)
-// 		{
-// 			printf("argv:\n");
-// 			for (i = 0; cmd->argv[i]; i++)
-// 			{
-// 				printf("  [%d] \"%s\" (quote_type: %d)\n",
-// 					i, cmd->argv[i],
-// 					(cmd->quote_type ? cmd->quote_type[i] : -1));
-// 			}
-// 		}
-// 		else
-// 			printf("argv: (null)\n");
-
-// 		// cmd_path
-// 		printf("cmd_path: %s\n", cmd->cmd_path ? cmd->cmd_path : "(null)");
-
-// 		// redirections
-// 		printf("redirections:\n");
-// 		r = cmd->redirections;
-// 		if (!r)
-// 			printf("  (none)\n");
-// 		while (r)
-// 		{
-// 			printf("  type: %d, file: %s, heredoc_delim: %s\n",
-// 				r->type,
-// 				r->file ? r->file : "(null)",
-// 				r->heredoc_delim ? r->heredoc_delim : "(null)");
-// 			r = r->next;
-// 		}
-
-// 		cmd = cmd->next;
-// 	}
-// }
-
 volatile sig_atomic_t	g_signal = 0;
 
 int main(int argc, char **argv, char **envp)
@@ -109,7 +62,7 @@ int main(int argc, char **argv, char **envp)
 				if (exec_cmd.exit_status == 2)
 					continue;
 				 else if (exec_cmd.exit_status == 0)  //$EMPTY
-    				continue;
+					continue;
 				else
 				{
 					free_env_list(env_list);
@@ -120,6 +73,7 @@ int main(int argc, char **argv, char **envp)
 
 			exec_cmd.whole_cmd = build_command_list(&exec_cmd, token_list); //convert token list to command list
 			free_token_list(token_list);
+			//print_cmd_list(exec_cmd.whole_cmd ); //debug should delete
 			if (!exec_cmd.whole_cmd || exec_cmd.exit_status == 2)
 			{
 				ft_free_arr(exec_cmd.envp);
@@ -137,7 +91,6 @@ int main(int argc, char **argv, char **envp)
 
 			//yuxindebug
 			//print_cmd_list(exec_cmd.whole_cmd);
-
 			expand_all_cmds(&exec_cmd, exec_cmd.whole_cmd, exec_cmd.envp);
 			tmp = exec_cmd.whole_cmd;
 			while (tmp)

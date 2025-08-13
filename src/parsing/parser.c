@@ -11,14 +11,10 @@ t_cmd	*build_command_list(t_exec_path *cmd, t_token *token_head)
 	t_cmd	*cmd_last;
 
 	cmd_head = NULL;
-	cmd_current = NULL;
 	cmd_last = NULL;
-	cmd->exit_status = 0;
-	if (check_token_syntax(token_head) == 1)
-	{
-		cmd->exit_status = 2;
+	check_token_syntax(token_head, cmd);
+	if (cmd->exit_status == 2)
 		return (NULL);
-	}
 	while (token_head)
 	{
 		cmd_current = malloc(sizeof(t_cmd));
@@ -55,15 +51,18 @@ t_cmd	*build_command_list(t_exec_path *cmd, t_token *token_head)
 	return (cmd_head);
 }
 
-// //generate on single cmd struct
+// generate on single cmd struct
+// parse_argv(cmd_current, argv_tok); this function has a return value, need to chekc
 t_token	*get_one_new_cmd(t_token *token_head, t_cmd *cmd_current)
 {
+	t_token	*argv_tok;
+
 	while (token_head && token_head->t_type != 1)
 	{
 		if (token_head && token_head->t_type == 0)
 		{
-			t_token *argv_tok = token_head;
-			parse_argv(cmd_current, argv_tok); //this function has a return value
+			argv_tok = token_head;
+			parse_argv(cmd_current, argv_tok);
 		}
 		if (token_head && token_head->t_type == 0)
 		{
@@ -87,7 +86,7 @@ t_token	*get_one_new_cmd(t_token *token_head, t_cmd *cmd_current)
 	return (token_head);
 }
 
-static t_redir	*create_redir_node(t_token *redir_tok, t_token *file_tok)
+t_redir	*create_redir_node(t_token *redir_tok, t_token *file_tok)
 {
 	t_redir	*new;
 

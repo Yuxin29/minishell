@@ -33,7 +33,7 @@ int	try_expand_env_var(char *raw_line, int *i, char *res, int *j, char **envp)
 		free (key);
 		*i += len + 1;
 		if (!val) //not good, need to make sure it is not from malloc failure
-            val = strdup(""); 
+            val = strdup("");
 		if (val)
 		{
 			k = 0;
@@ -41,7 +41,6 @@ int	try_expand_env_var(char *raw_line, int *i, char *res, int *j, char **envp)
 				res[(*j)++] = val[k++];
 			free (val);
 		}
-		
 		return (1);
 	}
 	return (0);
@@ -95,19 +94,19 @@ int	handle_heredoc_skip(char *raw_line, int *i, int *skip_expand, char *res, int
 // used before lexing, to solve presaved cmd like $A = "echo hello"
 // can handle $A$B$C as well
 // not doing anything to << heredoc
-char	*pre_expand_line(t_exec_path *cmd, char *raw_line, char **envp, int last_exit_status)
+char	*pre_expand_line(t_exec_path *cmd, char *raw_line, char **envp)
 {
 	char	*res;
 	int		i;
 	int		j;
 	int		quotes[2];
 	int		skip_expand;
-
 	char	*exit_status_str;
-	exit_status_str = ft_itoa(last_exit_status); 
+	int		k;
 
-	(void)last_exit_status; //I don’t use it yet but want to keep the parameter for interface consistency, so I mark it unused:
+	exit_status_str = ft_itoa(cmd->exit_status);
 	(void)cmd;
+
 	i = 0;
 	j = 0;
 	quotes[0] = 0;
@@ -142,7 +141,8 @@ char	*pre_expand_line(t_exec_path *cmd, char *raw_line, char **envp, int last_ex
 		}
 		if (raw_line[i] == '$' && raw_line[i + 1] == '?')
 		{
-			int k = 0;
+			exit_status_str = ft_itoa(cmd->exit_status);
+			k = 0;
 			while (exit_status_str[k])
 				res[j++] = exit_status_str[k++];
 			i += 2;

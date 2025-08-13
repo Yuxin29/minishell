@@ -20,7 +20,7 @@ void	precheck_path_or_exit(char *path) //should precheck
 	if (S_ISDIR(st.st_mode))
 	{
 		ft_putstr_fd(path, 2);
-		ft_putstr_fd(": Is a directory\n", 2);
+		ft_putstr_fd(": Is a directory\n", 2); 
 		exit(126);
 	}
 	if (access(path, X_OK) == -1)

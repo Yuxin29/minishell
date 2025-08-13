@@ -2,6 +2,7 @@
 
 // loop through raw_line and build token list
 //no need to check null in rawline, checked in main
+//	if (raw_line[0] == '\0')  // $EMPTY,  //not mem error
 t_token	*get_token_list(t_exec_path *cmd, char *raw_line)
 {
 	t_token	*head;
@@ -12,17 +13,9 @@ t_token	*get_token_list(t_exec_path *cmd, char *raw_line)
 	head = NULL;
 	last = NULL;
 	i = 0;
-	cmd->exit_status = 0;
-	if (check_raw_line_syntax(raw_line) == 1)
-	{
-		cmd->exit_status = 2;
+	check_raw_line_syntax(raw_line, cmd);
+	if (cmd->exit_status == 2)
 		return (NULL);
-	}
-	if (raw_line[0] == '\0')  // $EMPTY
-    {
-        cmd->exit_status = 0;  //not error
-        return (NULL);
-    }
 	while (raw_line[i])
 	{
 		while (raw_line[i] && ft_isspace(raw_line[i]))
@@ -129,26 +122,4 @@ t_token	*build_token_from_next_word(char *line, int *i)
 	if (line[*i] == '<' || line[*i] == '>' || line[*i] == '|')
 		return (build_operator_token(line, i));
 	return (build_word_token(line, i));
-}
-
-//return null if fails, null checked when it is used
-char	*get_quoted_part(char *s, int *i)
-{
-	int		start;
-	char	*part;
-	char	quote;
-
-	if (s[*i] == '\'')
-		quote = '\'';
-	else
-		quote = '"';
-	start = ++(*i);
-	while (s[*i] && s[*i] != quote)
-		(*i)++;
-	part = ft_strndup(&s[start], *i - start);
-	if (!part)
-		return (free_malloc_fail_null(NULL));
-	if (s[*i] == quote)
-		(*i)++;
-	return (part);
 }

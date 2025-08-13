@@ -2,6 +2,7 @@
 
 // loop through raw_line and build token list
 //no need to check null in rawline, checked in main
+//	if (raw_line[0] == '\0')  // $EMPTY,  //not mem error
 t_token	*get_token_list(t_exec_path *cmd, char *raw_line)
 {
 	t_token	*head;
@@ -12,17 +13,9 @@ t_token	*get_token_list(t_exec_path *cmd, char *raw_line)
 	head = NULL;
 	last = NULL;
 	i = 0;
-	cmd->exit_status = 0;
-	if (check_raw_line_syntax(raw_line) == 1)
-	{
-		cmd->exit_status = 2;
+	check_raw_line_syntax(raw_line, cmd);
+	if (cmd->exit_status == 2)
 		return (NULL);
-	}
-	if (raw_line[0] == '\0')  // $EMPTY
-    {
-        cmd->exit_status = 0;  //not error
-        return (NULL);
-    }
 	while (raw_line[i])
 	{
 		while (raw_line[i] && ft_isspace(raw_line[i]))

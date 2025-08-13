@@ -67,7 +67,8 @@ typedef struct s_cmd
 char	*pre_expand_line(t_exec_path *cmd, char *raw_line, char **envp, int last_exit_status);
 
 // lex_utils.c
-int		check_raw_line_syntax(char *raw_line);
+//int		check_raw_line_syntax(char *raw_line);
+void	check_raw_line_syntax(char *raw_line, t_exec_path *cmd);
 void	free_token_list(t_token *token_head);
 void	get_token_type(t_token *token);
 void	get_quote_type(t_token *token, char q);

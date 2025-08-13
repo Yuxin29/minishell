@@ -1,17 +1,16 @@
 #include "minishell.h"
 
-//precheck validity of the raw_line
+//precheck validity of the expanderd raw_line
 //return 1 on errors and 1 on okei
-//in case of the quotes not close, bash waits for the second quotes
-// but we treat it as syntax error
+//in case of the quotes not close, we treat it as syntax error
 // nothing need to be freed here
-int	check_raw_line_syntax(char *raw_line)
+// !raw_line[i] check unnecessary, for example $EMPTY
+void	check_raw_line_syntax(char *raw_line, t_exec_path *cmd)
 {
 	int	i;
 
 	i = 0;
-	// if (!raw_line || !raw_line[i])
-	// 	return (1);
+	cmd->exit_status = 0;
 	while (raw_line[i])
 	{
 		if (raw_line[i] == '"')
@@ -27,12 +26,15 @@ int	check_raw_line_syntax(char *raw_line)
 				i++;
 		}
 		if (!raw_line[i])
-			return (errmsg_return_one(SYNTAX_ERR_QUOTES));
+		{
+			cmd->exit_status = 2;
+			ft_putendl_fd(SYNTAX_ERR_QUOTES, 2);
+		}
 		i++;
 	}
-	return (0);
 }
 
+// get the type of a token
 //non mem involved in this one
 void	get_token_type(t_token *token)
 {
@@ -55,23 +57,8 @@ void	get_token_type(t_token *token)
 		token->t_type = T_WORD;
 }
 
-//free the whole linked list
-void	free_token_list(t_token *token_head)
-{
-	t_token	*tmp;
-
-	if (!token_head)
-		return ;
-	while (token_head)
-	{
-		tmp = token_head->next;
-		if (token_head->str)
-			free(token_head->str);
-		free(token_head);
-		token_head = tmp;
-	}
-}
-
+//get the quote type if a single token
+// 0: no quote; 1: single quote; 2: double quote, 3: QUOTE_DOLLAR_DOUBLE
 //non mem involved in this one
 void	get_quote_type(t_token *token, char q)
 {
@@ -97,4 +84,21 @@ char	*get_unquoted_part(char *s, int *i)
 	if (!part)
 		return (free_malloc_fail_null(NULL));
 	return (part);
+}
+
+//free the whole linked list
+void	free_token_list(t_token *token_head)
+{
+	t_token	*tmp;
+
+	if (!token_head)
+		return ;
+	while (token_head)
+	{
+		tmp = token_head->next;
+		if (token_head->str)
+			free(token_head->str);
+		free(token_head);
+		token_head = tmp;
+	}
 }

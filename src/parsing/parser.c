@@ -1,4 +1,5 @@
 #include "minishell.h"
+#include "exec.h"
 
 t_redir	*create_redir_node(t_token *redir_tok, t_token *file_tok)
 {

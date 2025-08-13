@@ -61,7 +61,7 @@ void	run_builtin_with_redir(t_exec_path *exec_cmd, t_env **env_list)
 		return ;
 	}
 	exec_cmd->exit_status = execute_builtin_cmd(exec_cmd->whole_cmd->argv, env_list, exec_cmd);
-	dup2(orig_stdin, STDIN_FILENO);
+	dup2(orig_stdin, STDIN_FILENO);//need check
 	dup2(orig_stdout, STDOUT_FILENO);
 	close(orig_stdin);
 	close(orig_stdout);

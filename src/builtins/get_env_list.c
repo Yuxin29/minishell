@@ -2,7 +2,7 @@
 
 static int	split_env(char *str, char **key, char **value)
 {
-	char *eq;
+	char	*eq;
 
 	eq = ft_strchr(str, '=');
 	if (!eq)
@@ -95,7 +95,7 @@ void	free_env_list(t_env *head)
 	if (!head)
 		return ;
 	cur = head;
-	while(cur)
+	while (cur)
 	{
 		next = cur->next;
 		free(cur->key);

@@ -2,12 +2,12 @@
 
 static void	unset_env(t_env **env, char *key)
 {
-	t_env *cur;
-	t_env *pre;
+	t_env	*cur;
+	t_env	*pre;
 
 	cur = *env;
 	pre = NULL;
-	while(cur)
+	while (cur)
 	{
 		if (ft_strcmp(cur->key, key) == 0)
 		{

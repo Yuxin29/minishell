@@ -38,11 +38,26 @@ int	ft_echo(char **argv)
 	return (0);
 }
 
+//need to move it somewhere else
+static int	perror_return_one(char *str)
+{
+	if (str)
+		perror(str);
+	return (1);
+}
+
+//need to move it somewhere else
+static int	errmsg_return_one(char *str)
+{
+	if (str)
+		ft_putendl_fd(str, 2);
+	return (1);
+}
+
 // yuxin working on this now; I passed t_env **env into ft_cd
 // NAME		chdir, - change working directory
 // SYNOPSIS	int chdir(const char *path);
 // On success, zero is returned.  On error, -1 is returned
-// I can use this directly:  void	set_env(t_env **env, char *key, char *value)
 // buf is a local mem, path pointing to it, so need need to free path ever
 int	ft_cd(char **argv, t_env **env)
 {
@@ -51,49 +66,33 @@ int	ft_cd(char **argv, t_env **env)
 	char	*target;
 
 	if (argv[2])
-	{
-		ft_putendl_fd("cd: too many arguments", 2);
-		return (1);
-	}
+		return (errmsg_return_one("cd: too many arguments"));	
 	path = getcwd(buf, sizeof(buf));
 	if (!path)
-	{
-		perror("cd: getcwd (old)");
-		return (1);
-	}
+		return (perror_return_one("cd: getcwd (old)"));
 	target = argv[1];
 	if (!target)
 		target = get_env(*env, "HOME");
 	if (!target)
-	{
-		ft_putendl_fd("cd: HOME not set", 2);
-		return (1);
-	}
+		return (errmsg_return_one("cd: HOME not set"));	
 	if (chdir(target) != 0)
-	{
-		perror("cd");
-		return (1);
-	}
+		return (perror_return_one("cd"));
 	set_env(env, "OLDPWD", path);
 	path = getcwd(buf, sizeof(buf));
 	if (!path)
-	{
-		perror("cd: getcwd (new)");
-		return (1);
-	}
+		return (perror_return_one("cd: getcwd (new)"));
 	set_env(env, "PWD", path);
 	return (0);
 }
 
-// yuxin working on this
 // in bash, if we exit, we exit bash into zsh shel
-// so, this should be the same of control+D, exit the whle thing
 // do we need to update signals? probably not
-// NAME		exit — cause the shell to exit
-// SYNOPSIS	exit [n]
-// Bash uses strtol() or strtoll() under the hood to parse the number.
-// That means: long long (the range of a 64-bit signed integer)
-//if (ft_is_numeric(argv[1])) fatal error 255 / exit 2 ?
+// exit — cause the shell to exit:	exit [n]
+// if (ft_is_numeric(argv[1])) fatal error 255 / exit 2 ?
+// minishell process ends with a specific exit code,
+// and the parent shell (bash/zsh) automatically stores
+// that exit code in the special variable $?.
+//in the terminal, echo $? to check the (unsigned char)status
 int	ft_exit(char **argv, t_exec_path *exec_cmd)
 {
 	long long	status;
@@ -115,9 +114,4 @@ int	ft_exit(char **argv, t_exec_path *exec_cmd)
 	status = ft_atoll(argv[1]);
 	exit((unsigned char)status);
 }
-// minishell process ends with a specific exit code,
-// and the parent shell (bash/zsh) automatically stores
-// that exit code in the special variable $?.
-//in the terminal, echo $? to check the (unsigned char)status
-
 

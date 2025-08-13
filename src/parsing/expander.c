@@ -3,6 +3,8 @@
 // examlpe of variable expandable in a redirection, and this variable is $?
 // ls > output_$?.txt
 // cat output_0.txt
+// value = get_env_value_from_substr(input, start, var_len, envp);
+//  need a spacial null check for this mem failure or ""
 char	*replace_variable_in_str(t_exec_path *cmd, char *input, int pos, char **envp)
 {
 	int		start;
@@ -18,12 +20,10 @@ char	*replace_variable_in_str(t_exec_path *cmd, char *input, int pos, char **env
 	else
 	{
 		var_len = 0;
-		while (input[start + var_len] && (ft_isalnum(input[start + var_len]) || input[start + var_len] == '_'))
+		while (input[start + var_len] && (ft_isalnum(input[start + var_len])
+			|| input[start + var_len] == '_'))
 			var_len++;
 		value = get_env_value_from_substr(input, start, var_len, envp);
-		if (!value)
-			value = ft_strdup("");
-			// instead of returning NULL, return an empty str, but need to null check this strdup, or a MACRO
 	}
 	prefix = ft_substr(input, 0, pos);
 	suffix = ft_strdup(input + start + var_len);
@@ -36,6 +36,7 @@ char	*replace_variable_in_str(t_exec_path *cmd, char *input, int pos, char **env
 
 // the 2 free (input);
 //with it, it is still reachable, without it, it is definitly loss
+// echo $? already expanded in preexpander
 char	*expand_variables_in_str(t_exec_path *cmd, char *input, char **envp)
 {
 	int		i;
@@ -52,17 +53,12 @@ char	*expand_variables_in_str(t_exec_path *cmd, char *input, char **envp)
 			i += 2;
 			continue ;
 		}
-		if (input[i] == '$' && input[i + 1]
-			&& (input[i + 1] == '?' || ft_isalpha(input[i + 1]) || input[i + 1] == '_'))
+		if (input[i] == '$' && input[i + 1] && (ft_isalpha(input[i + 1]) || input[i + 1] == '_'))
 		{
-			if (input[i + 1] == '?')
-				var_len = 1;
-			else
-			{
-				var_len = 0;
-				while (input[i + 1 + var_len] && (ft_isalnum(input[i + 1 + var_len]) || input[i + 1 + var_len] == '_'))
-					var_len++;
-			}
+			var_len = 0;
+			while (input[i + 1 + var_len]
+				&& (ft_isalnum(input[i + 1 + var_len]) || input[i + 1 + var_len] == '_'))
+				var_len++;
 			new_input = replace_variable_in_str(cmd, input, i, envp);
 			if (!new_input)
 				return (NULL);
@@ -110,7 +106,8 @@ void	expand_argv(t_exec_path *cmd, char **argv, int *quote_type, char **envp)
 	i = 0;
 	while (argv && argv[i])
 	{
-		if ((!quote_type || should_expand(argv[i], quote_type[i])) && ft_strchr(argv[i], '$'))
+		if ((!quote_type || should_expand(argv[i], quote_type[i]))
+			&& ft_strchr(argv[i], '$'))
 		{
 			value = expand_variables_in_str(cmd, argv[i], envp);
 			if (!value)

@@ -9,31 +9,23 @@ char	*get_env_value(char **envp, const char *key)
 	char	*new_value;
 
 	j = 0;
-	while (envp[j])
+	while (envp[++j])
 	{
 		split = ft_split(envp[j], '=');
-		if (!split)
-			return (free_malloc_fail_null(NULL));
-		if (!*split)
+		if (!split || !*split)
 		{
-			ft_free_arr(split);
+			if (!*split)
+				ft_free_arr(split);
 			return (free_malloc_fail_null(NULL));
 		}
 		if (ft_strcmp(split[0], (char *)key) == 0)
 		{
-			if (split[1])
-				new_value = ft_strdup(split[1]);
-			else
-				new_value = ft_strdup("");
-			if (!new_value)
-			{
-				ft_free_arr(split);
-				return (free_malloc_fail_null(NULL));
-			}
+			new_value = ft_strdup(split[1]);
 			ft_free_arr(split);
+			if (!new_value)
+				return (free_malloc_fail_null(NULL));
 			return (new_value);
 		}
-		j++;
 		ft_free_arr(split);
 	}
 	return (NULL);

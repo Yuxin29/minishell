@@ -106,7 +106,6 @@ char	*pre_expand_line(t_exec_path *cmd, char *raw_line, char **envp)
 
 	exit_status_str = ft_itoa(cmd->exit_status);
 	(void)cmd;
-
 	i = 0;
 	j = 0;
 	quotes[0] = 0;

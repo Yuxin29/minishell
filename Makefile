@@ -18,9 +18,10 @@ SRCS := \
 	$(SRC_DIR)/builtins/builtins_opera3.c $(SRC_DIR)/builtins/builtins_utils.c\
 	$(SRC_DIR)/exec/exec_single.c $(SRC_DIR)/exec/exec_builtin.c \
 	$(SRC_DIR)/exec/exec_pipeline.c $(SRC_DIR)/exec/get_path.c $(SRC_DIR)/exec/redirections.c \
-	$(SRC_DIR)/parsing/lex.c $(SRC_DIR)/parsing/lex_utils.c $(SRC_DIR)/parsing/parser.c \
-	$(SRC_DIR)/parsing/parser_utils.c $(SRC_DIR)/parsing/expander.c $(SRC_DIR)/parsing/pre_expander.c \
-	$(SRC_DIR)/parsing/expander_utils.c \
+	$(SRC_DIR)/parsing/pre_expander.c \
+	$(SRC_DIR)/parsing/lex.c $(SRC_DIR)/parsing/lex_utils.c \
+	$(SRC_DIR)/parsing/parser.c $(SRC_DIR)/parsing/parser_utils.c $(SRC_DIR)/parsing/parsing_to_cmd_list.c \
+	$(SRC_DIR)/parsing/expander.c $(SRC_DIR)/parsing/expander_utils.c \
 	$(SRC_DIR)/utils/free_error_exit.c \
 	$(SRC_DIR)/utils/str_utils.c \
 	$(SRC_DIR)/signals/signals.c $(SRC_DIR)/signals/signal_utils.c

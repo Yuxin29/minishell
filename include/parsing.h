@@ -2,27 +2,27 @@
 # define PARSING_H
 
 // syntax error ms macors
-#define SYNTAX_ERR_PIPE					"minishell: syntax error near unexpected token `|'"
-#define SYNTAX_ERR_REDIR_DOUBLE			"minishell: syntax error: near unexpected token redirections"
-#define SYNTAX_ERR_REDIR_FILE_MISSING	"minishell: syntax error: missing filename or delimiter after redirection"
-#define SYNTAX_ERR_SPECIAL_CHARS		"minishell: syntax error: special characters"
-#define SYNTAX_ERR_QUOTES				"minishell: syntax error: unclosed quotes"
+# define SYNTAX_ERR_PIPE				"minishell: syntax error near unexpected token `|'"
+# define SYNTAX_ERR_REDIR_DOUBLE		"minishell: syntax error: near unexpected token redirections"
+# define SYNTAX_ERR_REDIR_FILE_MISSING	"minishell: syntax error: missing filename or delimiter after redirection"
+# define SYNTAX_ERR_SPECIAL_CHARS		"minishell: syntax error: special characters"
+# define SYNTAX_ERR_QUOTES				"minishell: syntax error: unclosed quotes"
 
 //common shell cmd line length
-#define BUF_SIZE 8192
+# define BUF_SIZE 8192
 
 //needed for expand, bit used yet
-#define EMPTY ""
+# define EMPTY ""
 
 //Needed from exec.h
-typedef struct s_exec_path t_exec_path;
+typedef struct	s_exec_path	t_exec_path;
 
-// 	T_WORD,			0    "string" 	string				a cmd, a arguement
+// 	T_WORD,			0    "string" 	string			a cmd, a arguement
 // 	T_PIPE,			1    |      	pipe
-// 	T_REDIRECT_IN,	2     <      	input redirection   Reads from a file
-// 	T_REDIRECT_OUT,	3     >       	output redrection 	Writes to a file, replacing its contents.
-// 	T_APPEND,       4     >>    	output appen       	writes to a file, but appends at the end.
-// 	T_HEREDOC,      5    <<   		heredoc input      	Feeds inline text as stdin.
+// 	T_REDIRECT_IN,	2     <      	input   		Reads from a file
+// 	T_REDIRECT_OUT,	3     >       	output  		Writes to a file, replacing its contents.
+// 	T_APPEND,       4     >>    	output append   writes to a file, but appends at the end.
+// 	T_HEREDOC,      5    <<   		heredoc input   Feeds inline text as stdin.
 typedef enum e_token_type
 {
 	T_WORD,
@@ -33,8 +33,9 @@ typedef enum e_token_type
 	T_HEREDOC,
 }	t_token_type;
 
-//quote_type;		//0: no quote; 1: single quote; 2: double quote, 3: QUOTE_DOLLAR_DOUBLE
-typedef struct		s_token
+// quote_type;		
+// 0: no quote; 1: single quote; 2: double quote, 3: QUOTE_DOLLAR_DOUBLE
+typedef struct s_token
 {
 	char			*str;
 	t_token_type	t_type;
@@ -42,7 +43,7 @@ typedef struct		s_token
 	struct s_token	*next;
 }	t_token;
 
- // list of redirections
+// list of redirections
 // int	type; inherete from t_token: 2 - 5
 typedef struct s_redir
 {
@@ -76,7 +77,7 @@ char	*get_quoted_part(char *s, int *i);
 // get a raw line and change it to a linked list of minimal unit(tokens)
 t_token	*get_token_list(t_exec_path *cmd, char *raw_line);
 t_token	*build_word_token(char *line, int *i);
-t_token *build_operator_token(char *line, int *i);
+t_token	*build_operator_token(char *line, int *i);
 t_token	*build_token_from_next_word(char *line, int *i);
 
 // parser_utils.c

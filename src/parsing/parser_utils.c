@@ -38,9 +38,11 @@ void	check_token_syntax(t_token *token_head, t_exec_path *cmd)
 	{
 		if (check_special_characters(token_head))
 			return (errmsg_set_status(SYNTAX_ERR_SPECIAL_CHARS, cmd));
-		if (token_head->t_type >= 1 && token_head->next && token_head->next->t_type == 1)
+		if (token_head->t_type >= 1 && token_head->next
+			&& token_head->next->t_type == 1)
 			return (errmsg_set_status(SYNTAX_ERR_PIPE, cmd));
-		if (token_head->t_type >= 2 && token_head->next && token_head->next->t_type >= 2)
+		if (token_head->t_type >= 2 && token_head->next
+			&& token_head->next->t_type >= 2)
 			return (errmsg_set_status(SYNTAX_ERR_REDIR_DOUBLE, cmd));
 		if (token_head->t_type == 1 && token_head->next == NULL)
 			return (errmsg_set_status(SYNTAX_ERR_PIPE, cmd));

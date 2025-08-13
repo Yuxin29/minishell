@@ -39,8 +39,6 @@ t_token	*parse_redirections(t_cmd *cmd, t_token *tokens)
 		if (tokens->t_type >= 2 && tokens->t_type <= 5)
 		{
 			next = tokens->next;
-			if (!next || next->t_type != 0)
-				return (NULL);
 			new_redir = create_redir_node(tokens, next);
 			if (!new_redir)
 				return (NULL);
@@ -91,7 +89,7 @@ t_token	*parse_argv(t_cmd *cmd, t_token *tokens)
 	int	i;
 
 	i = 0;
-	if  (malloc_for_agrv(cmd, tokens) == -1)
+	if (malloc_for_agrv(cmd, tokens) == -1)
 		return (NULL);
 	while (tokens && tokens->t_type != 1)
 	{

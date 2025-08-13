@@ -63,7 +63,16 @@ typedef struct s_cmd
 	struct s_cmd	*next;
 }	t_cmd;
 
-//pre_expander.c
+
+//preexpander_utils.c
+int	try_expand_env_var(char *raw_line, int *i, char *res, int *j, char **envp);
+int	handle_quotes(char c, int quotes[2], char *res, int *j);
+int	handle_heredoc_skip(char *raw_line, int *i, int *skip_expand, char *res, int *j);
+int handle_dollar_dquote(char *raw_line, int *i, char *res, int *j);
+int handle_exit_status(char *raw_line, int *i, char *res, int *j, char *exit_status_str);
+
+//preexpander.c
+int		var_name_len(const char *str);
 char	*pre_expand_line(t_exec_path *cmd, char *raw_line, char **envp);
 
 // lex_utils.c

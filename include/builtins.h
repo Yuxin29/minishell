@@ -35,10 +35,11 @@ t_env	*env_list_init(char **envp);
 char	**env_list_to_envp(t_env *head);
 void	free_env_list(t_env *head);
 
-//yuxin added: changed this one from static to non static, because I need to use it in cd
 //utils
-void	set_env(t_env **env, char *key, char *value);
-void	print_error(const char *arg);
-t_env	*env_find(t_env *env, char *key);
+void		set_env(t_env **env, char *key, char *value);
+void		print_error(const char *arg);
+t_env		*env_find(t_env *env, char *key);
+long long	ft_atoll(char *str);
+int			ft_is_numeric(char *str);
 
 #endif

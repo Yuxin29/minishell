@@ -86,19 +86,24 @@ char	*get_unquoted_part(char *s, int *i)
 	return (part);
 }
 
-//free the whole linked list
-void	free_token_list(t_token *token_head)
+//return null if fails, null checked when it is used
+char	*get_quoted_part(char *s, int *i)
 {
-	t_token	*tmp;
+	int		start;
+	char	*part;
+	char	quote;
 
-	if (!token_head)
-		return ;
-	while (token_head)
-	{
-		tmp = token_head->next;
-		if (token_head->str)
-			free(token_head->str);
-		free(token_head);
-		token_head = tmp;
-	}
+	if (s[*i] == '\'')
+		quote = '\'';
+	else
+		quote = '"';
+	start = ++(*i);
+	while (s[*i] && s[*i] != quote)
+		(*i)++;
+	part = ft_strndup(&s[start], *i - start);
+	if (!part)
+		return (free_malloc_fail_null(NULL));
+	if (s[*i] == quote)
+		(*i)++;
+	return (part);
 }

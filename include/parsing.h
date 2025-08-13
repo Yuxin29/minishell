@@ -63,16 +63,14 @@ typedef struct s_cmd
 }	t_cmd;
 
 //pre_expander.c
-//char *pre_expand_line(t_exec_path *cmd, char *raw_line, char **envp);
 char	*pre_expand_line(t_exec_path *cmd, char *raw_line, char **envp);
 
 // lex_utils.c
-//int		check_raw_line_syntax(char *raw_line);
 void	check_raw_line_syntax(char *raw_line, t_exec_path *cmd);
-void	free_token_list(t_token *token_head);
 void	get_token_type(t_token *token);
 void	get_quote_type(t_token *token, char q);
 char	*get_unquoted_part(char *s, int *i);
+char	*get_quoted_part(char *s, int *i);
 
 // lex.c
 // get a raw line and change it to a linked list of minimal unit(tokens)
@@ -80,14 +78,11 @@ t_token	*get_token_list(t_exec_path *cmd, char *raw_line);
 t_token	*build_word_token(char *line, int *i);
 t_token *build_operator_token(char *line, int *i);
 t_token	*build_token_from_next_word(char *line, int *i);
-char	*get_quoted_part(char *s, int *i);
 
 // parser_utils.c
 int		check_special_characters(t_token *token_head);
 void	check_token_syntax(t_token *token_head, t_exec_path *cmd);
 int		count_argv(t_token *start);
-void	free_redirections(t_cmd *cmd_head);
-void	free_cmd_list(t_cmd *cmd_head);
 
 // parser.c
 // change token_list to command list and free the original tokens

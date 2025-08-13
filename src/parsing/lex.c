@@ -123,25 +123,3 @@ t_token	*build_token_from_next_word(char *line, int *i)
 		return (build_operator_token(line, i));
 	return (build_word_token(line, i));
 }
-
-//return null if fails, null checked when it is used
-char	*get_quoted_part(char *s, int *i)
-{
-	int		start;
-	char	*part;
-	char	quote;
-
-	if (s[*i] == '\'')
-		quote = '\'';
-	else
-		quote = '"';
-	start = ++(*i);
-	while (s[*i] && s[*i] != quote)
-		(*i)++;
-	part = ft_strndup(&s[start], *i - start);
-	if (!part)
-		return (free_malloc_fail_null(NULL));
-	if (s[*i] == quote)
-		(*i)++;
-	return (part);
-}

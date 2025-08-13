@@ -23,57 +23,18 @@ char	*ft_strjoin_free(char *s1, char *s2)
 	return (joined);
 }
 
-// need for builtin exit
-long long ft_atoll(char *str)
+void	errmsg_set_status(char *msg, t_exec_path *cmd)
 {
-	int			i;
-	int			sign;
-	long long	number;
-
-	i = 0;
-	sign = 1;
-	number = 0;
-	while ((str[i] >= '\t' && str[i] <= '\r') || str[i] == ' ')
-		i++;
-	if (str[i] == '-' || str[i] == '+')
-	{
-		if (str[i] == '-')
-			sign *= -1;
-		i++;
-	}
-	while (str[i] && ft_isdigit(str[i]))
-	{
-		number = number * 10 + (str[i] - '0');
-		i++;
-	}
-	return (number * sign);
+	if (msg)
+		ft_putendl_fd(msg, 2);
+	cmd->exit_status = 2;
 }
 
-// need for builtin exit
-int ft_is_numeric(char *str)
+//used in checking malloc strs or strdup, strjoin and so on
+char	*free_malloc_fail_null(char	*str)
 {
-	int			n;
-
-	n = 0;
-	if (str[0] == '-' || str[0] == '+')
-		n++;
-	if (!str[n])
-		return (1);
-	while (str[n])
-	{
-		if (!ft_isdigit(str[n]))
-			return (1);
-		n++;
-	}
-	if (str[0] == '-')
-	{
-		if (ft_strcmp(str, LLONG_MIN_STR) > 0)
-			return (1); // error: too small
-	}
-	else
-	{
-		if (ft_strcmp(LLONG_MAX_STR, str) < 0) // I compare the string direclyt
-			return (1);
-	}
-	return (0);
+	if (str)
+		free (str);
+	perror("malloc: ");
+	return (NULL);
 }

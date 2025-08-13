@@ -34,6 +34,35 @@ void	check_raw_line_syntax(char *raw_line, t_exec_path *cmd)
 	}
 }
 
+// if it is a word without quotes, it can not contain special character
+// with quotes, all chars are fine
+void	precheck_special_chars_rawline(char *line, t_exec_path *cmd)
+{
+	int	in_single;
+	int	in_double;
+	int	i;
+
+	in_single = 0;
+	in_double = 0;
+	i = 0;
+	while (line[i])
+	{
+		if (line[i] == '\'' && !in_double)
+			in_single = !in_single;
+		else if (line[i] == '"' && !in_single)
+			in_double = !in_double;
+		else if (!in_single && !in_double)
+		{
+			if (line[i] == ';' || line[i] == '\\')
+			{
+				cmd->exit_status = 2;
+				ft_putendl_fd(SYNTAX_ERR_SPECIAL_CHARS, 2);
+			}
+		}
+		i++;
+	}
+}
+
 // get the type of a token
 //non mem involved in this one
 void	get_token_type(t_token *token)
@@ -55,19 +84,6 @@ void	get_token_type(t_token *token)
 		token->t_type = T_HEREDOC;
 	else
 		token->t_type = T_WORD;
-}
-
-//get the quote type if a single token
-// 0: no quote; 1: single quote; 2: double quote, 3: QUOTE_DOLLAR_DOUBLE
-//non mem involved in this one
-void	get_quote_type(t_token *token, char q)
-{
-	if (q == '\'')
-		token->quote_type = 1;
-	else if (q == '"')
-		token->quote_type = 2;
-	else
-		token->quote_type = 0;
 }
 
 //return null if fails, null checked when it is used

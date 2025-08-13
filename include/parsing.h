@@ -77,8 +77,8 @@ char	*pre_expand_line(t_exec_path *cmd, char *raw_line, char **envp);
 
 // lex_utils.c
 void	check_raw_line_syntax(char *raw_line, t_exec_path *cmd);
+void	precheck_special_chars_rawline(char *line, t_exec_path *cmd);
 void	get_token_type(t_token *token);
-void	get_quote_type(t_token *token, char q);
 char	*get_unquoted_part(char *s, int *i);
 char	*get_quoted_part(char *s, int *i);
 
@@ -90,7 +90,7 @@ t_token	*build_operator_token(char *line, int *i);
 t_token	*build_token_from_next_word(char *line, int *i);
 
 // parser_utils.c
-int		check_special_characters(t_token *token_head);
+//int		check_special_characters(t_token *token_head);
 void	check_token_syntax(t_token *token_head, t_exec_path *cmd);
 int		count_argv(t_token *start);
 

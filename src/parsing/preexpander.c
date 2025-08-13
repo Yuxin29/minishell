@@ -24,13 +24,11 @@ char	*pre_expand_line(t_exec_path *cmd, char *raw_line, char **envp)
 	int		skip_expand;
 	char	*exit_status_str;
 
-	//(void)cmd;
 	i = 0;
 	j = 0;
 	quotes[0] = 0;
 	quotes[1] = 0;
 	skip_expand = 0;
-
 	exit_status_str = ft_itoa(cmd->exit_status);
 	if (!exit_status_str)
 		return (free_malloc_fail_null(NULL));

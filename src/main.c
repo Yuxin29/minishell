@@ -73,7 +73,6 @@ int main(int argc, char **argv, char **envp)
 
 			exec_cmd.whole_cmd = build_command_list(&exec_cmd, token_list); //convert token list to command list
 			free_token_list(token_list);
-			//print_cmd_list(exec_cmd.whole_cmd ); //debug should delete
 			if (!exec_cmd.whole_cmd || exec_cmd.exit_status == 2)
 			{
 				ft_free_arr(exec_cmd.envp);
@@ -89,8 +88,6 @@ int main(int argc, char **argv, char **envp)
 				}
 			}
 
-			//yuxindebug
-			//print_cmd_list(exec_cmd.whole_cmd);
 			expand_all_cmds(&exec_cmd, exec_cmd.whole_cmd, exec_cmd.envp);
 			tmp = exec_cmd.whole_cmd;
 			while (tmp)

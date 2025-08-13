@@ -14,6 +14,7 @@ t_token	*get_token_list(t_exec_path *cmd, char *raw_line)
 	last = NULL;
 	i = 0;
 	check_raw_line_syntax(raw_line, cmd);
+	precheck_special_chars_rawline(raw_line, cmd);
 	if (cmd->exit_status == 2)
 		return (NULL);
 	while (raw_line[i])
@@ -85,7 +86,9 @@ t_token	*build_word_token(char *line, int *i)
 		temp = ft_strjoin_free(temp, part);
 		if (!temp)
 			return ((t_token *)free_malloc_fail_null(NULL));
-		if ((part_quote == 1 || part_quote == 2 || part_quote == 3) && (line[*i] == '$' || line[*i] == '<' || line[*i] == '>' || line[*i] == '|' || ft_isspace(line[*i]) || line[*i] == '\0'))
+		if ((part_quote == 1 || part_quote == 2 || part_quote == 3)
+			&& (line[*i] == '<' || line[*i] == '>'
+			|| line[*i] == '|' || ft_isspace(line[*i]) || line[*i] == '\0'))
 			break ;
 	}
 	token = malloc(sizeof(t_token));

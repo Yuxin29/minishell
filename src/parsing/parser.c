@@ -82,7 +82,7 @@ int	malloc_for_agrv(t_cmd *cmd, t_token *tokens)
 	return (len);
 }
 
-// handle normal word_tokens, string and strings\
+// handle normal word_tokens, string and strings
 // if (!tokens)
 // 	return (NULL);
 t_token	*parse_argv(t_cmd *cmd, t_token *tokens)

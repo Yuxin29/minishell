@@ -48,6 +48,7 @@ static void	handle_parent_process(t_cmd *cmd, t_pipe_ex *pinfo, pid_t pid)
 		pinfo->prev_pipe = -1;
 	pinfo->last_pid = pid; //in the parent process, fork() returns the PID of the new child process, the pid hold the actual child's PID
 }
+
 static int	fork_and_exec(t_exec_path *exec_cmd, t_cmd *cmd, t_pipe_ex *pinfo, t_env *env_list)
 {
 	pid_t pid;

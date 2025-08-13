@@ -42,7 +42,7 @@ t_env	*env_find(t_env *env, char *key)
 
 
 // need for builtin exit
-long long ft_atoll(char *str)
+long long	ft_atoll(char *str)
 {
 	int			i;
 	int			sign;
@@ -70,7 +70,7 @@ long long ft_atoll(char *str)
 // need for builtin exit
 int ft_is_numeric(char *str)
 {
-	int			n;
+	int	n;
 
 	n = 0;
 	if (str[0] == '-' || str[0] == '+')

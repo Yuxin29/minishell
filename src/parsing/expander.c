@@ -64,8 +64,6 @@ char	*expand_variables_in_str(t_exec_path *cmd, char *input, char **envp)
 					var_len++;
 			}
 			new_input = replace_variable_in_str(cmd, input, i, envp);
-			//ft_putstr_fd(new_input, 1);
-			//ft_putstr_fd("try to print inside extention\n", 1);
 			if (!new_input)
 				return (NULL);
 			return (new_input);

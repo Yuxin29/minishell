@@ -1,19 +1,10 @@
 #include "minishell.h"
 
-void	print_error_and_exit(t_cmd *cmd)
+void	print_error_and_exit(t_cmd *cmd) //only deal with no /
 {
-	if (!ft_strchr(cmd->argv[0], '/'))
-	{
 		ft_putstr_fd(cmd->argv[0], 2);
 		ft_putstr_fd(": command not found\n", 2);
 		exit(127);
-	}
-	else
-	{
-		perror(cmd->argv[0]);
-		// ft_putendl_fd("debug chekc", 2); here is the bug
-		exit(127);
-	}
 }
 
 void	precheck_path_or_exit(char *path) //should precheck
@@ -46,13 +37,22 @@ static void	exec_single_child(t_exec_path *cmd)
 
 	if (check_and_apply_redirections(c) == -1)
 		exit(EXIT_FAILURE);
-	if (!c->argv || !c->argv[0]) //need redir or empty
+	if (!c->argv || !c->argv[0]) //empty
 		exit(0);
 	if (c->argv[0][0] == '\0') //""
 	{
 		ft_putstr_fd(": command not found\n", 2);
 		exit(127);
 	}
+	if (!c->cmd_path)
+	{
+		if (ft_strchr(c->argv[0], '/'))
+			precheck_path_or_exit(c->argv[0]);
+		else
+			print_error_and_exit(c);
+	}
+	else
+		precheck_path_or_exit(c->cmd_path); //even if we got the path, still check the path
 	if (!c->cmd_path)
 		print_error_and_exit(c);
 	precheck_path_or_exit(c->cmd_path); //

@@ -24,16 +24,19 @@ char	*pre_expand_line(t_exec_path *cmd, char *raw_line, char **envp)
 	int		skip_expand;
 	char	*exit_status_str;
 
-	exit_status_str = ft_itoa(cmd->exit_status);
-	(void)cmd;
+	//(void)cmd;
 	i = 0;
 	j = 0;
 	quotes[0] = 0;
 	quotes[1] = 0;
 	skip_expand = 0;
+
+	exit_status_str = ft_itoa(cmd->exit_status);
+	if (!exit_status_str)
+		return (free_malloc_fail_null(NULL));
 	res = malloc(BUF_SIZE);
 	if (!res)
-		return (NULL);
+		return (free_malloc_fail_null(exit_status_str));
 	while (raw_line[i])
 	{
 		if (handle_quotes(raw_line[i], quotes, res, &j))
@@ -48,11 +51,9 @@ char	*pre_expand_line(t_exec_path *cmd, char *raw_line, char **envp)
 			res[j++] = raw_line[i++];
 			continue ;
 		}
-		if (handle_dollar_dquote(raw_line, &i, res, &j))
-			continue ;
-		if (handle_exit_status(raw_line, &i, res, &j, exit_status_str))
-			continue ;
-		if ((try_expand_env_var(raw_line, &i, res, &j, envp)))
+		if (handle_dollar_dquote(raw_line, &i, res, &j)
+			|| handle_exit_status(raw_line, &i, res, &j, exit_status_str)
+			|| try_expand_env_var(raw_line, &i, res, &j, envp))
 			continue ;
 		res[j++] = raw_line[i++];
 	}

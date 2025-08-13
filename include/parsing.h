@@ -64,7 +64,7 @@ typedef struct s_cmd
 
 //pre_expander.c
 //char *pre_expand_line(t_exec_path *cmd, char *raw_line, char **envp);
-char	*pre_expand_line(t_exec_path *cmd, char *raw_line, char **envp, int last_exit_status);
+char	*pre_expand_line(t_exec_path *cmd, char *raw_line, char **envp);
 
 // lex_utils.c
 //int		check_raw_line_syntax(char *raw_line);
@@ -84,11 +84,10 @@ char	*get_quoted_part(char *s, int *i);
 
 // parser_utils.c
 int		check_special_characters(t_token *token_head);
-int		check_token_syntax(t_token *tokens);
+void	check_token_syntax(t_token *token_head, t_exec_path *cmd);
 int		count_argv(t_token *start);
 void	free_redirections(t_cmd *cmd_head);
 void	free_cmd_list(t_cmd *cmd_head);
-void	free_cmd_node(t_cmd *c);
 
 // parser.c
 // change token_list to command list and free the original tokens
@@ -97,6 +96,7 @@ void	free_cmd_node(t_cmd *c);
 // - Building a linked list of command objects (t_cmd)
 t_cmd	*build_command_list(t_exec_path *cmd, t_token *tokens);
 t_token	*get_one_new_cmd(t_token    *token_head, t_cmd *cmd_current);
+t_redir	*create_redir_node(t_token *redir_tok, t_token *file_tok);
 t_token	*parse_redirections(t_cmd *cmd, t_token *tokens);
 t_token	*parse_argv(t_cmd *cmd, t_token *tokens);
 

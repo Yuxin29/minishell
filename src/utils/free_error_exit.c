@@ -2,11 +2,11 @@
 
 //functions are are all called only before parsing and during parsing
 // used in pre lexing/pre parsign checkings
-int	errmsg_return_one(char *msg)
+void	errmsg_set_status(char *msg, t_exec_path *cmd)
 {
 	if (msg)
 		ft_putendl_fd(msg, 2);
-	return (1);
+	cmd->exit_status = 2;
 }
 
 //used in checking malloc strs or strdup, strjoin and so on
@@ -16,6 +16,21 @@ char	*free_malloc_fail_null(char	*str)
 		free (str);
 	perror("malloc: ");
 	return (NULL);
+}
+
+void	free_cmd_node(t_cmd *c)
+{
+	if (!c)
+		return ;
+	if (c->argv)
+		ft_free_arr(c->argv);
+	if (c->quote_type)
+		free(c->quote_type);
+	if (c->redirections)
+		free_redirections(c);
+	if (c->cmd_path)
+		free(c->cmd_path);
+	free(c);
 }
 
 //lin used in main

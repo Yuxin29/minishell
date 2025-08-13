@@ -27,27 +27,27 @@ int	check_special_characters(t_token *token_head)
 // after redirections it can not be followed by pipe or redirectiosn
 // after pipe, it can not be followed by another pipe
 // at the end of the tokens, it can not be pipe or redirections
-int	check_token_syntax(t_token *token_head)
+void	check_token_syntax(t_token *token_head, t_exec_path *cmd)
 {
 	// if (!token_head)
 	// 	return (1);
+	cmd->exit_status = 0;
 	if (token_head->t_type == 1)
-		return (errmsg_return_one(SYNTAX_ERR_PIPE));
+		return (errmsg_set_status(SYNTAX_ERR_PIPE, cmd));
 	while (token_head)
 	{
 		if (check_special_characters(token_head))
-			return (errmsg_return_one(SYNTAX_ERR_SPECIAL_CHARS));
+			return (errmsg_set_status(SYNTAX_ERR_SPECIAL_CHARS, cmd));
 		if (token_head->t_type >= 1 && token_head->next && token_head->next->t_type == 1)
-			return (errmsg_return_one(SYNTAX_ERR_PIPE));
+			return (errmsg_set_status(SYNTAX_ERR_PIPE, cmd));
 		if (token_head->t_type >= 2 && token_head->next && token_head->next->t_type >= 2)
-			return (errmsg_return_one(SYNTAX_ERR_REDIR_DOUBLE));
+			return (errmsg_set_status(SYNTAX_ERR_REDIR_DOUBLE, cmd));
 		if (token_head->t_type == 1 && token_head->next == NULL)
-			return (errmsg_return_one(SYNTAX_ERR_PIPE));
+			return (errmsg_set_status(SYNTAX_ERR_PIPE, cmd));
 		if (token_head->t_type >= 2 && token_head->next == NULL)
-			return (errmsg_return_one(SYNTAX_ERR_REDIR_FILE_MISSING));
+			return (errmsg_set_status(SYNTAX_ERR_REDIR_FILE_MISSING, cmd));
 		token_head = token_head->next;
 	}
-	return (0);
 }
 
 //used in parse_argv, for malloc str of strs
@@ -114,19 +114,4 @@ void	free_cmd_list(t_cmd *cmd_head)
 		free(cmd_head);
 		cmd_head = tmp;
 	}
-}
-
-void	free_cmd_node(t_cmd *c)
-{
-	if (!c)
-		return ;
-	if (c->argv)
-		ft_free_arr(c->argv);
-	if (c->quote_type)
-		free(c->quote_type);
-	if (c->redirections)
-		free_redirections(c);
-	if (c->cmd_path)
-		free(c->cmd_path);
-	free(c);
 }

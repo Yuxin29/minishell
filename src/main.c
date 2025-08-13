@@ -90,7 +90,7 @@ int main(int argc, char **argv, char **envp)
 			}
 
 			//yuxin added this part
-			expanded_line = pre_expand_line(&exec_cmd, line, exec_cmd.envp, exec_cmd.exit_status); //null check this one
+			expanded_line = pre_expand_line(&exec_cmd, line, exec_cmd.envp); //null check this one
 			free(line);
 
 			if (!expanded_line)

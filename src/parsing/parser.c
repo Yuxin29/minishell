@@ -61,26 +61,39 @@ t_token	*parse_redirections(t_cmd *cmd, t_token *tokens)
 	return (tokens);
 }
 
-//handle normal word_tokens, string and strings
-t_token	*parse_argv(t_cmd *cmd, t_token *tokens)
+//used for parse argv
+int	malloc_for_agrv(t_cmd *cmd, t_token *tokens)
 {
-	int	i;
 	int	len;
 
-	if (!tokens)
-		return (NULL);
-	i = 0;
 	len = count_argv(tokens);
 	cmd->argv = malloc(sizeof(char *) * (len + 1));
 	if (!cmd->argv)
-		return ((t_token *)free_malloc_fail_null(NULL));
+	{
+		perror("malloc: ");
+		return (-1);
+	}
 	cmd->quote_type = malloc(sizeof(int) * len);
 	if (!cmd->quote_type)
 	{
 		ft_free_arr(cmd->argv);
-		return ((t_token *)free_malloc_fail_null(NULL));
+		perror("malloc: ");
+		return (-1);
 	}
-	while (tokens && tokens->t_type != 1 && i < len)
+	return (len);
+}
+
+// handle normal word_tokens, string and strings\
+// if (!tokens)
+// 	return (NULL);
+t_token	*parse_argv(t_cmd *cmd, t_token *tokens)
+{
+	int	i;
+
+	i = 0;
+	if  (malloc_for_agrv(cmd, tokens) == -1)
+		return (NULL);
+	while (tokens && tokens->t_type != 1)
 	{
 		if (tokens->t_type == 0)
 		{
@@ -96,13 +109,7 @@ t_token	*parse_argv(t_cmd *cmd, t_token *tokens)
 			tokens = tokens->next;
 		}
 		else if (tokens->t_type >= 2 && tokens->t_type <= 5)
-		{
-			tokens = tokens->next;
-			if (tokens)
-				tokens = tokens->next;
-		}
-		else
-			break ;
+			tokens = tokens->next->next;
 	}
 	cmd->argv[i] = NULL;
 	return (tokens);

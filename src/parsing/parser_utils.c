@@ -27,10 +27,10 @@ int	check_special_characters(t_token *token_head)
 // after redirections it can not be followed by pipe or redirectiosn
 // after pipe, it can not be followed by another pipe
 // at the end of the tokens, it can not be pipe or redirections
+// if (!token_head)
+	// 	return (1); this already check in main??
 void	check_token_syntax(t_token *token_head, t_exec_path *cmd)
 {
-	// if (!token_head)
-	// 	return (1);
 	cmd->exit_status = 0;
 	if (token_head->t_type == 1)
 		return (errmsg_set_status(SYNTAX_ERR_PIPE, cmd));

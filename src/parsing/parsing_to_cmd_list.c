@@ -1,21 +1,21 @@
 #include "minishell.h"
 
 //called in build cmd list
-int	check_get_one_new_cmd(t_exec_path *cmd, t_token *token_head, t_cmd *cmd_current, t_cmd *cmd_head)
+int	check_new_cmd(t_exec_path *cmd, t_token *token, t_cmd *cmd1, t_cmd *cmd2)
 {
-	if (!token_head)
+	if (!token)
 	{
 		if (hd_is_interrupted())
 		{
-			free_cmd_node(cmd_current);
-			free_cmd_list(cmd_head);
+			free_cmd_node(cmd1);
+			free_cmd_list(cmd2);
 			cmd->exit_status = 130;
 			return (1);
 		}
-		if (!cmd_current->argv && !cmd_current->redirections)
+		if (!cmd1->argv && !cmd1->redirections)
 		{
-			free_cmd_node(cmd_current);
-			free_cmd_list(cmd_head);
+			free_cmd_node(cmd1);
+			free_cmd_list(cmd2);
 			cmd->exit_status = 0;
 			return (1);
 		}
@@ -58,7 +58,7 @@ t_cmd	*build_command_list(t_exec_path *cmd, t_token *token_head)
 		if (!cmd_current)
 			return (NULL);
 		token_head = get_one_new_cmd(token_head, cmd_current);
-		if (check_get_one_new_cmd(cmd, token_head, cmd_current, cmd_head))
+		if (check_new_cmd(cmd, token_head, cmd_current, cmd_head))
 			return (NULL);
 		if (!cmd_head)
 			cmd_head = cmd_current;

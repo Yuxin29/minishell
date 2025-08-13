@@ -38,3 +38,12 @@ char	*free_malloc_fail_null(char	*str)
 	perror("malloc: ");
 	return (NULL);
 }
+
+int	ft_check_valid_var_name(char c)
+{
+	if (ft_isalpha(c))
+		return (1);
+	else if (c == '_')
+		return (1);
+	return (0);
+}

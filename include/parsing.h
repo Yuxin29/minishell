@@ -90,11 +90,16 @@ int		count_argv(t_token *start);
 // - Taking the token list and Understanding the structure of the command,
 // - Grouping tokens into command nodes, pipes, redirections, etc,
 // - Building a linked list of command objects (t_cmd)
-t_cmd	*build_command_list(t_exec_path *cmd, t_token *tokens);
-t_token	*get_one_new_cmd(t_token    *token_head, t_cmd *cmd_current);
 t_redir	*create_redir_node(t_token *redir_tok, t_token *file_tok);
 t_token	*parse_redirections(t_cmd *cmd, t_token *tokens);
 t_token	*parse_argv(t_cmd *cmd, t_token *tokens);
+
+// parsing_to_cmd_list.c
+int		check_new_cmd(t_exec_path *cmd, t_token *token, t_cmd *cmd1, t_cmd *cmd2);
+t_cmd	*malloc_for_new_cmd(t_cmd *cmd_head);
+t_cmd	*build_command_list(t_exec_path *cmd, t_token *token_head);
+t_token	*loop_to_next(t_token *token_head);
+t_token	*get_one_new_cmd(t_token *token_head, t_cmd *cmd_current);
 
 //expander_utils.c >
 //string operations helpers.
@@ -105,7 +110,7 @@ int		should_expand(const char *str, int quote_type);
 
 // expander.c
 // called after parsing, expanding every thing but not heredocs
-char	*replace_variable_in_str(t_exec_path *cmd, char *input, int pos, char **envp);
+char	*replace_variable(t_exec_path *cmd, char *input, int pos, char **envp);
 char	*expand_variables_in_str(t_exec_path *cmd, char *input, char **envp);
 void	expand_redirection(t_exec_path *cmd, t_cmd *cmd_list, char **envp);
 void	expand_argv(t_exec_path *cmd, char **argv, int *quote_type, char **envp);

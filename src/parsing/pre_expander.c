@@ -23,7 +23,7 @@ int	try_expand_env_var(char *raw_line, int *i, char *res, int *j, char **envp)
 	size_t	k;
 	char	*key;
 
-	if (raw_line[*i] == '$' && raw_line[*i + 1] && (ft_isalnum(raw_line[*i + 1]) || raw_line[*i + 1] == '_'))
+	if (raw_line[*i] == '$' && raw_line[*i + 1] && ft_check_valid_var_name(raw_line[*i + 1]))
 	{
 		len = var_name_len(raw_line + *i + 1);
 		key = ft_substr(raw_line, *i + 1, len);
@@ -33,14 +33,11 @@ int	try_expand_env_var(char *raw_line, int *i, char *res, int *j, char **envp)
 		free (key);
 		*i += len + 1;
 		if (!val) //not good, need to make sure it is not from malloc failure
-            val = strdup("");
-		if (val)
-		{
-			k = 0;
-			while (val[k])
-				res[(*j)++] = val[k++];
-			free (val);
-		}
+			return (0);
+		k = 0;
+		while (val[k])
+			res[(*j)++] = val[k++];
+		free (val);
 		return (1);
 	}
 	return (0);
@@ -140,7 +137,6 @@ char	*pre_expand_line(t_exec_path *cmd, char *raw_line, char **envp)
 		}
 		if (raw_line[i] == '$' && raw_line[i + 1] == '?')
 		{
-			exit_status_str = ft_itoa(cmd->exit_status);
 			k = 0;
 			while (exit_status_str[k])
 				res[j++] = exit_status_str[k++];

@@ -18,5 +18,6 @@ void	free_t_exec_path(t_exec_path *cmd_and_path);//post_parsing
 char	*ft_strjoin_free(char *s1, char *s2);
 void	errmsg_set_status(char *msg, t_exec_path *cmd);
 char	*free_malloc_fail_null(char	*str);//preparsing
+int		ft_check_valid_var_name(char c);
 
 #endif

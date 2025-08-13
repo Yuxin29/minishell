@@ -34,6 +34,34 @@ t_token	*get_token_list(t_exec_path *cmd, char *raw_line)
 	return (head);
 }
 
+char	*get_part(char *line, int *i, char	*part_quote)
+{
+	char	*part;
+
+	if (line[*i] == '$' && line[*i + 1] == '"')
+	{
+		(*i)++;
+		part = get_quoted_part(line, i);
+		*part_quote = 3;
+	}
+	else if (line[*i] == '\'')
+	{
+		part = get_quoted_part(line, i);
+		*part_quote = 1;
+	}
+	else if (line[*i] == '"')
+	{
+		part = get_quoted_part(line, i);
+		*part_quote = 2;
+	}
+	else
+	{
+		part = get_unquoted_part(line, i);
+		*part_quote = 0;
+	}
+	return (part);
+}
+
 // if it is a world token
 t_token	*build_word_token(char *line, int *i)
 {
@@ -47,27 +75,7 @@ t_token	*build_word_token(char *line, int *i)
 	temp = NULL;
 	while (line[*i] && !ft_isspace(line[*i]) && line[*i] != '<' && line[*i] != '>' && line[*i] != '|')
 	{
-		if (line[*i] == '$' && line[*i + 1] == '"')
-		{
-			(*i)++;
-			part = get_quoted_part(line, i);
-			part_quote = 3;
-		}
-		else if (line[*i] == '\'')
-		{
-			part = get_quoted_part(line, i);
-			part_quote = 1;
-		}
-		else if (line[*i] == '"')
-		{
-			part = get_quoted_part(line, i);
-			part_quote = 2;
-		}
-		else
-		{
-			part = get_unquoted_part(line, i);
-			part_quote = 0;
-		}
+		part = get_part(line, i, &part_quote);
 		if (!part)
 			return (NULL);
 		if (q == 0)
@@ -121,5 +129,6 @@ t_token	*build_token_from_next_word(char *line, int *i)
 {
 	if (line[*i] == '<' || line[*i] == '>' || line[*i] == '|')
 		return (build_operator_token(line, i));
-	return (build_word_token(line, i));
+	else
+		return (build_word_token(line, i));
 }

@@ -23,13 +23,6 @@ char	*ft_strjoin_free(char *s1, char *s2)
 	return (joined);
 }
 
-void	errmsg_set_status(char *msg, t_exec_path *cmd)
-{
-	if (msg)
-		ft_putendl_fd(msg, 2);
-	cmd->exit_status = 2;
-}
-
 //used in checking malloc strs or strdup, strjoin and so on
 char	*free_malloc_fail_null(char	*str)
 {
@@ -41,6 +34,8 @@ char	*free_malloc_fail_null(char	*str)
 
 int	ft_check_valid_var_name(char c)
 {
+	if (!c)
+		return (0);
 	if (ft_isalpha(c))
 		return (1);
 	else if (c == '_')
@@ -48,9 +43,3 @@ int	ft_check_valid_var_name(char c)
 	return (0);
 }
 
-void	print_error(const char *arg)
-{
-	ft_putstr_fd("export: ", 2);
-	ft_putstr_fd(arg, 2);
-	ft_putstr_fd(" : not a valid identifier\n", 2);
-}

@@ -2,11 +2,16 @@
 # define PARSING_H
 
 // syntax error ms macors
-# define SYNTAX_ERR_PIPE				"minishell: syntax error near unexpected token `|'"
-# define SYNTAX_ERR_REDIR_DOUBLE		"minishell: syntax error: near unexpected token redirections"
-# define SYNTAX_ERR_REDIR_FILE_MISSING	"minishell: syntax error: missing filename or delimiter after redirection"
-# define SYNTAX_ERR_SPECIAL_CHARS		"minishell: syntax error: special characters"
-# define SYNTAX_ERR_QUOTES				"minishell: syntax error: unclosed quotes"
+# define SYNTAX_ERR_PIPE \
+	"minishell: syntax error near unexpected token `|'"
+# define SYNTAX_ERR_REDIR_DOUBLE \
+	"minishell: syntax error: near unexpected token redirections"
+# define SYNTAX_ERR_REDIR_FILE_MISSING \
+	"minishell: syntax error: missing filename or delimiter after redirection"
+# define SYNTAX_ERR_SPECIAL_CHARS \
+	"minishell: syntax error: special characters"
+# define SYNTAX_ERR_QUOTES \
+	"minishell: syntax error: unclosed quotes"
 
 //common shell cmd line length
 # define BUF_SIZE 8192
@@ -15,14 +20,14 @@
 # define EMPTY ""
 
 //Needed from exec.h
-typedef struct	s_exec_path	t_exec_path;
+typedef struct	s_exec_path t_exec_path;
 
-// 	T_WORD,			0    "string" 	string			a cmd, a arguement
-// 	T_PIPE,			1    |      	pipe
-// 	T_REDIRECT_IN,	2     <      	input   		Reads from a file
-// 	T_REDIRECT_OUT,	3     >       	output  		Writes to a file, replacing its contents.
-// 	T_APPEND,       4     >>    	output append   writes to a file, but appends at the end.
-// 	T_HEREDOC,      5    <<   		heredoc input   Feeds inline text as stdin.
+// 	T_WORD,			0			string			a cmd, a arguement
+// 	T_PIPE,			1    |      pipe
+// 	T_REDIRECT_IN,	2     <     input   		Reads from a file
+// 	T_REDIRECT_OUT,	3     >     output  		Writes to a file, replacing.
+// 	T_APPEND,       4     >>    output append   writes to a file, appends.
+// 	T_HEREDOC,      5    <<   	heredoc input   Feeds inline text as stdin.
 typedef enum e_token_type
 {
 	T_WORD,
@@ -65,11 +70,11 @@ typedef struct s_cmd
 
 
 //preexpander_utils.c
-int	try_expand_env_var(char *raw_line, int *i, char *res, int *j, char **envp);
-int	handle_quotes(char c, int quotes[2], char *res, int *j);
-int	handle_heredoc_skip(char *raw_line, int *i, int *skip_expand, char *res, int *j);
-int handle_dollar_dquote(char *raw_line, int *i, char *res, int *j);
-int handle_exit_status(char *raw_line, int *i, char *res, int *j, char *exit_status_str);
+int		try_expand_env_var(char *raw_line, int *i, char *res, int *j, char **envp);
+int		handle_quotes(char c, int quotes[2], char *res, int *j);
+int		handle_heredoc_skip(char *raw_line, int *i, int *skip_expand, char *res, int *j);
+int		handle_dollar_dquote(char *raw_line, int *i, char *res, int *j);
+int		handle_exit_status(char *raw_line, int *i, char *res, int *j, char *exit_status_str);
 
 //preexpander.c
 int		var_name_len(const char *str);

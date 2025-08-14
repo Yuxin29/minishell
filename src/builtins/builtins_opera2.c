@@ -38,22 +38,6 @@ int	ft_unset(char **argv, t_env **env)
 	return (0);
 }
 
-//need to move it somewhere else
-static int	perror_return_one(char *str)
-{
-	if (str)
-		perror(str);
-	return (1);
-}
-
-//need to move it somewhere else
-static int	errmsg_return_one(char *str)
-{
-	if (str)
-		ft_putendl_fd(str, 2);
-	return (1);
-}
-
 // yuxin working on this now; I passed t_env **env into ft_cd
 // NAME		chdir, - change working directory
 // SYNOPSIS	int chdir(const char *path);

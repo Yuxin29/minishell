@@ -11,6 +11,9 @@ void	check_raw_line_syntax(char *raw_line, t_exec_path *cmd)
 
 	i = 0;
 	cmd->exit_status = 0;
+	precheck_special_chars_rawline(raw_line, cmd);
+	if (cmd->exit_status == 2)
+		return ;
 	while (raw_line[i])
 	{
 		if (raw_line[i] == '"')

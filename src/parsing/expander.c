@@ -13,18 +13,12 @@ char	*replace_variable(t_exec_path *cmd, char *input, int pos, char **envp)
 	char	*prefix;
 	char	*suffix;
 
+	(void)cmd;
 	start = pos + 1;
-	var_len = 1;
-	if (input[pos + 1] == '?')
-		value = ft_itoa(cmd->exit_status);
-	else
-	{
-		var_len = 0;
-		while (input[start + var_len] && (ft_isalnum(input[start + var_len])
-				|| input[start + var_len] == '_'))
-			var_len++;
-		value = get_env_value_from_substr(input, start, var_len, envp);
-	}
+	var_len = 0;
+	while (ft_check_valid_var_name(input[start + var_len]))
+		var_len++;
+	value = get_env_value_from_substr(input, start, var_len, envp);
 	prefix = ft_substr(input, 0, pos);
 	suffix = ft_strdup(input + start + var_len);
 	if (!prefix)
@@ -35,13 +29,13 @@ char	*replace_variable(t_exec_path *cmd, char *input, int pos, char **envp)
 }
 
 // the 2 free (input);
-//with it, it is still reachable, without it, it is definitly loss
+// with it, it is still reachable, without it, it is definitly loss
 // echo $? already expanded in preexpander
+// return (replace_variable(cmd, input, i, envp));null is included in this one
 char	*expand_variables_in_str(t_exec_path *cmd, char *input, char **envp)
 {
 	int		i;
 	int		var_len;
-	char	*new_input;
 
 	i = 0;
 	if (!input)
@@ -53,15 +47,12 @@ char	*expand_variables_in_str(t_exec_path *cmd, char *input, char **envp)
 			i += 2;
 			continue ;
 		}
-		if (input[i] == '$' && input[i + 1] && ft_check_valid_var_name(input[i + 1]))
+		if (input[i] == '$' && ft_check_valid_var_name(input[i + 1]))
 		{
 			var_len = 0;
-			while (input[i + 1 + var_len] & ft_check_valid_var_name(input[i + 1 + var_len]))
+			while (ft_check_valid_var_name(input[i + 1 + var_len]))
 				var_len++;
-			new_input = replace_variable(cmd, input, i, envp);
-			if (!new_input)
-				return (NULL);
-			return (new_input);
+			return (replace_variable(cmd, input, i, envp));
 		}
 		else
 			i++;
@@ -82,7 +73,8 @@ void	expand_redirection(t_exec_path *cmd, t_cmd *cmd_list, char **envp)
 			redir = redir->next;
 			continue ;
 		}
-		if (redir->file && ft_strchr(redir->file, '$') && should_expand(redir->file, 2))
+		if (redir->file && ft_strchr(redir->file, '$')
+			&& should_expand(redir->file, 2))
 		{
 			value = expand_variables_in_str(cmd, redir->file, envp);
 			if (!value)

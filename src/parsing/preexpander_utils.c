@@ -11,7 +11,7 @@ int	try_expand_env_var(char *raw_line, int *i, char *res, int *j, char **envp)
 	size_t	k;
 	char	*key;
 
-	if (raw_line[*i] == '$' && raw_line[*i + 1] && ft_check_valid_var_name(raw_line[*i + 1]))
+	if (raw_line[*i] == '$' && ft_check_valid_var_name(raw_line[*i + 1]))
 	{
 		len = var_name_len(raw_line + *i + 1);
 		key = ft_substr(raw_line, *i + 1, len);

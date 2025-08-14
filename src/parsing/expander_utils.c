@@ -31,12 +31,12 @@ char	*get_env_value(char **envp, const char *key)
 	return (NULL);
 }
 
-char	*get_env_value_from_substr(char *input, int start, int var_len, char **envp)
+char	*get_env_value_from_substr(char *input, int start, int len, char **envp)
 {
 	char	*var_name;
 	char	*value;
 
-	var_name = ft_substr(input, start, var_len);
+	var_name = ft_substr(input, start, len);
 	if (!var_name)
 		return (NULL);
 	value = get_env_value(envp, var_name);

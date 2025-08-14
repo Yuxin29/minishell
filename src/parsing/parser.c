@@ -12,7 +12,7 @@ t_redir	*create_redir_node(t_token *redir_tok, t_token *file_tok)
 	new->next = NULL;
 	if (redir_tok->t_type == 5)
 	{
-		new->heredoc_delim = ft_strndup(file_tok->str, ft_strlen(file_tok->str));
+		new->heredoc_delim = ft_strdup(file_tok->str);
 		if (!new->heredoc_delim)
 			return (free(new), perror("malloc: "), NULL);
 		new->file = creat_heredoc_file(new->heredoc_delim);
@@ -21,7 +21,7 @@ t_redir	*create_redir_node(t_token *redir_tok, t_token *file_tok)
 	}
 	else
 	{
-		new->file = ft_strndup(file_tok->str, ft_strlen(file_tok->str));
+		new->file = ft_strdup(file_tok->str);
 		if (!new->file)
 			return (free(new), (t_redir *)free_malloc_fail_null(NULL));
 		new->heredoc_delim = NULL;
@@ -44,7 +44,10 @@ t_token	*parse_redirections(t_cmd *cmd, t_token *tokens)
 			if (!new_redir)
 				return (NULL);
 			if (!cmd->redirections)
+			{
+				free_redirections(cmd);//added recently
 				cmd->redirections = new_redir;
+			}
 			else
 			{
 				last = cmd->redirections;

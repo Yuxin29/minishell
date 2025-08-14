@@ -1,19 +1,24 @@
 #include "minishell.h"
 
-//return the length of a valid variable name
-//ft_isalnum, not sure, it should be only uppper case
+// return the length of a valid variable name
+// $ skipped already
 int	var_name_len(const char *str)
 {
 	int	len;
 
 	len = 0;
-	if (!(ft_isalpha(str[0]) || str[0] == '_'))
-		return (0);
-	while (str[len] && (ft_isalnum(str[len]) || str[len] == '_'))
+	if (!str[len])
+		return (len);
+	if (!ft_check_valid_var_name(str[len]))
+		return (len);
+	while (ft_check_valid_var_name(str[len]))
 		len++;
 	return (len);
 }
 
+// trackign and switch quotes status
+// quotes[0] -> single quotes
+// quotes[1] -> double quotes
 int	handle_quotes(char c, int quotes[2], char *res, int *j)
 {
 	if (c == '\'' && !quotes[1])
@@ -33,7 +38,12 @@ int	handle_quotes(char c, int quotes[2], char *res, int *j)
 	return (0);
 }
 
-//heredoc
+// heredoc is skiped in epanding
+// skip_expand is used to track if it shoudl be skiped
+// ATTERNTION
+// Bash behavior
+// << EOF ： expand
+// << 'EOF' 或 << "EOF"：no expansion
 int	handle_heredoc_skip(char *raw_line, int ids[2], int *skip_expand, char *res)
 {
 	if (!(*skip_expand)

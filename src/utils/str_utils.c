@@ -1,9 +1,7 @@
 #include "minishell.h"
-//# include "parsing.h"
-//# include "utils.h"
 
-//no need to null check in ft_strjoin, it will return null if failed
-//but need to null check when calling ft_strjoin_free
+// need to null check the return value, but not need to free source str
+// ATTENTION: when use it, need to be sure s1 and s2 are malloced
 char	*ft_strjoin_free(char *s1, char *s2)
 {
 	char	*joined;
@@ -23,15 +21,20 @@ char	*ft_strjoin_free(char *s1, char *s2)
 	return (joined);
 }
 
-//used in checking malloc strs or strdup, strjoin and so on
+// used in checking malloc strs or strdup, strjoin and so on
+// perror included, and it can free one string
 char	*free_malloc_fail_null(char	*str)
 {
 	if (str)
 		free (str);
-	perror("malloc: ");
+	perror("malloc");
 	return (NULL);
 }
 
+// commone version of bash support only alpha and '_'
+// when use, not need to check null, null check included
+// QUESTION: alpha or upper case only
+// RECHECK: it checks char instead of string
 int	ft_check_valid_var_name(char c)
 {
 	if (!c)

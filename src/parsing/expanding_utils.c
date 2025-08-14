@@ -62,7 +62,7 @@ char	*join_three_and_free(char *s1, char *s2, char *s3)
 	return (result);
 }
 
-//to deal with echo $"HOME", should not expand like this
+// to deal with echo $"HOME", should not expand like this
 // 1 for should expand, 0 for not expand
 int	should_expand(const char *str, int quote_type)
 {

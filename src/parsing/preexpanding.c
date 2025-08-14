@@ -1,6 +1,7 @@
 #include "minishell.h"
 
-static void	append_to_res(char *res, int *res_idx, const char *val)
+// there might be overflow when char length beyond BUFF_SIZE
+void	append_to_res(char *res, int *res_idx, const char *val)
 {
 	size_t	k;
 
@@ -33,15 +34,16 @@ int	try_expand_env_var(char *raw_line, int idx[2], char *res, char **envp)
 		free(key);
 		idx[0] += len + 1;
 		if (!val)
-			return (0);
+			val = "";
 		append_to_res(res, &idx[1], val);
-		free(val);
+		if (val != NULL && val[0] != '\0')
+			free(val);
 		return (1);
 	}
 	return (0);
 }
 
-static int	skip_copy(char *raw_line, int idx[2], char *res, int quotes[2])
+int	skip_copy(char *raw_line, int idx[2], char *res, int quotes[2])
 {
 	if (handle_quotes(raw_line[idx[0]], quotes, res, &idx[1]))
 	{

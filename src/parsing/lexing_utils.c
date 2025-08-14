@@ -1,19 +1,13 @@
 #include "minishell.h"
 
-//precheck validity of the expanderd raw_line
-//return 1 on errors and 1 on okei
-//in case of the quotes not close, we treat it as syntax error
-// nothing need to be freed here
+// precheck validity of the expanderd raw_line
+// send error msgs and set up the exit status in cmd
 // !raw_line[i] check unnecessary, for example $EMPTY
 void	check_raw_line_syntax(char *raw_line, t_exec_path *cmd)
 {
 	int	i;
 
 	i = 0;
-	cmd->exit_status = 0;
-	precheck_special_chars_rawline(raw_line, cmd);
-	if (cmd->exit_status == 2)
-		return ;
 	while (raw_line[i])
 	{
 		if (raw_line[i] == '"')
@@ -29,7 +23,10 @@ void	check_raw_line_syntax(char *raw_line, t_exec_path *cmd)
 				i++;
 		}
 		if (!raw_line[i])
+		{
 			errmsg_set_status(SYNTAX_ERR_QUOTES, cmd);
+			return ;
+		}
 		i++;
 	}
 }
@@ -64,7 +61,7 @@ void	precheck_special_chars_rawline(char *line, t_exec_path *cmd)
 }
 
 // get the type of a token
-//non mem involved in this one
+// non mem involved in this one
 void	get_token_type(t_token *token)
 {
 	const char	*tmp;
@@ -74,14 +71,14 @@ void	get_token_type(t_token *token)
 		token->t_type = T_WORD;
 	else if (ft_strncmp(tmp, "|", 2) == 0)
 		token->t_type = T_PIPE;
-	else if (ft_strncmp(tmp, "<", 2) == 0)
-		token->t_type = T_REDIRECT_IN;
-	else if (ft_strncmp(tmp, ">", 2) == 0)
-		token->t_type = T_REDIRECT_OUT;
 	else if (ft_strncmp(tmp, ">>", 3) == 0)
 		token->t_type = T_APPEND;
 	else if (ft_strncmp(tmp, "<<", 3) == 0)
 		token->t_type = T_HEREDOC;
+	else if (ft_strncmp(tmp, "<", 2) == 0)
+		token->t_type = T_REDIRECT_IN;
+	else if (ft_strncmp(tmp, ">", 2) == 0)
+		token->t_type = T_REDIRECT_OUT;
 	else
 		token->t_type = T_WORD;
 }

@@ -25,5 +25,4 @@ void	print_error(const char *arg); //for export
 int		perror_return_one(char *str); //for cd
 int		errmsg_return_one(char *str); //for cd
 
-
 #endif

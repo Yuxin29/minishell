@@ -98,6 +98,7 @@ int main(int argc, char **argv, char **envp)
 					tmp->cmd_path = get_cmd_path(tmp->argv[0], env_list);
 				else
 					tmp->cmd_path = NULL;
+				//printf("cmd->path: %s\n", tmp->cmd_path);
 				tmp = tmp->next;
 			}
 			if (!exec_cmd.whole_cmd->next)

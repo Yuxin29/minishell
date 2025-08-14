@@ -47,7 +47,7 @@ char	*creat_heredoc_file(char *delim)
 		free(line);
 	}
 	signal_init();
-	if (!dup2(saved_stdin, STDIN_FILENO))
+	if (!dup2(saved_stdin, STDIN_FILENO)) //??
 	{
 		perror("dup2");
 		close(saved_stdin);

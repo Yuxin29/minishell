@@ -38,53 +38,6 @@ int	ft_echo(char **argv)
 	return (0);
 }
 
-//need to move it somewhere else
-static int	perror_return_one(char *str)
-{
-	if (str)
-		perror(str);
-	return (1);
-}
-
-//need to move it somewhere else
-static int	errmsg_return_one(char *str)
-{
-	if (str)
-		ft_putendl_fd(str, 2);
-	return (1);
-}
-
-// yuxin working on this now; I passed t_env **env into ft_cd
-// NAME		chdir, - change working directory
-// SYNOPSIS	int chdir(const char *path);
-// On success, zero is returned.  On error, -1 is returned
-// buf is a local mem, path pointing to it, so need need to free path ever
-int	ft_cd(char **argv, t_env **env)
-{
-	char	*path;
-	char	buf[1024];
-	char	*target;
-
-	if (argv[2])
-		return (errmsg_return_one("cd: too many arguments"));	
-	path = getcwd(buf, sizeof(buf));
-	if (!path)
-		return (perror_return_one("cd: getcwd (old)"));
-	target = argv[1];
-	if (!target)
-		target = get_env(*env, "HOME");
-	if (!target)
-		return (errmsg_return_one("cd: HOME not set"));	
-	if (chdir(target) != 0)
-		return (perror_return_one("cd"));
-	set_env(env, "OLDPWD", path);
-	path = getcwd(buf, sizeof(buf));
-	if (!path)
-		return (perror_return_one("cd: getcwd (new)"));
-	set_env(env, "PWD", path);
-	return (0);
-}
-
 // in bash, if we exit, we exit bash into zsh shel
 // do we need to update signals? probably not
 // exit — cause the shell to exit:	exit [n]
@@ -114,4 +67,36 @@ int	ft_exit(char **argv, t_exec_path *exec_cmd)
 	status = ft_atoll(argv[1]);
 	exit((unsigned char)status);
 }
+// pwd
+// The getcwd() function copies an absolute pathname
+// of the current working directory
+// to the array pointed to by buf,
+// which is of length size
+// On success,  these functions return a pointer to a string
+// containing the pathname of the current working directory.
+// In the case of getcwd() and getwd() this is the same value as buf.
+// On failure, these functions return NULL, and errno is set.
+// The contents of the  array  pointed to by buf are undefined on error.
+int	ft_pwd()
+{
+	char	buf[PATH_MAX];
 
+	if (getcwd(buf, sizeof(buf)))
+	{
+		printf("%s\n", buf);
+		return (0);
+	}
+	perror("pwd");
+	return (1);
+}
+
+int	ft_env(t_env *env)
+{
+	while (env)
+	{
+		if (env->key && env->value)
+			printf("%s=%s\n", env->key, env->value);
+		env = env->next;
+	}
+	return (0);
+}

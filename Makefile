@@ -24,7 +24,7 @@ SRCS := \
 	$(SRC_DIR)/parsing/parser.c $(SRC_DIR)/parsing/parser_utils.c \
 	$(SRC_DIR)/parsing/parsing_to_cmd_list.c \
 	$(SRC_DIR)/parsing/expander.c $(SRC_DIR)/parsing/expander_utils.c \
-	$(SRC_DIR)/utils/free.c $(SRC_DIR)/utils/str_utils.c \
+	$(SRC_DIR)/utils/free.c $(SRC_DIR)/utils/str_utils.c $(SRC_DIR)/utils/err_msg.c \
 	$(SRC_DIR)/signals/signals.c $(SRC_DIR)/signals/signal_utils.c
 
 OBJS := $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)

@@ -19,34 +19,29 @@ static int	is_valid_identifier(char *str)
 static void	export_var(t_env **env, char *key)
 {
 	t_env	*node;
-	t_env	*new_node;
 
 	node = env_find(*env, key);
 	if (node)
 		node->exported = 1;
 	else
 	{
-		new_node = malloc(sizeof(t_env));
-		new_node->key = ft_strdup(key);
-		if (!new_node->key)
+		node = env_new_node(key, NULL);
+		if (!node)
 			return ;
-		new_node->value = ft_strdup("");
-		if (!new_node->value)
-			return ;
-		new_node->exported = 1;
-		new_node->next = *env;
-		*env = new_node;
+		node->next = *env;
+		*env = node;
 	}
 }
 
 static void	print_export(t_env *env)
 {
+	
 	while (env)
 	{
-		if (env->value)
-			printf("declare -x %s=\"%s\"\n", env->key, env->value);
-		else
+		if (env->value == NULL)
 			printf("declare -x %s\n", env->key);
+		else
+			printf("declare -x %s=\"%s\"\n", env->key, env->value);
 		env = env->next;
 	}
 }
@@ -73,7 +68,7 @@ static int	handle_export_arg(char *argv, t_env **env)
 		set_env(env, key, value);
 	}
 	else
-		export_var(env, argv);
+		export_var(env, key);
 	return (0);
 }
 

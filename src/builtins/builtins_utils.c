@@ -25,6 +25,7 @@ void	set_env(t_env **env, char *key, char *value)
 	}
 	// if no exit node, create a new one
 	new_node = env_new_node(key, value);
+	new_node->exported = 1;
 	new_node->next = *env;
 	*env = new_node;
 }

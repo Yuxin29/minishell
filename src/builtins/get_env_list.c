@@ -37,13 +37,10 @@ t_env	*env_new_node(char *key, char *value)
 	node->key = ft_strdup(key);
 	if (!node->key)
 		return (free(node), NULL);
-	node->value = ft_strdup(value);
-	if (!node->value)
-	{
-		free(node->key);
-		free(node);
-		return (NULL);
-	}
+	if (value)
+		node->value = ft_strdup(value);
+	else
+		node->value = NULL;
 	node->next = NULL;
 	return (node);
 }

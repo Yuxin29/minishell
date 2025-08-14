@@ -94,7 +94,7 @@ int	ft_env(t_env *env)
 {
 	while (env)
 	{
-		if (env->key && env->value)
+		if (env->key && env->value != NULL)
 			printf("%s=%s\n", env->key, env->value);
 		env = env->next;
 	}

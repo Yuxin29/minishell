@@ -1,34 +1,17 @@
 #include "minishell.h"
 
-// success, expanded
-// not an env var to expand here
-//if (!key) return (0); //malloc fails, need to perror here
-// val = get_env_value(envp, key); //should null check, failure check
-int	try_expand_env_var(char *raw_line, int *i, char *res, int *j, char **envp)
+//return the length of a valid variable name
+//ft_isalnum, not sure, it should be only uppper case
+int	var_name_len(const char *str)
 {
-	int		len;
-	char	*val;
-	size_t	k;
-	char	*key;
+	int	len;
 
-	if (raw_line[*i] == '$' && ft_check_valid_var_name(raw_line[*i + 1]))
-	{
-		len = var_name_len(raw_line + *i + 1);
-		key = ft_substr(raw_line, *i + 1, len);
-		if (!key)
-			return (0);
-		val = get_env_value(envp, key);
-		free (key);
-		*i += len + 1;
-		if (!val)
-			return (0);
-		k = 0;
-		while (val[k])
-			res[(*j)++] = val[k++];
-		free (val);
-		return (1);
-	}
-	return (0);
+	len = 0;
+	if (!(ft_isalpha(str[0]) || str[0] == '_'))
+		return (0);
+	while (str[len] && (ft_isalnum(str[len]) || str[len] == '_'))
+		len++;
+	return (len);
 }
 
 int	handle_quotes(char c, int quotes[2], char *res, int *j)
@@ -51,59 +34,68 @@ int	handle_quotes(char c, int quotes[2], char *res, int *j)
 }
 
 //heredoc
-int	handle_heredoc_skip(char *raw_line, int *i, int *skip_expand, char *res, int *j)
+int	handle_heredoc_skip(char *raw_line, int ids[2], int *skip_expand, char *res)
 {
-	if (!(*skip_expand) && raw_line[*i] == '<' && raw_line[*i + 1] == '<')
+	if (!(*skip_expand)
+		&& raw_line[ids[0]] == '<' && raw_line[ids[0] + 1] == '<')
 	{
 		*skip_expand = 1;
-		res[*j] = raw_line[*i];
-		(*j)++;
-		(*i)++;
-		res[*j] = raw_line[*i];
-		(*j)++;
-		(*i)++;
+		res[ids[1]] = raw_line[ids[0]];
+		(ids[1])++;
+		(ids[0])++;
+		res[ids[1]] = raw_line[ids[0]];
+		(ids[1])++;
+		(ids[0])++;
 		return (1);
 	}
 	if (*skip_expand)
 	{
-		res[*j] = raw_line[*i];
-		(*j)++;
-		if (ft_isspace(raw_line[*i]))
+		res[ids[1]] = raw_line[ids[0]];
+		(ids[1])++;
+		if (ft_isspace(raw_line[ids[0]]))
 			*skip_expand = 0;
-		(*i)++;
+		(ids[0])++;
 		return (1);
 	}
 	return (0);
 }
 
-int	handle_dollar_dquote(char *raw_line, int *i, char *res, int *j)
+int	handle_dollar_dquote(char *raw_line, int ids[2], char *res)
 {
-	if (raw_line[*i] == '$' && raw_line[*i + 1] == '"')
+	if (raw_line[ids[0]] == '$' && raw_line[ids[0] + 1] == '"')
 	{
-		res[(*j)++] = raw_line[(*i)++];
-		res[(*j)++] = raw_line[(*i)++];
-		while (raw_line[*i] && raw_line[*i] != '"')
-			res[(*j)++] = raw_line[(*i)++];
-		if (raw_line[*i] == '"')
-			res[(*j)++] = raw_line[(*i)++];
+		res[(ids[1])++] = raw_line[(ids[0])++];
+		res[(ids[1])++] = raw_line[(ids[0])++];
+		while (raw_line[ids[0]] && raw_line[ids[0]] != '"')
+			res[(ids[1])++] = raw_line[(ids[0])++];
+		if (raw_line[ids[0]] == '"')
+			res[(ids[1])++] = raw_line[(ids[0])++];
 		return (1);
 	}
 	return (0);
 }
 
-int	handle_exit_status(char *raw_line, int *i, char *res, int *j, char *exit_status_str)
+int	handle_exit_status(char *raw_line, int ids[2], char *res, t_exec_path *cmd)
 {
-	int	k;
+	int		k;
+	char	*exit_status_str;
 
 	k = 0;
-	if (raw_line[*i] == '$' && raw_line[*i + 1] == '?')
+	if (raw_line[ids[0]] == '$' && raw_line[ids[0] + 1] == '?')
 	{
+		exit_status_str = ft_itoa(cmd->exit_status);
+		if (!exit_status_str)
+		{
+			perror("malloc: ");
+			return (0);
+		}
 		while (exit_status_str[k])
 		{
-			res[(*j)++] = exit_status_str[k];
+			res[(ids[1])++] = exit_status_str[k];
 			k++;
 		}
-		*i += 2;
+		ids[0] += 2;
+		free(exit_status_str);
 		return (1);
 	}
 	return (0);

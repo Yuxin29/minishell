@@ -20,7 +20,7 @@
 # define EMPTY ""
 
 //Needed from exec.h
-typedef struct	s_exec_path t_exec_path;
+typedef struct s_exec_path	t_exec_path;
 
 // 	T_WORD,			0			string			a cmd, a arguement
 // 	T_PIPE,			1    |      pipe
@@ -68,17 +68,15 @@ typedef struct s_cmd
 	struct s_cmd	*next;
 }	t_cmd;
 
-
 //preexpander_utils.c
-int		try_expand_env_var(char *raw_line, int *i, char *res, int *j, char **envp);
+int		var_name_len(const char *str);
 int		handle_quotes(char c, int quotes[2], char *res, int *j);
-int		handle_heredoc_skip(char *raw_line, int *i, int *skip_expand, char *res, int *j);
-int		handle_dollar_dquote(char *raw_line, int *i, char *res, int *j);
-int		handle_exit_status(char *raw_line, int *i, char *res, int *j, char *exit_status_str);
+int		handle_heredoc_skip(char *raw_line, int ids[2], int *skip_expand, char *res);
+int		handle_dollar_dquote(char *raw_line, int ids[2], char *res);
+int		handle_exit_status(char *raw_line, int ids[2], char *res, t_exec_path *cmd);
 
 //preexpander.c
-int		var_name_len(const char *str);
-char	*pre_expand_line(t_exec_path *cmd, char *raw_line, char **envp);
+char	*pre_expand_line(t_exec_path *cmd, char *raw_line);
 
 // lex_utils.c
 void	check_raw_line_syntax(char *raw_line, t_exec_path *cmd);

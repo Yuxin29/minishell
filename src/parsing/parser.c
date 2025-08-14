@@ -29,33 +29,42 @@ t_redir	*create_redir_node(t_token *redir_tok, t_token *file_tok)
 	return (new);
 }
 
-t_token	*parse_redirections(t_cmd *cmd, t_token *tokens)
+// Helper: create and append redirection node
+static t_token	*get_one_redirection(t_cmd *cmd, t_token *tokens)
 {
 	t_redir	*new_redir;
 	t_redir	*last;
 	t_token	*next;
 
+	next = tokens->next;
+	new_redir = create_redir_node(tokens, next);
+	if (!new_redir)
+		return (NULL);
+	if (!cmd->redirections)
+	{
+		free_redirections(cmd);
+		cmd->redirections = new_redir;
+	}
+	else
+	{
+		last = cmd->redirections;
+		while (last->next)
+			last = last->next;
+		last->next = new_redir;
+	}
+	return (next->next);
+}
+
+//free_redirections(cmd);//added recently
+t_token	*parse_redirections(t_cmd *cmd, t_token *tokens)
+{
 	while (tokens && tokens->t_type != 1)
 	{
 		if (tokens->t_type >= 2 && tokens->t_type <= 5)
 		{
-			next = tokens->next;
-			new_redir = create_redir_node(tokens, next);
-			if (!new_redir)
+			tokens = get_one_redirection(cmd, tokens);
+			if (!tokens)
 				return (NULL);
-			if (!cmd->redirections)
-			{
-				free_redirections(cmd);//added recently
-				cmd->redirections = new_redir;
-			}
-			else
-			{
-				last = cmd->redirections;
-				while (last->next)
-					last = last->next;
-				last->next = new_redir;
-			}
-			tokens = next->next;
 		}
 		else
 			break ;

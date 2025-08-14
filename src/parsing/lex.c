@@ -1,9 +1,6 @@
 #include "minishell.h"
 
-// loop through raw_line and build token list
-//no need to check null in rawline, checked in main
-//	if (raw_line[0] == '\0')  // $EMPTY,  //not mem error
-t_token	*get_token_list(t_exec_path *cmd, char *raw_line)
+static t_token	*tokenize_loop(char *raw_line)
 {
 	t_token	*head;
 	t_token	*last;
@@ -13,26 +10,33 @@ t_token	*get_token_list(t_exec_path *cmd, char *raw_line)
 	head = NULL;
 	last = NULL;
 	i = 0;
-	check_raw_line_syntax(raw_line, cmd);
-	if (cmd->exit_status != 2)
+	while (raw_line[i])
 	{
-		while (raw_line[i])
-		{
-			while (ft_isspace(raw_line[i]))
-				i++;
-			if (!raw_line[i])
-				break ;
-			new = build_token_from_next_word(raw_line, &i);
-			if (!new)
-				return (NULL);
-			if (!head)
-				head = new;
-			else
-				last->next = new;
-			last = new;
-		}
+		while (ft_isspace(raw_line[i]))
+			i++;
+		if (!raw_line[i])
+			break ;
+		new = build_token_from_next_word(raw_line, &i);
+		if (!new)
+			return (NULL);
+		if (!head)
+			head = new;
+		else
+			last->next = new;
+		last = new;
 	}
 	return (head);
+}
+
+// loop through raw_line and build token list
+//no need to check null in rawline, checked in main
+//	if (raw_line[0] == '\0')  // $EMPTY,  //not mem error
+t_token	*get_token_list(t_exec_path *cmd, char *raw_line)
+{
+	check_raw_line_syntax(raw_line, cmd);
+	if (cmd->exit_status == 2)
+		return (NULL);
+	return (tokenize_loop(raw_line));
 }
 
 char	*get_part(char *line, int *i, char	*part_quote)
@@ -77,11 +81,27 @@ t_token	*malloc_and_set_token(char *temp, int q)
 	return (token);
 }
 
+static char	*append_next_part(char *temp, char *line, int *i, char *part_quote)
+{
+	char	*part;
+
+	part = get_part(line, i, part_quote);
+	if (!part)
+	{
+		if (temp)
+			free(temp);
+		return (free_malloc_fail_null(NULL));
+	}
+	temp = ft_strjoin_free(temp, part);
+	if (!temp)
+		return (free_malloc_fail_null(NULL));
+	return (temp);
+}
+
 // if it is a world token
 t_token	*build_word_token(char *line, int *i)
 {
 	char	*temp;
-	char	*part;
 	char	q;
 	char	part_quote;
 
@@ -90,20 +110,13 @@ t_token	*build_word_token(char *line, int *i)
 	while (line[*i] && !ft_isspace(line[*i])
 		&& line[*i] != '<' && line[*i] != '>' && line[*i] != '|')
 	{
-		part = get_part(line, i, &part_quote);
-		if (!part)
-		{
-			if (temp)
-				free(temp);
+		temp = append_next_part(temp, line, i, &part_quote);
+		if (!temp)
 			return (NULL);
-		}
 		if (q == 0)
 			q = part_quote;
 		else if (q != part_quote)
 			q = 0;
-		temp = ft_strjoin_free(temp, part);
-		if (!temp)
-			return ((t_token *)free_malloc_fail_null(NULL));
 		if (part_quote && (line[*i] == '<' || line[*i] == '>' || line[*i] == '|'
 				|| ft_isspace(line[*i]) || line[*i] == '\0'))
 			break ;

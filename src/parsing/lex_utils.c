@@ -29,10 +29,7 @@ void	check_raw_line_syntax(char *raw_line, t_exec_path *cmd)
 				i++;
 		}
 		if (!raw_line[i])
-		{
-			cmd->exit_status = 2;
-			ft_putendl_fd(SYNTAX_ERR_QUOTES, 2);
-		}
+			errmsg_set_status(SYNTAX_ERR_QUOTES, cmd);
 		i++;
 	}
 }
@@ -58,8 +55,8 @@ void	precheck_special_chars_rawline(char *line, t_exec_path *cmd)
 		{
 			if (line[i] == ';' || line[i] == '\\')
 			{
-				cmd->exit_status = 2;
-				ft_putendl_fd(SYNTAX_ERR_SPECIAL_CHARS, 2);
+				errmsg_set_status(SYNTAX_ERR_SPECIAL_CHARS, cmd);
+				return ;
 			}
 		}
 		i++;

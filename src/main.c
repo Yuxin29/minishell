@@ -43,7 +43,7 @@ int main(int argc, char **argv, char **envp)
 			}
 
 			//yuxin added this part
-			expanded_line = pre_expand_line(&exec_cmd, line, exec_cmd.envp); //null check this one
+			expanded_line = pre_expand_line(&exec_cmd, line); //null check this one
 			free(line);
 
 			if (!expanded_line)
@@ -92,18 +92,17 @@ int main(int argc, char **argv, char **envp)
 			tmp = exec_cmd.whole_cmd;
 			while (tmp)
 			{
-				if (!tmp->argv || !tmp->argv[0]) // explian
+				if (!tmp->argv || !tmp->argv[0])
 					tmp->cmd_path = NULL;
 				else if (!is_builtin(tmp->argv[0]))
 					tmp->cmd_path = get_cmd_path(tmp->argv[0], env_list);
 				else
 					tmp->cmd_path = NULL;
-				//printf("cmd->path: %s\n", tmp->cmd_path);
 				tmp = tmp->next;
 			}
 			if (!exec_cmd.whole_cmd->next)
 			{
-				if (!exec_cmd.whole_cmd->argv || !exec_cmd.whole_cmd->argv[0]) //explain
+				if (!exec_cmd.whole_cmd->argv || !exec_cmd.whole_cmd->argv[0])
 					execute_single_cmd(&exec_cmd);
 				else if (is_builtin(exec_cmd.whole_cmd->argv[0]))
 					run_builtin_with_redir(&exec_cmd, &env_list);

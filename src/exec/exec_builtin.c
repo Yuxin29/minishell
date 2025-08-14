@@ -38,6 +38,21 @@ int	execute_builtin_cmd(char **argv, t_env **env, t_exec_path *exec_cmd)
 	return (1);
 }
 
+static int	restore_stdio(int stdin_fd, int stdout_fd)
+{
+	if (dup2(stdin_fd, STDIN_FILENO) == -1) //recover to std
+	{
+		perror("dup2 failed");
+	}
+	if (dup2(stdout_fd, STDOUT_FILENO) == -1)
+	{
+		perror("dup2 failed");
+	}
+	close(stdin_fd); //dup can generate a new fd, so i should close it after finishing
+	close(stdout_fd);
+	return (1);
+}
+
 void	run_builtin_with_redir(t_exec_path *exec_cmd, t_env **env_list)
 {
 	int	orig_stdin;
@@ -53,16 +68,10 @@ void	run_builtin_with_redir(t_exec_path *exec_cmd, t_env **env_list)
 	}
 	if (check_and_apply_redirections(exec_cmd->whole_cmd) < 0)
 	{
-		dup2(orig_stdin, STDIN_FILENO); //recover to std
-		dup2(orig_stdout, STDOUT_FILENO);
-		close(orig_stdin); //dup can generate a new fd, so i should close it after finishing
-		close(orig_stdout);
+		restore_stdio(orig_stdin, orig_stdout);
 		exec_cmd->exit_status = 1;
 		return ;
 	}
 	exec_cmd->exit_status = execute_builtin_cmd(exec_cmd->whole_cmd->argv, env_list, exec_cmd);
-	dup2(orig_stdin, STDIN_FILENO);//need check
-	dup2(orig_stdout, STDOUT_FILENO);
-	close(orig_stdin);
-	close(orig_stdout);
+	restore_stdio(orig_stdin, orig_stdout);
 }

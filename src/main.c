@@ -92,7 +92,7 @@ int main(int argc, char **argv, char **envp)
 			tmp = exec_cmd.whole_cmd;
 			while (tmp)
 			{
-				if (!tmp->argv || !tmp->argv[0])
+				if (!tmp->argv || !tmp->argv[0]) // explian
 					tmp->cmd_path = NULL;
 				else if (!is_builtin(tmp->argv[0]))
 					tmp->cmd_path = get_cmd_path(tmp->argv[0], env_list);
@@ -103,7 +103,7 @@ int main(int argc, char **argv, char **envp)
 			}
 			if (!exec_cmd.whole_cmd->next)
 			{
-				if (!exec_cmd.whole_cmd->argv || !exec_cmd.whole_cmd->argv[0])
+				if (!exec_cmd.whole_cmd->argv || !exec_cmd.whole_cmd->argv[0]) //explain
 					execute_single_cmd(&exec_cmd);
 				else if (is_builtin(exec_cmd.whole_cmd->argv[0]))
 					run_builtin_with_redir(&exec_cmd, &env_list);

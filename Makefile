@@ -15,16 +15,16 @@ SRCS := \
 	$(SRC_DIR)/main.c \
 	$(SRC_DIR)/builtins/builtins_opera1.c $(SRC_DIR)/builtins/get_env_list.c \
 	$(SRC_DIR)/builtins/envlist_to_envp.c $(SRC_DIR)/builtins/builtins_opera2.c \
-	$(SRC_DIR)/builtins/builtins_opera3.c $(SRC_DIR)/builtins/builtins_utils.c\
-	$(SRC_DIR)/exec/exec_single.c $(SRC_DIR)/exec/exec_builtin.c $(SRC_DIR)/exec/pipeline_utils.c\
+	$(SRC_DIR)/builtins/builtins_opera3.c $(SRC_DIR)/builtins/builtins_utils.c \
+	$(SRC_DIR)/exec/exec_single.c $(SRC_DIR)/exec/exec_builtin.c \
+	$(SRC_DIR)/exec/heredoc_pipeline_utils.c $(SRC_DIR)/exec/heredoc.c \
 	$(SRC_DIR)/exec/exec_pipeline.c $(SRC_DIR)/exec/get_path.c $(SRC_DIR)/exec/redirections.c \
-	$(SRC_DIR)/exec/heredoc.c \
 	$(SRC_DIR)/parsing/preexpander.c $(SRC_DIR)/parsing/preexpander_utils.c \
 	$(SRC_DIR)/parsing/lex.c $(SRC_DIR)/parsing/lex_utils.c \
-	$(SRC_DIR)/parsing/parser.c $(SRC_DIR)/parsing/parser_utils.c $(SRC_DIR)/parsing/parsing_to_cmd_list.c \
+	$(SRC_DIR)/parsing/parser.c $(SRC_DIR)/parsing/parser_utils.c \
+	$(SRC_DIR)/parsing/parsing_to_cmd_list.c \
 	$(SRC_DIR)/parsing/expander.c $(SRC_DIR)/parsing/expander_utils.c \
-	$(SRC_DIR)/utils/free.c \
-	$(SRC_DIR)/utils/str_utils.c \
+	$(SRC_DIR)/utils/free.c $(SRC_DIR)/utils/str_utils.c \
 	$(SRC_DIR)/signals/signals.c $(SRC_DIR)/signals/signal_utils.c
 
 OBJS := $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)

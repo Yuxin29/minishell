@@ -9,6 +9,8 @@ static char	*get_tmp_filepath(void)
 	char	*fake_pid;
 
 	fake_pid = ft_itoa(i++);
+	if (!fake_pid)
+		return (NULL);
 	tmp_filepath = ft_strjoin("/tmp/.heredoc_", fake_pid);
 	free(fake_pid);
 	if (!tmp_filepath)
@@ -16,23 +18,30 @@ static char	*get_tmp_filepath(void)
 	return (tmp_filepath);
 }
 
-char	*creat_heredoc_file(char *delim)
+static int	get_tmpfile_fd(char **tmp_file)
 {
-	int		fd;
-	char	*line;
-	char	*tmp_file;
-	int		saved_stdin;
+	int	fd;
 
-	tmp_file = get_tmp_filepath();
-	if (!tmp_file)
-		return (perror("malloc: "), NULL);
-	fd = open(tmp_file, O_WRONLY | O_CREAT | O_TRUNC, 0600);
+	*tmp_file = get_tmp_filepath();
+	if (!*tmp_file)
+	{
+		perror("malloc: ");
+		return (-1);
+	}
+	fd = open(*tmp_file, O_WRONLY | O_CREAT | O_TRUNC, 0600);
 	if (fd < 0)
-		return (free(tmp_file), perror("heredoc open failed"), NULL);
-	saved_stdin = dup(STDIN_FILENO);
-	if (saved_stdin < 0)
-		return (close(fd), free(tmp_file), perror("dup"), NULL);
-	signal_heredoc();
+	{
+		free(*tmp_file);
+		perror("heredoc open failed");
+		return (-1);
+	}
+	return (fd);
+}
+
+static int	handle_heredoc_input(int fd, char *delim)
+{
+	char	*line;
+
 	while (1)
 	{
 		line = readline("minishell heredoc> ");
@@ -46,23 +55,41 @@ char	*creat_heredoc_file(char *delim)
 		ft_putendl_fd(line, fd);
 		free(line);
 	}
-	signal_init();
-	if (!dup2(saved_stdin, STDIN_FILENO)) //??
+	return (g_signal);
+}
+
+static int	restore_stdin(int saved_stdin)
+{
+	if (dup2(saved_stdin, STDIN_FILENO) == -1)
 	{
 		perror("dup2");
 		close(saved_stdin);
-		close(fd);
-		unlink(tmp_file);
-		free(tmp_file);
-		return (NULL);
+		return (0);
 	}
 	close(saved_stdin);
-	close(fd);
-	if(g_signal)
-	{
-		unlink(tmp_file);
-		free(tmp_file);
+	return (1);
+}
+
+char	*creat_heredoc_file(char *delim)
+{
+	int		fd;
+	char	*tmp_file;
+	int		saved_stdin;
+	int		interrupted;
+
+	fd = get_tmpfile_fd(&tmp_file);
+	if (fd == -1)
 		return (NULL);
-	}
+	saved_stdin = dup(STDIN_FILENO);
+	if (saved_stdin < 0)
+		return (cleanup_heredoc(fd, -1, tmp_file, "dup"));
+	signal_heredoc();
+	interrupted = handle_heredoc_input(fd , delim);
+	signal_init();
+	if (!restore_stdin(saved_stdin))
+		return (cleanup_heredoc(fd, saved_stdin, tmp_file, "dup2"));
+	close(fd);
+	if (interrupted)
+		return (cleanup_heredoc(-1, -1, tmp_file, NULL));
 	return (tmp_file);
 }

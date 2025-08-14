@@ -19,8 +19,20 @@ static int	is_valid_identifier(char *str)
 static void	export_var(t_env **env, char *key)
 {
 	t_env	*node;
+	t_env	*cur;
 
-	node = env_find(*env, key);
+	//node = env_find(*env, key);
+	cur = *env;
+	node = NULL;
+	while (cur)
+	{
+		if (ft_strcmp(cur->key, key) == 0)
+		{
+			node = cur;
+			break;
+		}
+		cur = cur->next;
+	}
 	if (node)
 		node->exported = 1;
 	else
@@ -30,19 +42,6 @@ static void	export_var(t_env **env, char *key)
 			return ;
 		node->next = *env;
 		*env = node;
-	}
-}
-
-static void	print_export(t_env *env)
-{
-	
-	while (env)
-	{
-		if (env->value == NULL)
-			printf("declare -x %s\n", env->key);
-		else
-			printf("declare -x %s=\"%s\"\n", env->key, env->value);
-		env = env->next;
 	}
 }
 
@@ -72,6 +71,35 @@ static int	handle_export_arg(char *argv, t_env **env)
 	return (0);
 }
 
+static void	print_export(t_env *env)
+{
+	int		size;
+	t_env	**copy_list;
+	int		i;
+
+	size = env_count(env);
+	copy_list = malloc(sizeof(t_env *) * size);
+	if (!copy_list)
+		return;
+	i = -1;
+	while (++i < size)
+	{
+		copy_list[i] = env;
+		env = env->next;
+	}
+	sort_copy_list(copy_list, size);
+	i = 0;
+	while (i < size)
+	{
+		if (copy_list[i]->value == NULL)
+			printf("declare -x %s\n", copy_list[i]->key);
+		else
+			printf("declare -x %s=\"%s\"\n", copy_list[i]->key, copy_list[i]->value);
+		i++;
+	}
+	free(copy_list);
+}
+
 int	ft_export(char **argv, t_env **env)
 {
 	int		i;
@@ -79,7 +107,10 @@ int	ft_export(char **argv, t_env **env)
 
 	ret = 0;
 	if (!argv[1])
+	{
 		print_export(*env);
+		return (0);
+	}
 	i = 1;
 	while (argv[i])
 	{

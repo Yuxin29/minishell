@@ -47,3 +47,10 @@ int	ft_check_valid_var_name(char c)
 		return (1);
 	return (0);
 }
+
+void	print_error(const char *arg)
+{
+	ft_putstr_fd("export: ", 2);
+	ft_putstr_fd(arg, 2);
+	ft_putstr_fd(" : not a valid identifier\n", 2);
+}

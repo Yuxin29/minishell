@@ -1,12 +1,5 @@
 #include "minishell.h"
 
-void	print_error(const char *arg)
-{
-	ft_putstr_fd("export: ", 2);
-	ft_putstr_fd(arg, 2);
-	ft_putstr_fd(" : not a valid identifier\n", 2);
-}
-
 void	set_env(t_env **env, char *key, char *value)
 {
 	t_env	*cur;
@@ -30,16 +23,16 @@ void	set_env(t_env **env, char *key, char *value)
 	*env = new_node;
 }
 
-t_env	*env_find(t_env *env, char *key)
-{
-	while (env)
-	{
-		if (ft_strcmp(env->key, key) == 0)
-			return (env);
-		env = env->next;
-	}
-	return (NULL);
-}
+// t_env	*env_find(t_env *env, char *key)
+// {
+// 	while (env)
+// 	{
+// 		if (ft_strcmp(env->key, key) == 0)
+// 			return (env);
+// 		env = env->next;
+// 	}
+// 	return (NULL);
+// }
 
 // Bash uses strtol() or strtoll() under the hood to parse the number.
 // That means: long long (the range of a 64-bit signed integer)
@@ -96,4 +89,41 @@ int ft_is_numeric(char *str)
 			return (1);
 	}
 	return (0);
+}
+
+int env_count(t_env *env)
+{
+	int	count;
+
+	count = 0;
+	while (env)
+	{
+		count++;
+		env = env -> next;
+	}
+	return (count);
+}
+
+void	sort_copy_list(t_env **copy_list, int size)
+{
+	int		i;
+	int		j;
+	t_env	*tmp;
+
+	i = 0;
+	while (i < size)
+	{
+		j = i + 1;
+		while (j < size - 1)
+		{
+			if (ft_strcmp(copy_list[i]->key , copy_list[j]->key) > 0)
+			{
+				tmp = copy_list[i];
+				copy_list[i] =  copy_list[j];
+				 copy_list[j] = tmp;
+			}
+			j++;
+		}
+		i++;
+	}
 }

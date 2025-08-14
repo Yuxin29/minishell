@@ -34,16 +34,16 @@ int		ft_export(char **argv, t_env **env);
 first step is converting every envp[i] to a signal node, and connect these nodes to a linked list, in which we can add or delete env elements more easily than in array, after modifying the env list, we should convert linked list to array*/
 
 //get env list
-t_env	*env_new_node(char *key, char *value);
-t_env	*env_list_init(char **envp);
-void	free_env_list(t_env *head);
+t_env		*env_new_node(char *key, char *value);
+t_env		*env_list_init(char **envp);
+void		free_env_list(t_env *head);
 //env list to envp
-char	**env_list_to_envp(t_env *head);
+char		**env_list_to_envp(t_env *head);
 //builtins_utils
 void		set_env(t_env **env, char *key, char *value);
-void		print_error(const char *arg);
-t_env		*env_find(t_env *env, char *key);
 long long	ft_atoll(char *str);
 int			ft_is_numeric(char *str);
+int			env_count(t_env *env);
+void		sort_copy_list(t_env **copy_list, int size);
 
 #endif

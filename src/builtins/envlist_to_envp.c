@@ -25,7 +25,7 @@ static char	*do_strjoin(char *key, char *value)
 		return (NULL);
 	tmp_join = ft_strjoin(key, "=");
 	if (!tmp_join)
-		return (0);
+		return (NULL);
 	result = ft_strjoin(tmp_join, value);
 	free(tmp_join);
 	return (result);

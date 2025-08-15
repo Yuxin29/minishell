@@ -24,5 +24,6 @@ void	errmsg_set_status(char *msg, t_exec_path *cmd);
 void	print_error(const char *arg); //for export
 int		perror_return_one(char *str); //for cd
 int		errmsg_return_one(char *str); //for cd
+int		handle_token_build_failure(t_exec_path *exec_cmd, t_env **env_list);//for main token
 
 #endif

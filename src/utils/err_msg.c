@@ -29,3 +29,13 @@ void	print_error(const char *arg)
 	ft_putstr_fd(arg, 2);
 	ft_putstr_fd(" : not a valid identifier\n", 2);
 }
+
+int	handle_token_build_failure(t_exec_path *exec_cmd, t_env **env_list)
+{
+	ft_free_arr(exec_cmd->envp);
+	if (exec_cmd->exit_status == 2 || exec_cmd->exit_status == 0)
+		return (0);
+	free_env_list(*env_list);
+	ft_putstr_fd("Error: get token list failed from memory failure\n", 2);
+	exit(EXIT_FAILURE);
+}

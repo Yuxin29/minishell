@@ -66,7 +66,7 @@ t_token	*parse_if_no_argv(t_cmd *cmd_current, t_token *token_head)
 // generate on single cmd struct
 // parse_argv(cmd_current, argv_tok); 
 // this function has a return value, need to chekc
-t_token	*get_one_new_cmd(t_token *token_head, t_cmd *cmd_current)
+t_token	*get_one_new_cmd(t_token *token_head, t_cmd *cmd_current, t_exec_path *exec_cmd)
 {
 	t_token	*argv_tok1;
 
@@ -79,7 +79,7 @@ t_token	*get_one_new_cmd(t_token *token_head, t_cmd *cmd_current)
 			break ;
 		if (token_head->t_type >= 2 && token_head->t_type <= 5)
 		{
-			token_head = parse_redirections(cmd_current, token_head);
+			token_head = parse_redirections(cmd_current, token_head, exec_cmd);
 			if (!token_head)
 				return (NULL);
 		}

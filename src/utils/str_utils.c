@@ -46,3 +46,22 @@ int	ft_check_valid_var_name(char c)
 	return (0);
 }
 
+
+// a string operation utils.
+// used in expander to join prefix, replaced variable and suffix
+// free the sources within itself, still need to null check after using
+char	*join_three_and_free(char *s1, char *s2, char *s3)
+{
+	char	*temp;
+	char	*result;
+
+	temp = ft_strjoin_free(s1, s2);
+	if (!temp)
+	{
+		free(s3);
+		return (NULL);
+	}
+	result = ft_strjoin_free(temp, s3);
+	return (result);
+}
+

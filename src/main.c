@@ -89,7 +89,7 @@ int main(int argc, char **argv, char **envp)
 				}
 			}
 
-			//expand_all_cmds(&exec_cmd, exec_cmd.whole_cmd, exec_cmd.envp);
+			expand_all_cmds(&exec_cmd, exec_cmd.whole_cmd, exec_cmd.envp);
 			tmp = exec_cmd.whole_cmd;
 			while (tmp)
 			{

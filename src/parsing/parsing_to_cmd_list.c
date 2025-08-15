@@ -22,6 +22,7 @@ int	check_new_cmd(t_exec_path *cmd, t_token *token, t_cmd *cmd1, t_cmd *cmd2)
 	}
 	return (0);
 }
+
 // called in build_command_list
 t_cmd	*malloc_for_new_cmd(t_cmd *cmd_head)
 {
@@ -57,7 +58,7 @@ t_cmd	*build_command_list(t_exec_path *cmd, t_token *token_head)
 		cmd_current = malloc_for_new_cmd(cmd_head);
 		if (!cmd_current)
 			return (NULL);
-		token_head = get_one_new_cmd(token_head, cmd_current);
+		token_head = get_one_new_cmd(token_head, cmd_current, cmd);
 		if (check_new_cmd(cmd, token_head, cmd_current, cmd_head))
 			return (NULL);
 		if (!cmd_head)
@@ -68,4 +69,3 @@ t_cmd	*build_command_list(t_exec_path *cmd, t_token *token_head)
 	}
 	return (cmd_head);
 }
-

@@ -36,7 +36,8 @@ char	*cleanup_heredoc(int fd, int saved_stdin, char *tmp_file, const char *err_m
 //redir
 int		check_and_apply_redirections(t_cmd *cmd);
 //heredoc
-char	*creat_heredoc_file(char *delim);
+//char	*creat_heredoc_file(char *delim);
+char	*creat_heredoc_file(t_exec_path *cmd, char *delim, char **envp); // yuxin added
 
 //get_path
 char	*get_env(t_env *env, char *key);

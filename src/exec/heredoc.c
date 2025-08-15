@@ -38,9 +38,11 @@ static int	get_tmpfile_fd(char **tmp_file)
 	return (fd);
 }
 
-static int	handle_heredoc_input(int fd, char *delim)
+// static int	handle_heredoc_input(int fd, char *delim)
+static int	handle_heredoc_input(t_exec_path *cmd, int fd, char *delim, char **envp) // yuxin added
 {
 	char	*line;
+	char	*expanded; // yuxin added
 
 	while (1)
 	{
@@ -52,7 +54,10 @@ static int	handle_heredoc_input(int fd, char *delim)
 			free(line);
 			break ;
 		}
+		expanded = expand_variables_in_str(cmd, line, envp); // yuxin added
 		ft_putendl_fd(line, fd);
+		if (expanded != line)
+			free(expanded); // yuxin added
 		free(line);
 	}
 	return (g_signal);
@@ -70,7 +75,8 @@ static int	restore_stdin(int saved_stdin)
 	return (1);
 }
 
-char	*creat_heredoc_file(char *delim)
+// char	*creat_heredoc_file(char *delim)
+char	*creat_heredoc_file(t_exec_path *cmd, char *delim, char **envp) // yuxin added
 {
 	int		fd;
 	char	*tmp_file;
@@ -79,12 +85,14 @@ char	*creat_heredoc_file(char *delim)
 
 	fd = get_tmpfile_fd(&tmp_file);
 	if (fd == -1)
+
 		return (NULL);
 	saved_stdin = dup(STDIN_FILENO);
 	if (saved_stdin < 0)
 		return (cleanup_heredoc(fd, -1, tmp_file, "dup"));
 	signal_heredoc();
-	interrupted = handle_heredoc_input(fd , delim);
+	//interrupted = handle_heredoc_input(fd , delim);
+	interrupted = handle_heredoc_input(cmd, fd , delim, envp); // yuxin added
 	signal_init();
 	if (!restore_stdin(saved_stdin))
 		return (cleanup_heredoc(fd, saved_stdin, tmp_file, "dup2"));

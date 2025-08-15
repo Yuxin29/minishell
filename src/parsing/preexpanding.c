@@ -13,7 +13,6 @@ void	append_to_res(char *res, int *res_idx, const char *val)
 // success, expanded
 // not an env var to expand here
 //if (!key) return (0); //malloc fails, need to perror here
-// val = get_env_value(envp, key); //should null check, failure check
 int	try_expand_env_var(char *raw_line, int idx[2], char *res, char **envp)
 {
 	int		len;
@@ -34,7 +33,7 @@ int	try_expand_env_var(char *raw_line, int idx[2], char *res, char **envp)
 		free(key);
 		idx[0] += len + 1;
 		if (!val)
-			val = "";
+			val = EMPTY_STRING;
 		append_to_res(res, &idx[1], val);
 		if (val != NULL && val[0] != '\0')
 			free(val);
@@ -61,19 +60,22 @@ int	skip_copy(char *raw_line, int idx[2], char *res, int quotes[2])
 void	expand_loop(char *raw_line, char *res, int idx[2], t_exec_path *cmd)
 {
 	int		quotes[2];
-	int		skip;
 
-	skip = 0;
 	quotes[0] = 0;
 	quotes[1] = 0;
 	while (raw_line[idx[0]])
 	{
-		if (skip_copy(raw_line, idx, res, quotes))
+		if (handle_quotes(raw_line[idx[0]], quotes, res, &idx[1]))
+		{
+			idx[0]++;
 			continue ;
-		if (!quotes[0] && !quotes[1]
-			&& handle_heredoc_skip(raw_line, idx, &skip, res))
+		}
+		if (quotes[0])
+		{
+			res[idx[1]++] = raw_line[idx[0]++];
 			continue ;
-		if (handle_dollar_dquote(raw_line, idx, res))
+		}
+		if (!quotes[0] && !quotes[1] && handle_heredoc_skip(raw_line, idx, res))
 			continue ;
 		if (handle_exit_status(raw_line, idx, res, cmd))
 			continue ;

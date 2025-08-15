@@ -44,27 +44,38 @@ int	handle_quotes(char c, int quotes[2], char *res, int *j)
 // Bash behavior
 // << EOF ： expand
 // << 'EOF' 或 << "EOF"：no expansion
-int	handle_heredoc_skip(char *raw_line, int ids[2], int *skip_expand, char *res)
+// cat << $USER, not expansion
+// cat << ""$USER, not expansion, ""removed
+// cat << $USER", not expansion, ""removed
+int	handle_heredoc_skip(char *raw_line, int ids[2], char *res)
 {
-	if (!(*skip_expand)
-		&& raw_line[ids[0]] == '<' && raw_line[ids[0] + 1] == '<')
+	int		in_sq;
+	int		in_dq;
+	char	c;
+
+	if (raw_line[ids[0]] == '<' && raw_line[ids[0] + 1] == '<')
 	{
-		*skip_expand = 1;
-		res[ids[1]] = raw_line[ids[0]];
-		(ids[1])++;
-		(ids[0])++;
-		res[ids[1]] = raw_line[ids[0]];
-		(ids[1])++;
-		(ids[0])++;
-		return (1);
-	}
-	if (*skip_expand)
-	{
-		res[ids[1]] = raw_line[ids[0]];
-		(ids[1])++;
-		if (ft_isspace(raw_line[ids[0]]))
-			*skip_expand = 0;
-		(ids[0])++;
+		res[ids[1]++] = raw_line[ids[0]++];
+		res[ids[1]++] = raw_line[ids[0]++];
+		while (raw_line[ids[0]] == ' ' || raw_line[ids[0]] == '\t')
+			res[ids[1]++] = raw_line[ids[0]++];
+		in_sq = 0;
+		in_dq = 0;
+		c = raw_line[ids[0]];
+		while (c != '\0')
+		{
+			if (!in_sq && !in_dq)
+			{
+				if (c == ' ' || c == '\t' || c == '|' || c == '<' || c == '>')
+					break;
+			}
+			if (c == '\'' && !in_dq)
+				in_sq = !in_sq;
+			else if (c == '"' && !in_sq)
+				in_dq = !in_dq;
+			c = raw_line[ids[0]];
+			res[ids[1]++] = raw_line[ids[0]++];
+		}
 		return (1);
 	}
 	return (0);

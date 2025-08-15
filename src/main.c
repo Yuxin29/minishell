@@ -55,6 +55,7 @@ static int	parse_and_expand(t_exec_path *exec_cmd, char *expanded_line, t_env **
 	expand_all_cmds(exec_cmd, exec_cmd->whole_cmd, exec_cmd->envp);
 	return (1);
 }
+
 static void	handle_line(char *line, t_env **env_list, t_exec_path *exec_cmd)
 {
 	char	*expanded_line;
@@ -108,7 +109,7 @@ static void	minishell_loop(t_env *env_list)
 
 int main(int argc, char **argv, char **envp)
 {
-	t_env		*env_list;
+	t_env	*env_list;
 
 	(void)argc;
 	(void)argv;

@@ -1,10 +1,53 @@
 #include "minishell.h"
 
+// return the value of a key from the envp
+// special case: split[1] == NULL (e.g. FOO= in envp).
+char	*get_env_value(char **envp, const char *key)
+{
+	int		j;
+	char	**split;
+	char	*new_value;
+
+	j = 0;
+	while (envp[++j])
+	{
+		split = ft_split(envp[j], '=');
+		if (!split || !*split)
+		{
+			if (!split)
+				ft_free_arr(split);
+			return (free_malloc_fail_null(NULL));
+		}
+		if (ft_strcmp(split[0], (char *)key) == 0)
+		{
+			new_value = ft_strdup(split[1]);
+			ft_free_arr(split);
+			if (!new_value)
+				return (free_malloc_fail_null(NULL));
+			return (new_value);
+		}
+		ft_free_arr(split);
+	}
+	return (NULL);
+}
+
+char	*get_env_value_from_substr(char *input, int start, int len, char **envp)
+{
+	char	*var_name;
+	char	*value;
+
+	var_name = ft_substr(input, start, len);
+	if (!var_name)
+		return (NULL);
+	value = get_env_value(envp, var_name);
+	free(var_name);
+	return (value);
+}
+
 // examlpe of variable expandable in a redirection, and this variable is $?
 // ls > output_$?.txt
 // cat output_0.txt
 // value = get_env_value_from_substr(input, start, var_len, envp);
-//  need a spacial null check for this mem failure or ""
 char	*replace_variable(t_exec_path *cmd, char *input, int pos, char **envp)
 {
 	int		start;
@@ -19,6 +62,8 @@ char	*replace_variable(t_exec_path *cmd, char *input, int pos, char **envp)
 	while (ft_check_valid_var_name(input[start + var_len]))
 		var_len++;
 	value = get_env_value_from_substr(input, start, var_len, envp);
+	if (!value)
+		value = EMPTY_STRING;
 	prefix = ft_substr(input, 0, pos);
 	suffix = ft_strdup(input + start + var_len);
 	if (!prefix)
@@ -32,99 +77,53 @@ char	*replace_variable(t_exec_path *cmd, char *input, int pos, char **envp)
 // with it, it is still reachable, without it, it is definitly loss
 // echo $? already expanded in preexpander
 // return (replace_variable(cmd, input, i, envp));null is included in this one
+		// if (input[i] == '$' && ft_check_valid_var_name(input[i + 1]))
+		// 	return (replace_variable(cmd, input, i, envp)); // FIX
 char	*expand_variables_in_str(t_exec_path *cmd, char *input, char **envp)
 {
 	int		i;
-	int		var_len;
 
 	i = 0;
 	if (!input)
 		return (NULL);
 	while (input[i])
 	{
-		if (input[i] == '$' && input[i + 1] == '"')
-		{
-			i += 2;
-			continue ;
-		}
 		if (input[i] == '$' && ft_check_valid_var_name(input[i + 1]))
-		{
-			var_len = 0;
-			while (ft_check_valid_var_name(input[i + 1 + var_len]))
-				var_len++;
 			return (replace_variable(cmd, input, i, envp));
-		}
 		else
 			i++;
 	}
 	return (input);
 }
 
-void	expand_redirection(t_exec_path *cmd, t_cmd *cmd_list, char **envp)
+//call this after getting the cmd list
+// I only need to expand << str here, 
+void	expand_all_cmds(t_exec_path *cmd, t_cmd *cmd_list, char **envp)
 {
 	t_redir	*redir;
 	char	*value;
 
-	redir = cmd_list->redirections;
-	while (redir)
-	{
-		if (redir->type == 5)
-		{
-			redir = redir->next;
-			continue ;
-		}
-		if (redir->file && ft_strchr(redir->file, '$')
-			&& should_expand(redir->file, 2))
-		{
-			value = expand_variables_in_str(cmd, redir->file, envp);
-			if (!value)
-				return ;
-			if (value && value != redir->file)
-			{
-				free(redir->file);
-				redir->file = value;
-			}
-		}
-		redir = redir->next;
-	}
-}
-
-void	expand_argv(t_exec_path *cmd, char **argv, int *quote_type, char **envp)
-{
-	int		i;
-	char	*value;
-
-	i = 0;
-	while (argv && argv[i])
-	{
-		if ((!quote_type || should_expand(argv[i], quote_type[i]))
-			&& ft_strchr(argv[i], '$'))
-		{
-			value = expand_variables_in_str(cmd, argv[i], envp);
-			if (!value)
-				continue ;
-			if (value != argv[i])
-			{
-				free(argv[i]);
-				argv[i] = value;
-			}
-		}
-		i++;
-	}
-}
-
-//call this after getting the cmd list
-//go through all cmd and check all word without single quotes,
-// not expanding heredocs
-//after this Here I already got the updated cmd list
-void	expand_all_cmds(t_exec_path *cmd, t_cmd *cmd_list, char **envp)
-{
 	while (cmd_list)
 	{
-		if (cmd_list->argv)
-			expand_argv(cmd, cmd_list->argv, cmd_list->quote_type, envp);
-		if (cmd_list->redirections)
-			expand_redirection(cmd, cmd_list, envp);
+		redir = cmd_list->redirections;
+		while (redir)
+		{
+			if (redir->type == 5 && redir->quoted == 0 && redir->heredoc_delim)
+			{
+				if (ft_strchr(redir->heredoc_delim, '$'))
+				{
+					value = expand_variables_in_str(cmd, redir->heredoc_delim, envp);
+					if (!value)
+						return ;
+					if (value != redir->heredoc_delim)
+					{
+						free(redir->heredoc_delim);
+						redir->heredoc_delim = value;
+					}
+				}
+			}
+			redir = redir->next;
+		}
 		cmd_list = cmd_list->next;
 	}
 }

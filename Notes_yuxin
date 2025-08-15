@@ -112,10 +112,10 @@ token   - the results of the smallest unit
         "double quotes"     possibly multiple variables and commands included
 
 -------> Error msg in different phase  
-Phase	        Checks file existence?	         Errors?
-Lexing	        ❌ No	                        Only special character and unclosed quotes
-Parsing	        ❌ No	                        Only invalid structure
-Execution	    ✅ Yes	                        File not found, command not found, etc.
+Phase	        Checks file existence?	          Errors?
+Lexing	        No	                              Only special character and unclosed quotes
+Parsing	        No	                              Only invalid structure
+Execution	    Yes	                              File not found, command not found, etc.
 
 ========================================================continous redirections should be allowd ===========================================================
 ----->  example case
@@ -167,14 +167,133 @@ append_out:  0
 heredoc_delim: NULL
 next:        NULL
 
+========================================expand raw line vs expand AST/链表=========================================
+
+
+“预展开 raw line（整行扫描预处理）”
+
+⚠️ 优点
+- 在词法分析前就把 $VAR / $? 等替换掉，后面 parser 更简单。
+- 对“预保存命令”这类需求（你提到的 $A="echo hello"）可以一次性摊平
+
+❌ 缺点（关键）
+- 会和语法/引号/操作符边界打架，尤其是 << 之后的heredoc 定界符：定界符不能做变量展开，而且是否展开 heredoc 正文是由定界符是否包含引号来决定的（有引号→不展开，无引号→展开）。
+- 拿你的失败用例 << $ABC"" 来说：
+  你当前代码在看到 << 后一遇到空格就结束“跳过展开”状态，导致后面的 $ABC"" 被错误地展开了——这是不允许的。定界符是一个完整的“词”（word），
+  必须把这个词按引号感知的规则一次性读完，再恢复正常展开。
+- 还会牵涉 <<<、<<- 等边角（42 一般不要求，但容易踩）。
+
+“先词法/语法→再对 token/AST 做展开（推荐）”
+⚠️ 优点（更贴近 Bash）
+先把输入切成操作符（| < > << >>）和词（含引号信息），去掉词内的引号（quote removal），然后：
+- 对 argv、重定向文件名等做参数展开（单引号内不展开、双引号内可展开）。
+- 对 << 的下一个词（定界符）只做quote removal，不做变量展开；同时记录一个布尔位“定界符是否带引号”。
+- 读 heredoc 正文时，若“定界符带引号”→正文不做任何展开；若不带引号→正文进行参数/命令/算术（你项目一般只做 $VAR 和 $?）展开。
+- 不容易和语法打架，行为和 Bash 一致。
+
+❌ 缺点
+- parser 要保存更多元信息（比如“这个 heredoc 的 delimiter 是否带过引号”）。
+- 稍微多写一点代码，但一次写对后期最省心。
+
+I chose preexpandingh
+
 
 ================================================================PARSEING test case Specail ====================================================
+❌❌❌ what need  to be fixed
+⚠️⚠️⚠️ differs, but I dont think it need to be fixed
+
 ----------------> Prespanding
 1. preexpading is needed, for cmd as VAR
     ->  export $CMD="echo hello"
         $CMD
     preexpading is needed, also for VAR can mess up with cmd
     ->  echo$USER           bash: echoyuwu: command not found
+
+2. normal expansion case
+    ->  minishell$ echo "$USER "$USER" '$USER'" '$USER' "$USER"
+        echo "Hello $USER"	                    "Hello alice"
+        echo 'Hello $USER'	                    'Hello $USER'
+        echo "Path is $PATH/bin"	            "Path is /usr/bin:/bin/bin"
+        echo "$"	                            "" (empty string or preserved as literal)
+        echo "$UNDEFINED"	                    ""
+        echo "Mix$VAR1and$VAR2"	                "Mixval1andval2" 
+        echo "yuxin $USER '$USER' "user" kk,"
+
+3. heredoc without quotes should not be expanded 
+    ->  minishell$ echo << $USER                    
+        > skfd
+        > mikko
+        > $USER
+    ->  minishell$ echo << $SUER                    
+        minishell: syntax error: missing filename or delimiter after redirection
+
+4. heredoc with quotes should not be expanded        
+    mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ cat << ""$USER
+    > asd
+    > sdfg
+    > mikko
+    > $USER
+    asd
+    sdfg
+    mikko
+    mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ ./minishell 
+    minishell$ cat << ""$USER
+    minishell heredoc> sdf
+    minishell heredoc> mikko
+    sdf
+
+5. heredoc with quotes should not be expanded              same as above
+    yuwu@c2r6p13:~$ echo << $ABC"" | grep abc
+    > $USER
+    > abc sdfkljsdfkjl
+    > $USER"abc"
+    > fgjkfgjk
+    > fgkljfghklj
+    > abcok
+    > $ABC
+    yuwu@c2r6p13:~$ cat << $ABC"" | grep abc
+    $USER
+    abc sdfkljsdfkjl
+    $USER"abc"
+    fgjkfgjk
+    fgkljfghklj
+    abcok
+    $ABC
+    abc sdfkljsdfkjl
+    $USER"abc"
+    abcok
+6. multiple $, or ""
+    mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo $
+    $
+    mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo "$"$
+    $$
+    mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo "$"$"$"
+    $$
+    mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo "$" $ "$"
+    $ $ $
+    mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo "$"$ "$"
+    $$ $
+    mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo "$"$$"$" ⚠️
+    $217485$
+    mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo $? $$ ⚠️
+    0 217485
+    mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo $?$$ ⚠️
+    0217485
+    mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo $?$?"$"$?"$" ⚠️
+    00$0$
+    mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo $?$?"$"$?$"$" ⚠️
+    00$0$
+
+7. first export our own VAR, and then echo $VAR, with / without -n, with / without quotes
+    yuwu@c2r6p13:~/42/Rank3_minishell$ export A="     a       b     "
+    yuwu@c2r6p13:~/42/Rank3_minishell$ echo $A
+    a b
+    yuwu@c2r6p13:~/42/Rank3_minishell$ echo -n $A
+    a b
+    yuwu@c2r6p13:~/42/Rank3_minishell$ echo -n "$A"
+        a       b     
+    yuwu@c2r6p13:~/42/Rank3_minishell$ echo "$A"
+        a       b     
 
 ----------------> Parsing
 1. "<" and '<' should be solid input argv, but < is certainly redirect int
@@ -183,8 +302,8 @@ next:        NULL
     ->  echo "<<"<<"<<"
     ->  echo '>>'
 
-2. first redirections and then actuall command is valid in bash     ❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌
-    -> > out.txt echo hello        ❌
+2. first redirections and then actuall command is valid in bash    
+    -> > out.txt echo hello       
     -> echo hello > out.txt       this one is working
     -> echo > out.txt hello     this one is working
 
@@ -198,49 +317,7 @@ next:        NULL
     ->  minishell$ ""
         Command '' not found,
 
-
-----------------> Expansion
-1. normal expansion case
-    ->  minishell$ echo "$USER "$USER" '$USER'" '$USER' "$USER"
-        echo "Hello $USER"	                    "Hello alice"
-        echo 'Hello $USER'	                    'Hello $USER'
-        echo "Path is $PATH/bin"	            "Path is /usr/bin:/bin/bin"
-        echo "$"	                            "" (empty string or preserved as literal)
-        echo "$UNDEFINED"	                    ""
-        echo "Mix$VAR1and$VAR2"	                "Mixval1andval2" 
-        echo "yuxin $USER '$USER' "user" kk,"
-2. heredoc without quotes should not be expanded   ❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌
-    ->  minishell$ echo << $USER                    
-        > skfd
-        > mikko
-        > $USER
-    ->  minishell$ echo << $SUER                    
-        minishell: syntax error: missing filename or delimiter after redirection
-3. multiple $, or ""
-    mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo $
-    $
-    mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo "$"$
-    $$
-    mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo "$"$"$"
-    $$
-    mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo "$" $ "$"
-    $ $ $
-    mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo "$"$ "$"
-    $$ $
-    mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo "$"$$"$"
-    $217485$
-    mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo $? $$
-    0 217485
-    mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo $?$$
-    0217485
-    mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo $?$?"$"$?"$"
-    00$0$
-    mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo $?$?"$"$?$"$"
-    00$0$
-4. 
-
-----------------> Syntax
-1. a cmd can have null as argv, just redirection
+5. a cmd can have null as argv, just redirection
     ->  cat Makefile | < in
     ->  < in
 
@@ -287,94 +364,9 @@ next:        NULL
         yuwu@c2r4p10:/home$ pwd
         /home
         yuwu@c2r4p10:/home$ export
-    
-=================================PARSEING test not to be retested ====================================================
 
-
-1. SOLVED
-yuwu@c2r6p13:~/42/Rank3_minishell$ export A="     a       b     "
-yuwu@c2r6p13:~/42/Rank3_minishell$ echo $A
-a b
-yuwu@c2r6p13:~/42/Rank3_minishell$ echo -n $A
-a b
-yuwu@c2r6p13:~/42/Rank3_minishell$ echo -n "$A"
-     a       b     
-yuwu@c2r6p13:~/42/Rank3_minishell$ echo "$A"
-     a       b     
-     
-----------------
-2. NOT SOLVED 
-yuwu@c2r6p13:~$ echo << $ABC"" | grep abc
-> $USER
-> abc sdfkljsdfkjl
-> $USER"abc"
-> fgjkfgjk
-> fgkljfghklj
-> abcok
-> $ABC
-yuwu@c2r6p13:~$ cat << $ABC"" | grep abc
-$USER
-abc sdfkljsdfkjl
-$USER"abc"
-fgjkfgjk
-fgkljfghklj
-abcok
-$ABC
-abc sdfkljsdfkjl
-$USER"abc"
-abcok
-yuwu@c2r6p13:~$ cat << $ABC"" | grep abc
-> $ABC abc
-> dfgjkdflgj
-> dflgkjjdfgkj
-> abcok
-> $USER abc
-> fdgkjdg
-> abcok
-> $ABC
-$ABC abc
-abcok
-$USER abc
-abcok
-yuwu@c2r6p13:~$ cat << $ABC | grep abc
-> $USER abc
-> $USER
-> abcok
-> dfgjklfdgjkl
-> $ABC
-yuwu abc
-abcok
-
-c2r6p13% bash
-yuwu@c2r6p13:~$ cat << $USER
-> sdkfh
-> yuwu
-> $USER
-sdkfh
-yuwu
-yuwu@c2r6p13:~$ cat << ""$USER
-> ksdjf
-> $USER
-ksdjf
-
-3.Yuxin needs to fix
-mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ cat << ""$USER
-> asd
-> sdfg
-> mikko
-> $USER
-asd
-sdfg
-mikko
-mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ ./minishell 
-minishell$ cat << ""$USER
-minishell heredoc> sdf
-minishell heredoc> mikko
-sdf
-
-
-=====================Tester Lucas test 83        ❌❌❌❌❌❌❌❌================================================
-Test  83: ❌ echo hi >         ./outfiles/outfile01 bye 
+=====================Tester Lucas test 83        c⚠️================================================
+Test  83: ⚠️ echo hi >         ./outfiles/outfile01 bye 
 Files ./mini_outfiles/outfile01 and ./bash_outfiles/outfile01 differ
 mini outfiles:
 bash outfiles:
@@ -437,3 +429,14 @@ exit(127);
     127 是标准 Unix 规定的 “command not found or not executable” 返回值。
 
     用 errno 更复杂，只适合你要分类处理错误原因的情况，否则没必要。
+
+
+⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️
+!!!! lexing phase, if malloc fails, need to set exit status to 1
+    	//debug
+	//token = NULL;
+yuwu@c3r1p3:~/42/Rank3_minishell$ ./minishell
+minishell$ echo hello
+malloc: Success
+minishell$ echo $?
+malloc: Success

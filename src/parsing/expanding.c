@@ -48,9 +48,6 @@ char	*get_env_value_from_substr(char *input, int start, int len, char **envp)
 // ls > output_$?.txt
 // cat output_0.txt
 // value = get_env_value_from_substr(input, start, var_len, envp);
-//  need a spacial null check for this mem failure or ""
-	// if (!value)
-	// 	value = ft_strdup(""); //null check or macro
 char	*replace_variable(t_exec_path *cmd, char *input, int pos, char **envp)
 {
 	int		start;
@@ -66,7 +63,7 @@ char	*replace_variable(t_exec_path *cmd, char *input, int pos, char **envp)
 		var_len++;
 	value = get_env_value_from_substr(input, start, var_len, envp);
 	if (!value)
-		value = ft_strdup("");
+		value = EMPTY_STRING;
 	prefix = ft_substr(input, 0, pos);
 	suffix = ft_strdup(input + start + var_len);
 	if (!prefix)

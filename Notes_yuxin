@@ -169,9 +169,10 @@ next:        NULL
 
 ========================================expand raw line vs expand AST/链表=========================================
 
+
 “预展开 raw line（整行扫描预处理）”
 
-✅ 优点
+⚠️ 优点
 - 在词法分析前就把 $VAR / $? 等替换掉，后面 parser 更简单。
 - 对“预保存命令”这类需求（你提到的 $A="echo hello"）可以一次性摊平
 
@@ -183,7 +184,7 @@ next:        NULL
 - 还会牵涉 <<<、<<- 等边角（42 一般不要求，但容易踩）。
 
 “先词法/语法→再对 token/AST 做展开（推荐）”
-✅ 优点（更贴近 Bash）
+⚠️ 优点（更贴近 Bash）
 先把输入切成操作符（| < > << >>）和词（含引号信息），去掉词内的引号（quote removal），然后：
 - 对 argv、重定向文件名等做参数展开（单引号内不展开、双引号内可展开）。
 - 对 << 的下一个词（定界符）只做quote removal，不做变量展开；同时记录一个布尔位“定界符是否带引号”。
@@ -364,7 +365,7 @@ I chose preexpandingh
         /home
         yuwu@c2r4p10:/home$ export
 
-=====================Tester Lucas test 83        ⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️================================================
+=====================Tester Lucas test 83        c⚠️================================================
 Test  83: ⚠️ echo hi >         ./outfiles/outfile01 bye 
 Files ./mini_outfiles/outfile01 and ./bash_outfiles/outfile01 differ
 mini outfiles:
@@ -430,7 +431,7 @@ exit(127);
     用 errno 更复杂，只适合你要分类处理错误原因的情况，否则没必要。
 
 
-
+⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️
 !!!! lexing phase, if malloc fails, need to set exit status to 1
     	//debug
 	//token = NULL;

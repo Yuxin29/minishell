@@ -30,7 +30,7 @@ t_redir	*create_redir_node(t_token *redir_tok, t_token *file_tok)
 }
 
 // Helper: create and append redirection node
-static t_token	*get_one_redirection(t_cmd *cmd, t_token *tokens)
+t_token	*get_one_redirection(t_cmd *cmd, t_token *tokens)
 {
 	t_redir	*new_redir;
 	t_redir	*last;

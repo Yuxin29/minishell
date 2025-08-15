@@ -22,7 +22,7 @@ int	check_new_cmd(t_exec_path *cmd, t_token *token, t_cmd *cmd1, t_cmd *cmd2)
 	}
 	return (0);
 }
-
+// called in build_command_list
 t_cmd	*malloc_for_new_cmd(t_cmd *cmd_head)
 {
 	t_cmd	*cmd_current;
@@ -69,43 +69,3 @@ t_cmd	*build_command_list(t_exec_path *cmd, t_token *token_head)
 	return (cmd_head);
 }
 
-// used in get_one_new_cmd to skip the word tokens that have been parsed already
-t_token	*loop_to_next(t_token *token_head)
-{
-	if (token_head && token_head->t_type == 0)
-	{
-		while (token_head && token_head->t_type == 0)
-			token_head = token_head->next;
-	}
-	return (token_head);
-}
-
-// generate on single cmd struct
-// parse_argv(cmd_current, argv_tok); 
-// this function has a return value, need to chekc
-t_token	*get_one_new_cmd(t_token *token_head, t_cmd *cmd_current)
-{
-	t_token	*argv_tok;
-
-	while (token_head && token_head->t_type != 1)
-	{
-		if (token_head && token_head->t_type == 0)
-		{
-			argv_tok = token_head;
-			parse_argv(cmd_current, argv_tok);
-		}
-		token_head = loop_to_next(token_head);
-		if (!token_head)
-			break ;
-		if (token_head->t_type >= 2 && token_head->t_type <= 5)
-		{
-			token_head = parse_redirections(cmd_current, token_head);
-			if (!token_head)
-				return (NULL);
-		}
-		token_head = loop_to_next(token_head);
-	}
-	if (token_head && token_head->t_type == 1)
-		token_head = token_head->next;
-	return (token_head);
-}

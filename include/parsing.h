@@ -1,6 +1,8 @@
 #ifndef PARSING_H
 # define PARSING_H
 
+//-----------------------------------------------------------------------------------
+
 //Needed from exec.h
 typedef struct s_exec_path	t_exec_path;
 
@@ -112,6 +114,9 @@ t_token	*build_token_from_next_word(char *line, int *i);
 // when it is empty but status == 2, it is from symtax error 
 void	check_token_syntax(t_token *token_head, t_exec_path *cmd);
 int		count_argv(t_token *start);
+t_token	*parse_if_no_argv(t_cmd *cmd_current, t_token *token_head);
+t_token	*loop_to_next(t_token *token_head);
+t_token	*get_one_new_cmd(t_token *token_head, t_cmd *cmd_current);
 
 // parser.c
 // change token_list to command list and free the original tokens
@@ -119,15 +124,15 @@ int		count_argv(t_token *start);
 // - Grouping tokens into command nodes, pipes, redirections, etc,
 // - Building a linked list of command objects (t_cmd)
 t_redir	*create_redir_node(t_token *redir_tok, t_token *file_tok);
+t_token	*get_one_redirection(t_cmd *cmd, t_token *tokens);
 t_token	*parse_redirections(t_cmd *cmd, t_token *tokens);
+int		malloc_for_agrv(t_cmd *cmd, t_token *tokens);
 t_token	*parse_argv(t_cmd *cmd, t_token *tokens);
 
 // parsing_to_cmd_list.c
 int		check_new_cmd(t_exec_path *cmd, t_token *token, t_cmd *cmd1, t_cmd *cmd2);
 t_cmd	*malloc_for_new_cmd(t_cmd *cmd_head);
 t_cmd	*build_command_list(t_exec_path *cmd, t_token *token_head);
-t_token	*loop_to_next(t_token *token_head);
-t_token	*get_one_new_cmd(t_token *token_head, t_cmd *cmd_current);
 
 //expander_utils.c >
 //string operations helpers.
@@ -144,4 +149,7 @@ void	expand_redirection(t_exec_path *cmd, t_cmd *cmd_list, char **envp);
 void	expand_argv(t_exec_path *cmd, char **argv, int *quote_type, char **envp);
 void	expand_all_cmds(t_exec_path *cmd, t_cmd *cmd_list, char **envp);
 
+//-----------------------------------------------------------------------------------
+
 #endif
+

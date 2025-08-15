@@ -1,5 +1,7 @@
 #include "minishell.h"
 
+#include <stdio.h>
+
 volatile sig_atomic_t	g_signal = 0;
 
 int main(int argc, char **argv, char **envp)
@@ -42,8 +44,7 @@ int main(int argc, char **argv, char **envp)
 				exit(EXIT_FAILURE);
 			}
 
-			//yuxin added this part
-			expanded_line = pre_expand_line(&exec_cmd, line); //null check this one
+			expanded_line = pre_expand_line(&exec_cmd, line); 
 			free(line);
 
 			if (!expanded_line)
@@ -88,7 +89,7 @@ int main(int argc, char **argv, char **envp)
 				}
 			}
 
-			expand_all_cmds(&exec_cmd, exec_cmd.whole_cmd, exec_cmd.envp);
+			//expand_all_cmds(&exec_cmd, exec_cmd.whole_cmd, exec_cmd.envp);
 			tmp = exec_cmd.whole_cmd;
 			while (tmp)
 			{

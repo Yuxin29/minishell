@@ -112,10 +112,10 @@ token   - the results of the smallest unit
         "double quotes"     possibly multiple variables and commands included
 
 -------> Error msg in different phase  
-Phase	        Checks file existence?	         Errors?
-Lexing	        ❌ No	                        Only special character and unclosed quotes
-Parsing	        ❌ No	                        Only invalid structure
-Execution	    ✅ Yes	                        File not found, command not found, etc.
+Phase	        Checks file existence?	          Errors?
+Lexing	        No	                              Only special character and unclosed quotes
+Parsing	        No	                              Only invalid structure
+Execution	    Yes	                              File not found, command not found, etc.
 
 ========================================================continous redirections should be allowd ===========================================================
 ----->  example case
@@ -183,8 +183,8 @@ next:        NULL
     ->  echo "<<"<<"<<"
     ->  echo '>>'
 
-2. first redirections and then actuall command is valid in bash     ❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌
-    -> > out.txt echo hello        ❌
+2. first redirections and then actuall command is valid in bash    
+    -> > out.txt echo hello       
     -> echo hello > out.txt       this one is working
     -> echo > out.txt hello     this one is working
 
@@ -209,14 +209,72 @@ next:        NULL
         echo "$UNDEFINED"	                    ""
         echo "Mix$VAR1and$VAR2"	                "Mixval1andval2" 
         echo "yuxin $USER '$USER' "user" kk,"
-2. heredoc without quotes should not be expanded   ❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌
+
+2. heredoc without quotes should not be expanded 
     ->  minishell$ echo << $USER                    
         > skfd
         > mikko
         > $USER
     ->  minishell$ echo << $SUER                    
         minishell: syntax error: missing filename or delimiter after redirection
-3. multiple $, or ""
+
+3. heredoc with quotes should not be expanded             ❌❌❌❌❌❌❌❌
+    mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ cat << ""$USER
+    > asd
+    > sdfg
+    > mikko
+    > $USER
+    asd
+    sdfg
+    mikko
+    mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ ./minishell 
+    minishell$ cat << ""$USER
+    minishell heredoc> sdf
+    minishell heredoc> mikko
+    sdf
+
+5. heredoc with quotes should not be expanded             ❌❌❌❌❌❌❌❌ same as above
+    yuwu@c2r6p13:~$ echo << $ABC"" | grep abc
+    > $USER
+    > abc sdfkljsdfkjl
+    > $USER"abc"
+    > fgjkfgjk
+    > fgkljfghklj
+    > abcok
+    > $ABC
+    yuwu@c2r6p13:~$ cat << $ABC"" | grep abc
+    $USER
+    abc sdfkljsdfkjl
+    $USER"abc"
+    fgjkfgjk
+    fgkljfghklj
+    abcok
+    $ABC
+    abc sdfkljsdfkjl
+    $USER"abc"
+    abcok
+    yuwu@c2r6p13:~$ cat << $ABC"" | grep abc
+    > $ABC abc
+    > dfgjkdflgj
+    > dflgkjjdfgkj
+    > abcok
+    > $USER abc
+    > fdgkjdg
+    > abcok
+    > $ABC
+    $ABC abc
+    abcok
+    $USER abc
+    abcok
+    yuwu@c2r6p13:~$ cat << $ABC | grep abc
+    > $USER abc
+    > $USER
+    > abcok
+    > dfgjklfdgjkl
+    > $ABC
+    yuwu abc
+    abcok
+4. multiple $, or ""
     mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo $
     $
     mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo "$"$
@@ -227,17 +285,27 @@ next:        NULL
     $ $ $
     mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo "$"$ "$"
     $$ $
-    mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo "$"$$"$"
+    mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo "$"$$"$" ⚠️
     $217485$
-    mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo $? $$
+    mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo $? $$ ⚠️
     0 217485
-    mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo $?$$
+    mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo $?$$ ⚠️
     0217485
-    mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo $?$?"$"$?"$"
+    mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo $?$?"$"$?"$" ⚠️
     00$0$
-    mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo $?$?"$"$?$"$"
+    mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo $?$?"$"$?$"$" ⚠️
     00$0$
-4. 
+
+5. first export our own VAR, and then echo $VAR, with / without -n, with / without quotes
+    yuwu@c2r6p13:~/42/Rank3_minishell$ export A="     a       b     "
+    yuwu@c2r6p13:~/42/Rank3_minishell$ echo $A
+    a b
+    yuwu@c2r6p13:~/42/Rank3_minishell$ echo -n $A
+    a b
+    yuwu@c2r6p13:~/42/Rank3_minishell$ echo -n "$A"
+        a       b     
+    yuwu@c2r6p13:~/42/Rank3_minishell$ echo "$A"
+        a       b     
 
 ----------------> Syntax
 1. a cmd can have null as argv, just redirection
@@ -287,94 +355,9 @@ next:        NULL
         yuwu@c2r4p10:/home$ pwd
         /home
         yuwu@c2r4p10:/home$ export
-    
-=================================PARSEING test not to be retested ====================================================
 
-
-1. SOLVED
-yuwu@c2r6p13:~/42/Rank3_minishell$ export A="     a       b     "
-yuwu@c2r6p13:~/42/Rank3_minishell$ echo $A
-a b
-yuwu@c2r6p13:~/42/Rank3_minishell$ echo -n $A
-a b
-yuwu@c2r6p13:~/42/Rank3_minishell$ echo -n "$A"
-     a       b     
-yuwu@c2r6p13:~/42/Rank3_minishell$ echo "$A"
-     a       b     
-     
-----------------
-2. NOT SOLVED 
-yuwu@c2r6p13:~$ echo << $ABC"" | grep abc
-> $USER
-> abc sdfkljsdfkjl
-> $USER"abc"
-> fgjkfgjk
-> fgkljfghklj
-> abcok
-> $ABC
-yuwu@c2r6p13:~$ cat << $ABC"" | grep abc
-$USER
-abc sdfkljsdfkjl
-$USER"abc"
-fgjkfgjk
-fgkljfghklj
-abcok
-$ABC
-abc sdfkljsdfkjl
-$USER"abc"
-abcok
-yuwu@c2r6p13:~$ cat << $ABC"" | grep abc
-> $ABC abc
-> dfgjkdflgj
-> dflgkjjdfgkj
-> abcok
-> $USER abc
-> fdgkjdg
-> abcok
-> $ABC
-$ABC abc
-abcok
-$USER abc
-abcok
-yuwu@c2r6p13:~$ cat << $ABC | grep abc
-> $USER abc
-> $USER
-> abcok
-> dfgjklfdgjkl
-> $ABC
-yuwu abc
-abcok
-
-c2r6p13% bash
-yuwu@c2r6p13:~$ cat << $USER
-> sdkfh
-> yuwu
-> $USER
-sdkfh
-yuwu
-yuwu@c2r6p13:~$ cat << ""$USER
-> ksdjf
-> $USER
-ksdjf
-
-3.Yuxin needs to fix
-mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ cat << ""$USER
-> asd
-> sdfg
-> mikko
-> $USER
-asd
-sdfg
-mikko
-mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ ./minishell 
-minishell$ cat << ""$USER
-minishell heredoc> sdf
-minishell heredoc> mikko
-sdf
-
-
-=====================Tester Lucas test 83        ❌❌❌❌❌❌❌❌================================================
-Test  83: ❌ echo hi >         ./outfiles/outfile01 bye 
+=====================Tester Lucas test 83        ⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️================================================
+Test  83: ⚠️ echo hi >         ./outfiles/outfile01 bye 
 Files ./mini_outfiles/outfile01 and ./bash_outfiles/outfile01 differ
 mini outfiles:
 bash outfiles:

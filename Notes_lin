@@ -112,7 +112,7 @@ void print_cmd_list(t_cmd *cmd)
     {
         printf("=== Command #%d ===\n", ++j);
         printf("  argv:");
-        for (i = 0; cmd->argv && cmd->argv[i]; i++)
+        for (i = 0; cmd->argv && cmd->argv[i]; i++))
             printf(" '%s'", cmd->argv[i]);
         printf("\n");
         print_redirects(cmd->redirects);

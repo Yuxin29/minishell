@@ -1,5 +1,5 @@
 
-=================================git collaborations=====================================================
+====================================================================git collaborations=========================================================================
 //how to work in your branch and push to the main
 	- git checkout branch-name
 	- do changes
@@ -15,7 +15,7 @@
 	- git push origin main
 
 
-=================================minishell workflows=====================================================
+===========================================================minishell workflows=========================================================================
 main.c         --->  +---------------------------------------------+
 👤👤 Shared          | init env from envp                          | -> void init_env(char **envp);
                      | init signal handlers                        | -> void setup_signals(void);
@@ -91,27 +91,61 @@ utils.c       --->   +---------------------------------------------+
 
 ** Error exit codes:
 
-    - Syntax error:         exit 2
-    - Command not found:    exit 127
-    - Permission denied:    exit 126
-    - Signal exit (e.g. ^C): appropriate status
-    - Builtin exit:         user-defined exit code
+    - Syntax error:             exit 2
+    - Command not found:        exit 127
+    - Permission denied:        exit 126
+    - Signal exit (e.g. ^C):    appropriate status: like 128 + status
+    - Builtin exit:             user-defined exit code
 
-=================================concept in parsing=====================================================
+==============================================================concept in parsing==================================================================================
 
-prompt: A prompt in a shell is the text displayed to the user that signals it's ready to receive input.
+-------> prompt: A prompt in a shell is the text displayed to the user that signals it's ready to receive input.
 for example:        -bash       user@hostname:~$
                     -minishell  minishell$
 
-lexing and token
+-------> lexing and token
 lexing  - a process the analyse the raw line and change it to tokens
 token   - the results of the smallest unit
 
-"  " and '   '
-'single quotes'     literally just a string
-"double quotes"     possibly multiple variables and commands included
+-------> "  " and '   '
+        'single quotes'     literally just a string
+        "double quotes"     possibly multiple variables and commands included
 
-====================================for example====================================
+-------> Error msg in different phase  
+Phase	        Checks file existence?	         Errors?
+Lexing	        ❌ No	                        Only special character and unclosed quotes
+Parsing	        ❌ No	                        Only invalid structure
+Execution	    ✅ Yes	                        File not found, command not found, etc.
+
+========================================================continous redirections should be allowd ===========================================================
+----->  example case
+    ->  echo > out1 > out2 > out3
+    ->  cat < in1 < in2 < in3
+    ->  cat < file1 > file2 < file1: does this make sense: should we handle it?
+    ->  cat < in.txt > out.txtThis reads from in.txt and writes to out.txt.
+    ->  grep hello < file.txt > result.txt, grep hello from infile and put it to a outfile
+
+----->  to handles this, we have redirection node as a linked list
+typedef struct s_redir {
+	char *file;
+	int type; // T_REDIRECT_IN, T_REDIRECT_OUT, T_APPEND, T_HEREDOC
+	struct s_redir *next;
+} t_redir;
+
+typedef struct s_cmd
+{
+	char **argv;
+	t_redir *redirections;  // <-- list of redirections
+	struct s_cmd *next;
+} t_cmd;
+
+-----> more infor about bash behaviors of continous refirection
+    - In real Bash, even though only the last redirection affects where the command reads/writes
+    - all redirections are processed in order, and errors can occur during any redirection (not just the last).
+    - in one cmd, redirectin, redirectout, append and heredoc can appear at the same time for multiple times
+
+
+=================================================================PARSEING for example=================================================================
 echo "hello world" > file.txt | cat -e
 [TOKEN: echo]	[TOKEN: "hello world"]	[TOKEN: >]	[TOKEN: file.txt]   [TOKEN: |] 	[TOKEN: cat]  	[TOKEN: -e]
 T_WORD	  				T_WORD		T_REDIRECT_OUT		 T_WORD			  T_PIPE	   T_WORD		  T_WORD
@@ -133,314 +167,130 @@ append_out:  0
 heredoc_delim: NULL
 next:        NULL
 
-=================================to tell lin on Friday  =====================================================
 
-in lex_utils.c, we are prechecking if quotes are closed or not
-//in case of the quotes not close, the screen is blicking because it thinks that the cmd is not finished
-mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ cat < input.txt | grep foo > out.txt | echo "hello world 'again' >> out2.txt
-> ^C
-mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ cat < input.txt | grep foo > out.txt | echo "hello world
-> "
-hello world
+================================================================PARSEING test case Specail ====================================================
+----------------> Prespanding
+1. preexpading is needed, for cmd as VAR
+    ->  export $CMD="echo hello"
+        $CMD
+    preexpading is needed, also for VAR can mess up with cmd
+    ->  echo$USER           bash: echoyuwu: command not found
 
-bash: input.txt: No such file or directory
+----------------> Parsing
+1. "<" and '<' should be solid input argv, but < is certainly redirect int
+    ->  echo "<"
+    ->  echo "<"<<"<"
+    ->  echo "<<"<<"<<"
+    ->  echo '>>'
 
-| cat Makefile
-this syntax error is reported before change token to cmd list
-cat Makefile or Cati makefile
-the cmd existence and file access if reported after parsing
+2. first redirections and then actuall command is valid in bash     ❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌
+    -> > out.txt echo hello        ❌
+    -> echo hello > out.txt       this one is working
+    -> echo > out.txt hello     this one is working
 
-Phase	        Checks file existence?	         Errors?
-Lexing	        ❌ No	                        Only syntax / quoting issues
-Parsing	        ❌ No	                        Only invalid structure, like `
-Execution	    ✅ Yes	                        File not found, command not found, etc.
+3. about quotes
+    ->  echo "hello "yuxin" wi"
+        echo 'hello 'yuxin' wi'
+        echo "hello 'yuxin' wi"
+        echo 'hello "yuxin" wi'
 
-=================================about environment variables =====================================================
-how to set env_variables, in bash eg:
-export VAR=value
-//do we need to achieve this export in shell as well?
-
-EDGE CASES AND TESTS
-Input                   Expected Output
-"Hello $USER"	        "Hello alice"
-'Hello $USER'	        'Hello $USER'
-"Path is $PATH/bin"	    "Path is /usr/bin:/bin/bin"
-"$"	                    "" (empty string or preserved as literal)
-"$UNDEFINED"	        ""
-"Mix$VAR1and$VAR2"	    "Mixval1andval2"
-
-how to set env_variables, in bash eg:
-export VAR=value
-//do we need to achieve this export in shell as well? tes
-
-EDGE CASES AND TESTS
-Input                   Expected Output
-"Hello $USER"	        "Hello alice"
-'Hello $USER'	        'Hello $USER'
-"Path is $PATH/bin"	    "Path is /usr/bin:/bin/bin"
-"$"	                    "" (empty string or preserved as literal)
-"$UNDEFINED"	        ""
-"Mix$VAR1and$VAR2"	    "Mixval1andval2"
-
-=================================weird testing case======SOLVED=========================================
-//about quotes and #USER
-echo "yuxin $USER '$USER' "user" kk,"
-echo "hello "yuxin" wi"
-echo 'hello 'yuxin' wi'
-echo "hello 'yuxin' wi"
-echo 'hello "yuxin" wi'
-
-//about redirection
-< infile            bash: infile: No such file or directory, fake excution
-cat <               bash: syntax error near unexpected token 'newline', exit during parsing stage
-
-//cmds without empty space in between
-echo$USER           bash: echoyuwu: command not found
-cat<Makefile        bash: solid, same as cat < Makefile
-
-=================================to tell lin on Thursday=====================================================
-1.empty string executions 
-minishell$ ""
-Command '' not found,
-solved
-
-2. first redirections and then actuall command is valid in bash
-minishell$ > out.txt echo hello
-solved
-
-3. bash allows empty command and redirections and outfile
-minishell$ < infile
-minishell: infile: No such file or directory
-solved
-
-=================================to be solved on Friday, week 2================================================
-1. expand everything but not heredoc input
-minishell$ echo << $USER
-> skfd
-> mikko
-> $USER
-FIXED: now expand after parsing in cmd list, nor normed, too many variables in str operations
-------------------------------------------------------
-
-2. "<" and '<' should be solid input argv, but < is certainly redirect int
-echo "<"<<"<"
-FIXED: in get token type, as long as there are quotes, it is a word token
-minishell$ echo "<"
-<
-minishell$ echo "<"<<"<"
-minishell herecod> asd
-minishell herecod> <
-<
-minishell$ echo "<<"<<"<<"
-minishell herecod> asd
-minishell herecod> <<
-<<
-minishell$ echo '>>'
->>
-------------------------------------------------------
-
-3. continously redirections
-eg:
-echo > out1 > out2 > out3
-cat < in1 < in2 < in3
-cat < file1 > file2 < file1: does this make sense: should we handle it?
----> YES, direct in and direct out in a bash cmd is solid and we need to handle it
----> FOR EXAMPLE: cat < in.txt > out.txtThis reads from in.txt and writes to out.txt.
-                  grep hello < file.txt > result.txt, grep hello from infile and put it to a outfile
-WAITING: BIG BIG BIG ONE
----> suggested restructured struc
-typedef struct s_redir {
-	char *file;
-	int type; // T_REDIRECT_IN, T_REDIRECT_OUT, T_APPEND, T_HEREDOC
-	struct s_redir *next;
-} t_redir;
-
-typedef struct s_cmd
-{
-	char **argv;
-	t_redir *redirections;  // <-- list of redirections
-	struct s_cmd *next;
-} t_cmd;
-
----> Why this:
-- In real Bash, even though only the last redirection affects where the command reads/writes
-- all redirections are processed in order, and errors can occur during any redirection (not just the last).
-- in one cmd, redirectin, redirectout, append and heredoc can appear at the same time for multiple times
----> what needs to be rewritten:
-- parser
-- redirections
-- exevc_external
-- exev_builtin
-- main
-
-PARSING PART FIXED, print tests done but execute tests not none yet
-------------------------------------------------------
-
-4.signals
-./
-ADDED, but not tested with main and minishell yet
-------------------------------------------------------
-
-5.echo $?
-DONE in parsing, I did it as a normal $VAR
-in exectation, I think we still need to update it after every cmd execution in the env
-------------------------------------------------------
-
-6. possiblye 2 unfinished builtins from lin
-not done, Yuxin can probably look into it on TUesday eve or Wed.
-------------------------------------------------------
-
-7. 
--    globle status setting in parsing phase,
--    pre-lexing exit and free exex_envp
--    no exit, but try to return null up to the main
-FIXED, not existing now, save status to 2 in case of syntax error
-------------------------------------------------------
-
-n. maybe, can try to solve
-echo "$"$"$"$"$"
-zsh: $$$$$
-bash: $$$
-minishell: $$$$$
-GIVEN UP:
-mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo $
-$
-mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo "$"$
-$$
-mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo "$"$"$"
-$$
-mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo "$" $ "$"
-$ $ $
-mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo "$"$ "$"
-$$ $
-mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo "$"$$"$"
-$217485$
-mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo $? $$
-0 217485
-mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo $?$$
-0217485
-mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo $?$?"$"$?"$"
-00$0$
-mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo $?$?"$"$?$"$"
-00$0$
-Maybe, yuxin probaly can solve it in expander, becuase expander is more precise now than before
+4.  empty string executions 
+    ->  minishell$ ""
+        Command '' not found,
 
 
-=================================MAX built in edge case tests ==========================
-c2r4p10% bash
-=================================echo -n 234 ==========================
-yuwu@c2r4p10:~$ echo -nnnnnnn 123
-123yuwu@c2r4p10:~$ echo -nnnnnnn -nnnnn -n -nnnn 123
-123yuwu@c2r4p10:~$ echo -nnnnnnn -nnnnn -n -nnnn -n-n 123
--n-n 123yuwu@c2r4p10:~$ pwd
-/home/yuwu
-yuwu@c2r4p10:~$ cd ..
-yuwu@c2r4p10:/home$ pwd
-/home
-yuwu@c2r4p10:/home$ pwd
-/home
-yuwu@c2r4p10:/home$ unset PWD
-yuwu@c2r4p10:/home$ pwd
-/home
-yuwu@c2r4p10:/home$ export
+----------------> Expansion
+1. normal expansion case
+    ->  minishell$ echo "$USER "$USER" '$USER'" '$USER' "$USER"
+        echo "Hello $USER"	                    "Hello alice"
+        echo 'Hello $USER'	                    'Hello $USER'
+        echo "Path is $PATH/bin"	            "Path is /usr/bin:/bin/bin"
+        echo "$"	                            "" (empty string or preserved as literal)
+        echo "$UNDEFINED"	                    ""
+        echo "Mix$VAR1and$VAR2"	                "Mixval1andval2" 
+        echo "yuxin $USER '$USER' "user" kk,"
+2. heredoc without quotes should not be expanded   ❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌
+    ->  minishell$ echo << $USER                    
+        > skfd
+        > mikko
+        > $USER
+    ->  minishell$ echo << $SUER                    
+        minishell: syntax error: missing filename or delimiter after redirection
+3. multiple $, or ""
+    mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo $
+    $
+    mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo "$"$
+    $$
+    mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo "$"$"$"
+    $$
+    mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo "$" $ "$"
+    $ $ $
+    mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo "$"$ "$"
+    $$ $
+    mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo "$"$$"$"
+    $217485$
+    mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo $? $$
+    0 217485
+    mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo $?$$
+    0217485
+    mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo $?$?"$"$?"$"
+    00$0$
+    mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo $?$?"$"$?$"$"
+    00$0$
+4. 
 
-==============================export nbrs="1 2 3" ==========================
-minishell$ export 77="1 2 3"
+----------------> Syntax
+1. a cmd can have null as argv, just redirection
+    ->  cat Makefile | < in
+    ->  < in
 
-============================== exit numeric argument required ==========================
-yuwu@c2r4p10:~$ exit 1 1
-exit
-bash: exit: too many arguments
-yuwu@c2r4p10:~$ exit a 1
-exit
-bash: exit: a: numeric argument required
-c2r4p10% bash
-yuwu@c2r4p10:~$ exit 1
-exit
-c2r4p10% bash
-yuwu@c2r4p10:~$ exit 1111111111111111111111111111111
-exit
-bash: exit: 1111111111111111111111111111111: numeric argument required
-c2r4p10% bash    
-yuwu@c2r4p10:~$ exit 300
-exit
-c2r4p10% echo  $?
-44
-c2r4p10% 300-256
-zsh: command not found: 300-256
-
-=======================================About signal adn exec error in child===============
-（可选但推荐）：子进程出错时是否用 errno？
-你目前在 execve 失败时：
-perror("execve");
-exit(127);
-
-这是合理的，因为：
-
-    127 是标准 Unix 规定的 “command not found or not executable” 返回值。
-
-    用 errno 更复杂，只适合你要分类处理错误原因的情况，否则没必要。
-
-================0806 need to fix===================================
-1. mem leak \ reachable mem in  expander
-minishell$ echo "$USER "$USER" '$USER'" '$USER' "$USER"
-FIXED
-
-2. preparsing checker wrong
-lin@EricdeMacBook-Pro minishell % cat Makefile | < in
-zsh: no such file or directory: in
-lin@EricdeMacBook-Pro minishell % ./minishell
-minishell$ cat Makefile | < in
-minishell: syntax error near unexpected token `newline'
-Error: get command list failed from syntax error
-minishell$
---should check with print cmd_list
-FIXED
-
-====================================later to check forbiddent functions =============================
-// External functs allowed .
-// readline            - get a line from a user with editing       get a line from a user with editing
-// rl_clear_history    ??
-// rl_on_new_line      ??
-// rl_replace_line     ??
-// rl_redisplay        ??
-// add_history         ??
-// printf              ??
-// malloc, free
-// write               ??
-// access             -check user's permissions for a file
-// open                ??
-// read                ??
-// close               - close a file descriptor                  int close(int fd);
-// fork                -  create a child proces                   pid_t fork(void);
-// wait, waitpid, wait3, wait4                                     ??
-// signal              - ANSI C signal handling                    sighandler_t signal(int signum, sighandler_t handler);
-// sigaction           - examine and change a signal action
-// sigemptyset         ??
-// sigaddset           - POSIX signal set operations
-// kill                 - send a signal to a processq
-// exit,                — cause the shell to exit              exit [n]
-// getcwd, chdir, stat, lstat, fstat, unlink, execve,
-// dup, dup2, pipe, opendir, readdir, closedir,
-// strerror, perror, isatty, ttyname, ttyslot, ioctl,
-// getenv, tcsetattr, tcgetattr, tgetent, tgetflag,
-// tgetnum, tgetstr, tgoto, tputs
-
-// #include <unistd.h>         //access, access, close, fork
-// #include <stdlib.h>         //malloc, free
-// #include <fcntl.h
-> $USER
-ksdjf
->
-// #include <stdio.h>  //readline, printf
-// #include <string.h>
-// # include <errno.h>
-// sigaddset
-// #include <signal.h>         //signal, sigaction,
-// # include <sys/wait.h>
+----------------> build in
+1. cd
+    ->  cd without argv[1] means change home
+2. exit
+    yuwu@c2r4p10:~$ exit 1 1
+    exit
+    bash: exit: too many arguments
+    yuwu@c2r4p10:~$ exit a 1
+    exit
+    bash: exit: a: numeric argument required
+    c2r4p10% bash
+    yuwu@c2r4p10:~$ exit 1
+    exit
+    c2r4p10% bash
+    yuwu@c2r4p10:~$ exit 1111111111111111111111111111111
+    exit
+    bash: exit: 1111111111111111111111111111111: numeric argument required
+    c2r4p10% bash    
+    yuwu@c2r4p10:~$ exit 300
+    exit
+    c2r4p10% echo  $?
+    44
+    c2r4p10% 300-256
+    zsh: command not found: 300-256
+3. export
+    ->  export has to have valid varaiable name
+        ->   export 77="1 2 3"
+4. echo
+    -> -n or not -n
+        yuwu@c2r4p10:~$ echo -nnnnnnn 123
+        123yuwu@c2r4p10:~$ echo -nnnnnnn -nnnnn -n -nnnn 123
+        123yuwu@c2r4p10:~$ echo -nnnnnnn -nnnnn -n -nnnn -n-n 123
+        -n-n 123yuwu@c2r4p10:~$ pwd
+        /home/yuwu
+        yuwu@c2r4p10:~$ cd ..
+        yuwu@c2r4p10:/home$ pwd
+        /home
+        yuwu@c2r4p10:/home$ pwd
+        /home
+        yuwu@c2r4p10:/home$ unset PWD
+        yuwu@c2r4p10:/home$ pwd
+        /home
+        yuwu@c2r4p10:/home$ export
+    
+=================================PARSEING test not to be retested ====================================================
 
 
-========================================Danny testes
 1. SOLVED
 yuwu@c2r6p13:~/42/Rank3_minishell$ export A="     a       b     "
 yuwu@c2r6p13:~/42/Rank3_minishell$ echo $A
@@ -451,6 +301,7 @@ yuwu@c2r6p13:~/42/Rank3_minishell$ echo -n "$A"
      a       b     
 yuwu@c2r6p13:~/42/Rank3_minishell$ echo "$A"
      a       b     
+     
 ----------------
 2. NOT SOLVED 
 yuwu@c2r6p13:~$ echo << $ABC"" | grep abc
@@ -494,7 +345,6 @@ yuwu@c2r6p13:~$ cat << $ABC | grep abc
 yuwu abc
 abcok
 
-=========================Anton
 c2r6p13% bash
 yuwu@c2r6p13:~$ cat << $USER
 > sdkfh
@@ -506,60 +356,6 @@ yuwu@c2r6p13:~$ cat << ""$USER
 > ksdjf
 > $USER
 ksdjf
-
-
-========================================tester lukas
-Test  26: ❌ export A- 
-mini exit code = 0
-bash exit code = 1
-mini error = ()
-bash error = ( not a valid identifier)
-Test  30: ❌ export HELLO-=123 
-mini exit code = 0
-bash exit code = 1
-mini error = ()
-bash error = ( not a valid identifier)
-Test  31: ❌ export = 
-mini exit code = 0
-bash exit code = 1
-mini error = ()
-bash error = ( not a valid identifier)
-Test  32: ❌ export 123 
-mini exit code = 0
-bash exit code = 1
-mini error = ()
-bash error = ( not a valid identifier)
---> to be fixed in built in export??
-
-
-
-===========================Yuxin fixed ont the wkend
-1/ cd. cd without argv[1] means change home
-mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell/tester_lukas$ pwd
-/home/mikko/yuxin_home/minishell/tester_lukas
-mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell/tester_lukas$ echo $HOME
-/home/mikko
-mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell/tester_lukas$ cd
-mikko@mikko-desktop-ubuntu:~$ pwd
-/home/mikko
-
-
-===========================Yuxin NOT fixed ont the wkend, might be fixed, not updated
-2. syntax error code 2 is not passed to $? correctly.
-mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ ./minishell 
-minishell$ echo ss
-ss
-minishell$ echo $?
-0
-minishell$ echo <as
-as: No such file or directory
-minishell$ echo $?
-1
-minishell$ <
-minishell: syntax error: missing filename or delimiter after redirection
-minishell$ echo $?
-minishell$ echo aa
-minishell$ echo $?
 
 3.Yuxin needs to fix
 mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ cat << ""$USER
@@ -576,7 +372,8 @@ minishell heredoc> sdf
 minishell heredoc> mikko
 sdf
 
-=====================Tester Lucas test 83================================================
+
+=====================Tester Lucas test 83        ❌❌❌❌❌❌❌❌================================================
 Test  83: ❌ echo hi >         ./outfiles/outfile01 bye 
 Files ./mini_outfiles/outfile01 and ./bash_outfiles/outfile01 differ
 mini outfiles:
@@ -584,229 +381,59 @@ bash outfiles:
 hi bye
 mini output = (hi bye)
 bash output = ()
+.-------> agreed with lin that its not our problem
 
-------> I did Manual tests: no problem here
 
-mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ ./minishell 
-minishell$ echo hi > ./outfiles/outfile01 bye
-./outfiles/outfile01: No such file or directory
-minishell$ echo hi > outm bye
-minishell$ cat outm
-hi bye
-minishell$ echo $?
-0
-minishell$ 
-exit
-mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo hi > outb bye
-mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ cat outb
-hi bye
-mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo $?
-0
+====================================later to check forbiddent functions and header file =============================
+// External functs allowed .
+// readline            - get a line from a user with editing       get a line from a user with editing
+// rl_clear_history    ??
+// rl_on_new_line      ??
+// rl_replace_line     ??
+// rl_redisplay        ??
+// add_history         ??
+// printf              ??
+// malloc, free
+// write               ??
+// access             -check user's permissions for a file
+// open                ??
+// read                ??
+// close               - close a file descriptor                  int close(int fd);
+// fork                -  create a child proces                   pid_t fork(void);
+// wait, waitpid, wait3, wait4                                     ??
+// signal              - ANSI C signal handling                    sighandler_t signal(int signum, sighandler_t handler);
+// sigaction           - examine and change a signal action
+// sigemptyset         ??
+// sigaddset           - POSIX signal set operations
+// kill                 - send a signal to a processq
+// exit,                — cause the shell to exit              exit [n]
+// getcwd, chdir, stat, lstat, fstat, unlink, execve,
+// dup, dup2, pipe, opendir, readdir, closedir,
+// strerror, perror, isatty, ttyname, ttyslot, ioctl,
+// getenv, tcsetattr, tcgetattr, tgetent, tgetflag,
+// tgetnum, tgetstr, tgoto, tputs
 
-------> then I added print tokens and cmds to see the parsing process
+// #include <unistd.h>         //access, access, close, fork
+// #include <stdlib.h>         //malloc, free
+// #include <fcntl.h
+> $USER
+ksdjf
+>
+// #include <stdio.h>  //readline, printf
+// #include <string.h>
+// # include <errno.h>
+// sigaddset
+// #include <signal.h>         //signal, sigaction,
+// # include <sys/wait.h>
 
-mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ ./minishell 
-minishell$ echo hi > outm bye
-=== TOKEN LIST ===
-[0] str: "echo", type: WORD (0), quote_type: 0
-[1] str: "hi", type: WORD (0), quote_type: 0
-[2] str: ">", type: REDIRECT_OUT (3), quote_type: 0
-[3] str: "outm", type: WORD (0), quote_type: 0
-[4] str: "bye", type: WORD (0), quote_type: 0
-==================
-=== CMD LIST ===
-Command #0:
-  argv[0]: "echo" (quote_type: 0)
-  argv[1]: "hi" (quote_type: 0)
-  argv[2]: "bye" (quote_type: 0)
-  cmd_path: (null)
-  redir: type=REDIRECT_OUT (3), file="outm"
-=================
-minishell$ cat outm
-=== TOKEN LIST ===
-[0] str: "cat", type: WORD (0), quote_type: 0
-[1] str: "outm", type: WORD (0), quote_type: 0
-==================
-=== CMD LIST ===
-Command #0:
-  argv[0]: "cat" (quote_type: 0)
-  argv[1]: "outm" (quote_type: 0)
-  cmd_path: (null)
-  redirections: (none)
-=================
-hi bye
+=======================================About signal adn exec error in child===============
+（可选但推荐）：子进程出错时是否用 errno？
+你目前在 execve 失败时：
+perror("execve");
+exit(127);
 
-------> then I asked chatgpt, can you think step by step and analise in chinese.
+这是合理的，因为：
 
-ChatGPT said:
+    127 是标准 Unix 规定的 “command not found or not executable” 返回值。
 
-好的，我们一步步分析你的情况，我用中文仔细说明整个逻辑和可能出错的地方。
-
----
-
-### **1️⃣ 问题现象**
-
-* Bash 的行为（参考 tester Lucas test 83）：
-
-```bash
-echo hi > ./outfiles/outfile01 bye
-# 输出文件包含：hi bye
-# 返回值：0
-```
-
-* 你的 minishell 行为：
-
-```bash
-echo hi > ./outfiles/outfile01 bye
-# 返回错误：No such file or directory
-# 文件未创建或为空
-```
-
-* 手动测试时，`echo hi > outm bye` 正常，说明某些路径/文件名可能在自动测试中处理不一致。
-
----
-
-### **2️⃣ 打印 token 与 cmd 列表**
-
-你的 token list：
-
-```
-[0] "echo" WORD
-[1] "hi" WORD
-[2] ">" REDIRECT_OUT
-[3] "outm" WORD
-[4] "bye" WORD
-```
-
-你的 cmd list：
-
-```
-argv[0] = "echo"
-argv[1] = "hi"
-argv[2] = "bye"     <-- ✅ 这里把 "bye" 放进 argv 了
-redir: > outm
-```
-
----
-
-### **3️⃣ 对比 Bash 行为**
-
-在 Bash 中：
-
-```bash
-echo hi > outm bye
-```
-
-* 先解析 `>`，确定输出重定向目标为 `outm`
-* **`echo` 的 argv** = `["echo", "hi", "bye"]` ✅
-* **redir** = `> outm` ✅
-
-所以从 parsing 角度，你的 cmd list 和 Bash 是一致的。
-
-> 说明 **解析 token → cmd** 没有问题
-
----
-
-### **4️⃣ 再看错误信息**
-
-```
-./outfiles/outfile01: No such file or directory
-```
-
-* 说明你的 minishell 在创建输出文件时，父目录不存在或路径处理有问题。
-* Bash 自动处理 `./outfiles/outfile01` 的路径，如果目录不存在，会报错 `No such file or directory`，你手动测试时用了 `outm`（当前目录下文件），所以能成功。
-
----
-
-### **5️⃣ 核心问题可能在这里**
-
-#### **（A）输出重定向创建逻辑**
-
-你之前修复了 “父进程先创建输出文件”：
-
-```c
-r = cmd->whole_cmd->redirections;
-while (r)
-{
-    if (r->type == 2 || r->type == 3)
-    {
-        int fd = open(r->file, O_CREAT | O_WRONLY | O_TRUNC, 0644);
-        if (fd < 0)
-        {
-            perror(r->file);
-            cmd->exit_status = 1;
-            return ;
-        }
-        close(fd);
-    }
-    r = r->next;
-}
-```
-
-* `open` 的失败原因通常是 **父目录不存在**，比如 `./outfiles/` 不存在
-* Lucas tester 可能创建了 `./outfiles/`，但是你的 shell 没有自动创建
-
----
-
-#### **（B）路径字符串处理**
-
-* 你的 `t_redir->file` 是 `"./outfiles/outfile01"`
-* `open()` 直接调用，如果路径不存在，会返回 `-1`，设置 `errno = ENOENT`
-* Bash 行为一样，但测试脚本可能有不同的当前目录或路径问题
-
----
-
-### **6️⃣ 其他潜在小问题**
-
-* `run_builtin_with_redir` / `execute_single_cmd` 都是 **父进程创建文件**，再在子进程 `dup2` 时使用。
-
-* 如果 `dup2` 之前文件没成功创建，子进程会报错
-
-* `type` 判断是否截断：`>` 需要 `O_TRUNC`，`>>` 需要 `O_APPEND`
-
-* 你当前实现把 `>` 和 `>>` 都 `O_TRUNC`，理论上会丢掉原文件内容（目前测试中影响不大，但更严格需要区分）
-
----
-
-### **7️⃣ 总结分析**
-
-✅ **Parsing 没问题**：
-
-* Token → cmd 结构和 Bash 一致
-* `argv` 包含 `hi bye`
-* `redir` 指向正确的输出文件
-
-❌ **真正问题在执行阶段**：
-
-1. 输出重定向的文件路径可能不存在父目录 → `open()` 失败
-2. 你的逻辑只在父进程创建文件，没有做路径检查或自动创建目录
-3. Tester 的文件路径可能包含不存在的目录，导致失败
-
----
-
-### **8️⃣ 下一步建议**
-
-1. **手动确认路径存在**：
-
-```c
-#include <sys/stat.h>
-#include <sys/types.h>
-mkdir("./outfiles", 0777); // 自动创建目录，测试用
-```
-
-2. **可选**：在创建文件前检查目录是否存在，缺失则报错或尝试创建
-
-3. **修复 append (`>>`) 类型**：
-
-```c
-if (r->type == 2) // >
-    fd = open(r->file, O_CREAT | O_WRONLY | O_TRUNC, 0644);
-else if (r->type == 3) // >>
-    fd = open(r->file, O_CREAT | O_WRONLY | O_APPEND, 0644);
-```
-
----
-
-如果你愿意，我可以帮你写一份 **兼容 Lucas tester 的安全输出文件创建函数**，保证父目录不存在时不会出错，同时保留 `>`/`>>` 的正确行为。
-
-你希望我直接写吗？
+    用 errno 更复杂，只适合你要分类处理错误原因的情况，否则没必要。

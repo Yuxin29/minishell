@@ -12,11 +12,11 @@ t_token	*get_token_list(t_exec_path *cmd, char *raw_line)
 	precheck_special_chars_rawline(raw_line, cmd);
 	if (cmd->exit_status == 2)
 		return (NULL);
-	return (tokenize_loop(raw_line));
+	return (tokenize_loop(raw_line, cmd));
 }
 
 // called in get_token list
-t_token	*tokenize_loop(char *raw_line)
+t_token	*tokenize_loop(char *raw_line, t_exec_path *cmd)
 {
 	t_token	*head;
 	t_token	*last;
@@ -32,7 +32,7 @@ t_token	*tokenize_loop(char *raw_line)
 			i++;
 		if (!raw_line[i])
 			break ;
-		new = build_token_from_next_word(raw_line, &i);
+		new = build_token_from_next_word(raw_line, &i, cmd);
 		if (!new)
 			return (NULL);
 		if (!head)
@@ -45,7 +45,7 @@ t_token	*tokenize_loop(char *raw_line)
 }
 
 //in case of mem failure, already perrored inside it
-t_token	*build_operator_token(char *line, int *i)
+t_token	*build_operator_token(char *line, int *i, t_exec_path *cmd)
 {
 	t_token	*token;
 	int		start;
@@ -56,12 +56,12 @@ t_token	*build_operator_token(char *line, int *i)
 		(*i)++;
 	token = malloc(sizeof(t_token));
 	if (!token)
-		return ((t_token *)free_malloc_fail_null(NULL));
+		return ((t_token *)free_malloc_fail_null_status(NULL, cmd));
 	token->str = ft_strndup(&line[start], *i - start);
 	if (!token->str)
 	{
 		free(token);
-		return ((t_token *)free_malloc_fail_null(NULL));
+		return ((t_token *)free_malloc_fail_null_status(NULL, cmd));
 	}
 	token->quote_type = 0;
 	token->next = NULL;
@@ -71,10 +71,10 @@ t_token	*build_operator_token(char *line, int *i)
 
 //two cases in this one: redirectons token and world token
 //no need for null check. already perrored, just return null
-t_token	*build_token_from_next_word(char *line, int *i)
+t_token	*build_token_from_next_word(char *line, int *i, t_exec_path *cmd)
 {
 	if (line[*i] == '<' || line[*i] == '>' || line[*i] == '|')
-		return (build_operator_token(line, i));
+		return (build_operator_token(line, i, cmd));
 	else
-		return (build_word_token(line, i));
+		return (build_word_token(line, i, cmd));
 }

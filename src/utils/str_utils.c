@@ -31,6 +31,17 @@ char	*free_malloc_fail_null(char	*str)
 	return (NULL);
 }
 
+// used in checking malloc strs or strdup, strjoin and so on
+// perror included, and it can free one string
+char	*free_malloc_fail_null_status(char	*str,  t_exec_path *cmd)
+{
+	if (str)
+		free (str);
+	perror("malloc");
+	cmd->exit_status = 1;
+	return (NULL);
+}
+
 // commone version of bash support only alpha and '_'
 // when use, not need to check null, null check included
 // QUESTION: alpha or upper case only

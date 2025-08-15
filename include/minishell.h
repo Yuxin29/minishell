@@ -147,21 +147,21 @@ char	*pre_expand_line(t_exec_path *cmd, char *raw_line);
 void	precheck_special_chars_rawline(char *line, t_exec_path *cmd);
 void	check_raw_line_syntax(char *raw_line, t_exec_path *cmd);
 void	get_token_type(t_token *token);
-char	*get_unquoted_part(char *s, int *i);
-char	*get_quoted_part(char *s, int *i);
+char	*get_unquoted_part(char *s, int *i, t_exec_path *cmd);
+char	*get_quoted_part(char *s, int *i, t_exec_path *cmd);
 
 // lexing_w_token.c
-char	*get_part(char *line, int *i, char	*part_quote);
-t_token	*malloc_and_set_token(char *temp, int q);
-char	*append_next_part(char *temp, char *line, int *i, char *part_quote);
-t_token	*build_word_token(char *line, int *i);
+char	*get_part(char *line, int *i, char	*part_quote, t_exec_path *cmd);
+t_token	*malloc_and_set_token(char *temp, int q, t_exec_path *cmd);
+char	*append_next_part(char *temp, char *line, int *i, char *part_quote, t_exec_path *cmd);
+t_token	*build_word_token(char *line, int *i, t_exec_path *cmd);
 
 // lex.c
 // get a raw line and change it to a linked list of minimal unit(tokens)
 t_token	*get_token_list(t_exec_path *cmd, char *raw_line);
-t_token	*tokenize_loop(char *raw_line);
-t_token	*build_operator_token(char *line, int *i);
-t_token	*build_token_from_next_word(char *line, int *i);
+t_token	*tokenize_loop(char *raw_line, t_exec_path *cmd);
+t_token	*build_operator_token(char *line, int *i, t_exec_path *cmd);
+t_token	*build_token_from_next_word(char *line, int *i, t_exec_path *cmd);
 
 // parser_utils.c
 // ATTENTION: empty token list is alloweed. when its leagal, status = 0
@@ -285,6 +285,7 @@ char	*ft_strjoin_free(char *s1, char *s2);
 char	*free_malloc_fail_null(char	*str);//preparsing
 int		ft_check_valid_var_name(char c);
 char	*join_three_and_free(char *s1, char *s2, char *s3);
+char	*free_malloc_fail_null_status(char	*str,  t_exec_path *cmd); //added, used in lexing mem fails
 
 //err_msg.c
 void	errmsg_set_status(char *msg, t_exec_path *cmd);

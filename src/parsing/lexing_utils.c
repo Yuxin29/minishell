@@ -84,7 +84,7 @@ void	get_token_type(t_token *token)
 }
 
 //return null if fails, null checked when it is used
-char	*get_unquoted_part(char *s, int *i)
+char	*get_unquoted_part(char *s, int *i, t_exec_path *cmd)
 {
 	int		start;
 	char	*part;
@@ -95,12 +95,12 @@ char	*get_unquoted_part(char *s, int *i)
 		(*i)++;
 	part = ft_strndup(&s[start], *i - start);
 	if (!part)
-		return (free_malloc_fail_null(NULL));
+		return (free_malloc_fail_null_status(NULL, cmd));
 	return (part);
 }
 
 //return null if fails, null checked when it is used
-char	*get_quoted_part(char *s, int *i)
+char	*get_quoted_part(char *s, int *i, t_exec_path *cmd)
 {
 	int		start;
 	char	*part;
@@ -115,7 +115,7 @@ char	*get_quoted_part(char *s, int *i)
 		(*i)++;
 	part = ft_strndup(&s[start], *i - start);
 	if (!part)
-		return (free_malloc_fail_null(NULL));
+		return (free_malloc_fail_null_status(NULL, cmd));
 	if (s[*i] == quote)
 		(*i)++;
 	return (part);

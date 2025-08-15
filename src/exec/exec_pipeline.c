@@ -17,23 +17,27 @@ static void	handle_child_process(t_exec_path *exec_cmd,
 	signal_default();
 	if (pinfo->prev_pipe != -1)
 	{
-		dup2(pinfo->prev_pipe, STDIN_FILENO);
+		if (dup2(pinfo->prev_pipe, STDIN_FILENO) == -1)
+		{
+			perror("dup2 stdin");
+			exit(EXIT_FAILURE);
+		}
 		close(pinfo->prev_pipe);
 	}
 	if (cmd->next)
 	{
-		dup2(pinfo->pipefd[1], STDOUT_FILENO);
+		if (dup2(pinfo->pipefd[1], STDOUT_FILENO) == -1)
+		{
+			perror("dup2 stdout");
+			exit(EXIT_FAILURE);
+		}
 		close(pinfo->pipefd[0]);
 		close(pinfo->pipefd[1]);
 	}
 	if (check_and_apply_redirections(cmd) == -1)
 		exit(EXIT_FAILURE);
 	if (is_builtin(cmd->argv[0]))
-	{
-		exec_cmd->exit_status = execute_builtin_cmd(cmd->argv,
-				&env_list, exec_cmd);
-		exit(exec_cmd->exit_status);
-	}
+		exit(execute_builtin_cmd(cmd->argv, &env_list, exec_cmd));
 	handle_execve_or_exit_inchild(exec_cmd, cmd);
 }
 
@@ -59,6 +63,13 @@ static int	fork_and_exec(t_exec_path *exec_cmd, t_cmd *cmd, t_pipe_ex *pinfo, t_
 	if (pid < 0)
 	{
 		perror("fork failed");
+		if (cmd->next)
+		{
+			close(pinfo->pipefd[0]);
+			close(pinfo->pipefd[1]);
+		}
+		if (pinfo->prev_pipe != -1)
+			close(pinfo->prev_pipe);
 		exec_cmd->exit_status = 1;
 		return (0);
 	}

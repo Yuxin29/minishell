@@ -17,8 +17,6 @@ int	is_builtin(char *cmd)
 		|| ft_strcmp(cmd, "exit") == 0);
 }
 
-//yuxin changed
-//should handle redir here!!!
 int	execute_builtin_cmd(char **argv, t_env **env, t_exec_path *exec_cmd)
 {
 	if (ft_strcmp(argv[0], "echo") == 0)
@@ -38,7 +36,7 @@ int	execute_builtin_cmd(char **argv, t_env **env, t_exec_path *exec_cmd)
 	return (1);
 }
 
-static int	restore_stdio(int stdin_fd, int stdout_fd)
+static void	restore_stdio(int stdin_fd, int stdout_fd)
 {
 	if (dup2(stdin_fd, STDIN_FILENO) == -1) //recover to std
 	{
@@ -50,7 +48,6 @@ static int	restore_stdio(int stdin_fd, int stdout_fd)
 	}
 	close(stdin_fd); //dup can generate a new fd, so i should close it after finishing
 	close(stdout_fd);
-	return (1);
 }
 
 void	run_builtin_with_redir(t_exec_path *exec_cmd, t_env **env_list)

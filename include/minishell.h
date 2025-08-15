@@ -217,7 +217,7 @@ char	*creat_heredoc_file(t_exec_path *cmd, char *delim, char **envp); // yuxin a
 
 //get_path
 char	*get_env(t_env *env, char *key);
-char	*get_cmd_path(char *cmd, t_env *env_list);
+char	*get_cmd_path(char *cmd, t_env *env_list, t_exec_path *exec_cmd);
 
 
 //---------------------------built_in part---------------------------------------------//

@@ -334,3 +334,12 @@ exit（无参、单参、非数字、多参时返回码与提示）。
 --------------------
 echo hello > out1 > out2
 cat < infile > outfile
+-----------
+mimic the behavior of fork failed:
+	errno = ENOMEM;
+	pid = -1;
+
+get_path, modify status
+pipeline, modify fork failed, dup2 failed
+single, modify fork failed
+builtin, modify restore

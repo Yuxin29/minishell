@@ -2,7 +2,7 @@
 
 volatile sig_atomic_t	g_signal = 0;
 
-static void	run_command(t_exec_path *exec_cmd, t_env **env_list)
+static int	run_command(t_exec_path *exec_cmd, t_env **env_list)
 {
 	t_cmd	*tmp;
 
@@ -12,22 +12,27 @@ static void	run_command(t_exec_path *exec_cmd, t_env **env_list)
 		if (!tmp->argv || !tmp->argv[0])
 			tmp->cmd_path = NULL;
 		else if (!is_builtin(tmp->argv[0]))
-			tmp->cmd_path = get_cmd_path(tmp->argv[0], *env_list);
+		{
+			tmp->cmd_path = get_cmd_path(tmp->argv[0], *env_list, exec_cmd);
+			if (exec_cmd->exit_status == 1)
+				return (free_t_exec_path(exec_cmd), 0);
+		}
 		else
 			tmp->cmd_path = NULL;
 		tmp = tmp->next;
 	}
 	if (!exec_cmd->whole_cmd->next)
 	{
-		if (!exec_cmd->whole_cmd->argv || !exec_cmd->whole_cmd->argv[0])
-			execute_single_cmd(exec_cmd);
-		else if (is_builtin(exec_cmd->whole_cmd->argv[0]))
+		if (exec_cmd->whole_cmd->argv && is_builtin(exec_cmd->whole_cmd->argv[0]))
 			run_builtin_with_redir(exec_cmd, env_list);
 		else
 			execute_single_cmd(exec_cmd);
 	}
 	else
 		execute_pipeline(exec_cmd, *env_list);
+	if (exec_cmd->exit_status == 1)
+		return (free_t_exec_path(exec_cmd), 0);
+	return (1);
 }
 
 static int	parse_and_expand(t_exec_path *exec_cmd, char *expanded_line, t_env **env_list)
@@ -79,7 +84,8 @@ static void	handle_line(char *line, t_env **env_list, t_exec_path *exec_cmd)
 	}
 	if (!parse_and_expand(exec_cmd, expanded_line, env_list))
 		return ;
-	run_command(exec_cmd, env_list);
+	if (!run_command(exec_cmd, env_list))
+		return ;
 	free_t_exec_path(exec_cmd);
 }
 

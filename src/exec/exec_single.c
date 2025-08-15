@@ -96,5 +96,7 @@ void	execute_single_cmd(t_exec_path *cmd)
 	{
 		perror("fork");
 		cmd->exit_status = 1;
+		signal_init();
+		return ;
 	}
 }

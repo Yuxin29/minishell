@@ -35,7 +35,7 @@ static char	*match_cmd_in_path(char **paths, char *cmd)
 	return (NULL);
 }
 
-char	*get_cmd_path(char *cmd, t_env *env_list)
+char	*get_cmd_path(char *cmd, t_env *env_list, t_exec_path *exec_cmd)
 {
 	char	**paths;
 	char	*path_value;
@@ -48,14 +48,15 @@ char	*get_cmd_path(char *cmd, t_env *env_list)
 		else
 			return (NULL);
 	}
-	//path_value = find_path_in_envp(envp); //find "PATH=""
 	path_value = get_env(env_list, "PATH");
 	if (!path_value)
 		return (NULL);
-	paths = ft_split(path_value, ':'); //split directory
+	paths = ft_split(path_value, ':');
 	if (!paths)
-		return (NULL);
-	cmd_path = match_cmd_in_path(paths, cmd); //strjoin /+cmd, check by access
+		return (free_malloc_fail_null_status(NULL, exec_cmd));
+	cmd_path = match_cmd_in_path(paths, cmd);
 	ft_free_arr(paths);
+	if (!cmd_path)
+		return (free_malloc_fail_null_status(NULL, exec_cmd));
 	return (cmd_path);
 }

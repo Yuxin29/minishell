@@ -23,17 +23,6 @@ void	set_env(t_env **env, char *key, char *value)
 	*env = new_node;
 }
 
-// t_env	*env_find(t_env *env, char *key)
-// {
-// 	while (env)
-// 	{
-// 		if (ft_strcmp(env->key, key) == 0)
-// 			return (env);
-// 		env = env->next;
-// 	}
-// 	return (NULL);
-// }
-
 // Bash uses strtol() or strtoll() under the hood to parse the number.
 // That means: long long (the range of a 64-bit signed integer)
 // need for builtin exit
@@ -120,7 +109,7 @@ void	sort_copy_list(t_env **copy_list, int size)
 			{
 				tmp = copy_list[i];
 				copy_list[i] =  copy_list[j];
-				 copy_list[j] = tmp;
+				copy_list[j] = tmp;
 			}
 			j++;
 		}

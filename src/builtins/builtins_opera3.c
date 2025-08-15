@@ -21,7 +21,6 @@ static void	export_var(t_env **env, char *key)
 	t_env	*node;
 	t_env	*cur;
 
-	//node = env_find(*env, key);
 	cur = *env;
 	node = NULL;
 	while (cur)
@@ -29,7 +28,7 @@ static void	export_var(t_env **env, char *key)
 		if (ft_strcmp(cur->key, key) == 0)
 		{
 			node = cur;
-			break;
+			break ;
 		}
 		cur = cur->next;
 	}
@@ -80,7 +79,7 @@ static void	print_export(t_env *env)
 	size = env_count(env);
 	copy_list = malloc(sizeof(t_env *) * size);
 	if (!copy_list)
-		return;
+		return ;
 	i = -1;
 	while (++i < size)
 	{

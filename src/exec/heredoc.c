@@ -4,9 +4,9 @@
 than this tmp file should become the infile in the process*/
 static char	*get_tmp_filepath(void)
 {
-	static int	i; //generate unique tmp filename
-	char	*tmp_filepath;
-	char	*fake_pid;
+	static int	i; //generate unique tmp filename, should be static
+	char		*tmp_filepath;
+	char		*fake_pid;
 
 	fake_pid = ft_itoa(i++);
 	if (!fake_pid)

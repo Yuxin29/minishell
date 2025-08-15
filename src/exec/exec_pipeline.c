@@ -11,7 +11,8 @@ static int	create_pipe_or_exit(t_exec_path *exec_cmd, t_pipe_ex *pinfo)
 	return (1);
 }
 
-static void	handle_child_process(t_exec_path *exec_cmd, t_cmd *cmd, t_env *env_list, t_pipe_ex *pinfo)
+static void	handle_child_process(t_exec_path *exec_cmd,
+	t_cmd *cmd, t_env *env_list, t_pipe_ex *pinfo)
 {
 	signal_default();
 	if (pinfo->prev_pipe != -1)
@@ -29,7 +30,8 @@ static void	handle_child_process(t_exec_path *exec_cmd, t_cmd *cmd, t_env *env_l
 		exit(EXIT_FAILURE);
 	if (is_builtin(cmd->argv[0]))
 	{
-		exec_cmd->exit_status = execute_builtin_cmd(cmd->argv, &env_list, exec_cmd);
+		exec_cmd->exit_status = execute_builtin_cmd(cmd->argv,
+				&env_list, exec_cmd);
 		exit(exec_cmd->exit_status);
 	}
 	handle_execve_or_exit_inchild(exec_cmd, cmd);
@@ -51,7 +53,7 @@ static void	handle_parent_process(t_cmd *cmd, t_pipe_ex *pinfo, pid_t pid)
 
 static int	fork_and_exec(t_exec_path *exec_cmd, t_cmd *cmd, t_pipe_ex *pinfo, t_env *env_list)
 {
-	pid_t pid;
+	pid_t	pid;
 
 	pid = fork();
 	if (pid < 0)
@@ -69,8 +71,8 @@ static int	fork_and_exec(t_exec_path *exec_cmd, t_cmd *cmd, t_pipe_ex *pinfo, t_
 
 void	execute_pipeline(t_exec_path *exec_cmd, t_env *env_list)
 {
-	t_cmd	*cmd;
-	t_pipe_ex pinfo;
+	t_cmd		*cmd;
+	t_pipe_ex	pinfo;
 
 	pinfo.prev_pipe = -1;
 	cmd = exec_cmd->whole_cmd;

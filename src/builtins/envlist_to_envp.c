@@ -31,7 +31,7 @@ static char	*do_strjoin(char *key, char *value)
 	return (result);
 }
 
-static void free_envp(char **envp, int i)
+static void	free_envp(char **envp, int i)
 {
 	while (--i >= 0)
 		free(envp[i]);

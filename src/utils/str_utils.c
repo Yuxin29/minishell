@@ -45,4 +45,3 @@ int	ft_check_valid_var_name(char c)
 		return (1);
 	return (0);
 }
-

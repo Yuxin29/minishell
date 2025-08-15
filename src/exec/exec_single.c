@@ -2,15 +2,14 @@
 
 void	print_error_and_exit(t_cmd *cmd)
 {
-		ft_putstr_fd(cmd->argv[0], 2);
-		ft_putstr_fd(": command not found\n", 2);
-		exit(127);
+	ft_putstr_fd(cmd->argv[0], 2);
+	ft_putstr_fd(": command not found\n", 2);
+	exit(127);
 }
 
 void	precheck_path_or_exit(char *path)
 {
-	struct stat st; //a structure that holds detailed information about a file.（man 2 stat)
-
+	struct stat	st; //a structure that holds detailed information about a file.（man 2 stat)
 	if (stat(path, &st) == -1)
 	{
 		ft_putstr_fd(path, 2); //It checks the file at path and fills the struct stat (st) with its info.
@@ -33,8 +32,9 @@ void	precheck_path_or_exit(char *path)
 
 static void	exec_single_child(t_exec_path *cmd)
 {
-	t_cmd *c = cmd->whole_cmd;
+	t_cmd	*c;
 
+	c = cmd->whole_cmd;
 	if (check_and_apply_redirections(c) == -1)
 		exit(EXIT_FAILURE);
 	if (!c->argv || !c->argv[0]) //if redir ok but no argv, still 0

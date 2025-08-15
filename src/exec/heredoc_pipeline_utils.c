@@ -63,7 +63,9 @@ void	wait_exit(t_exec_path *exec_cmd, pid_t last_pid)
 	exec_cmd->exit_status = last_exit;
 }
 
-char	*cleanup_heredoc(int fd, int saved_stdin, char *tmp_file, const char *err_msg) //for heredoc
+//for heredoc
+char	*cleanup_heredoc(int fd, int saved_stdin, char *tmp_file,
+	const char *err_msg)
 {
 	if (err_msg)
 		perror(err_msg);

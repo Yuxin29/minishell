@@ -9,12 +9,12 @@ int	is_builtin(char *cmd)
 	if (!cmd)
 		return (0);
 	return (ft_strcmp(cmd, "echo") == 0
-				|| ft_strcmp(cmd, "cd") == 0
-				|| ft_strcmp(cmd, "pwd") == 0
-				|| ft_strcmp(cmd, "export") == 0
-				|| ft_strcmp(cmd, "unset") == 0
-				|| ft_strcmp(cmd, "env") == 0
-				|| ft_strcmp(cmd, "exit") == 0);
+		|| ft_strcmp(cmd, "cd") == 0
+		|| ft_strcmp(cmd, "pwd") == 0
+		|| ft_strcmp(cmd, "export") == 0
+		|| ft_strcmp(cmd, "unset") == 0
+		|| ft_strcmp(cmd, "env") == 0
+		|| ft_strcmp(cmd, "exit") == 0);
 }
 
 //yuxin changed
@@ -34,7 +34,7 @@ int	execute_builtin_cmd(char **argv, t_env **env, t_exec_path *exec_cmd)
 	if (ft_strcmp(argv[0], "env") == 0)
 		return (ft_env(*env));
 	if (ft_strcmp(argv[0], "exit") == 0)
-	 	return (ft_exit(argv, exec_cmd));
+		return (ft_exit(argv, exec_cmd));
 	return (1);
 }
 
@@ -72,6 +72,7 @@ void	run_builtin_with_redir(t_exec_path *exec_cmd, t_env **env_list)
 		exec_cmd->exit_status = 1;
 		return ;
 	}
-	exec_cmd->exit_status = execute_builtin_cmd(exec_cmd->whole_cmd->argv, env_list, exec_cmd);
+	exec_cmd->exit_status = execute_builtin_cmd(
+			exec_cmd->whole_cmd->argv, env_list, exec_cmd);
 	restore_stdio(orig_stdin, orig_stdout);
 }

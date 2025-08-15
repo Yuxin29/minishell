@@ -23,7 +23,6 @@ void	errmsg_set_status(char *msg, t_exec_path *cmd)
 	cmd->exit_status = 2;
 }
 
-
 void	print_error(const char *arg)
 {
 	ft_putstr_fd("export: ", 2);

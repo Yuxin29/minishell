@@ -10,11 +10,11 @@ static void	handle_sigint(int signal)
 		rl_redisplay();
 	}
 }
+
 static void	handle_heredoc(int sig)
 {
 	(void)sig;
 	g_signal = 1;
-	//write(STDOUT_FILENO, "\n", 1);
 	close(STDIN_FILENO);
 }
 

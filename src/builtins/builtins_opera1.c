@@ -77,7 +77,8 @@ int	ft_exit(char **argv, t_exec_path *exec_cmd)
 // In the case of getcwd() and getwd() this is the same value as buf.
 // On failure, these functions return NULL, and errno is set.
 // The contents of the  array  pointed to by buf are undefined on error.
-int	ft_pwd()
+
+int	ft_pwd(void)
 {
 	char	buf[PATH_MAX];
 

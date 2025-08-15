@@ -55,8 +55,7 @@ char	*get_cmd_path(char *cmd, t_env *env_list)
 	paths = ft_split(path_value, ':'); //split directory
 	if (!paths)
 		return (NULL);
-	cmd_path = match_cmd_in_path(paths,cmd); //strjoin /+cmd, check by access
+	cmd_path = match_cmd_in_path(paths, cmd); //strjoin /+cmd, check by access
 	ft_free_arr(paths);
 	return (cmd_path);
 }
-

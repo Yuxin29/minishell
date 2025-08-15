@@ -19,7 +19,7 @@ static int	apply_infile(t_redir *redir)
 	return (0);
 }
 
-static int	apply_outfile(t_redir *redir , int is_last)
+static int	apply_outfile(t_redir *redir, int is_last)
 {
 	int	fd;
 
@@ -42,7 +42,7 @@ static int	apply_outfile(t_redir *redir , int is_last)
 	return (0);
 }
 
-static int	apply_out_or_in(t_redir *cur,t_redir *last)
+static int	apply_out_or_in(t_redir *cur, t_redir *last)
 {
 	int	is_last;
 
@@ -81,7 +81,7 @@ int	check_and_apply_redirections(t_cmd *cmd)
 	cur = cmd->redirections;
 	while (cur)
 	{
-		if (!apply_out_or_in(cur,last))
+		if (!apply_out_or_in(cur, last))
 			return (-1);
 		cur = cur->next;
 	}

@@ -58,10 +58,6 @@ char		*get_cmd_path(char *cmd, t_env *env_list, t_exec_path *exec_cmd)
 		return (free_malloc_fail_null_status(NULL, exec_cmd)); //it is a malloc fail, should we set status to 1
 	cmd_path = match_cmd_in_path(paths, cmd, exec_cmd);
 	ft_free_arr(paths);
-	// if (!cmd_path) 
-	//if ((!cmd_path) && (exec_cmd->exit_status != 1))
-		//return (free_malloc_fail_null(NULL));  //yuxin it is normal cmd not found
-	//else if (!cmd_path) // yuxin null from mem failure, already perroed
-		//return (NULL);
-	return (cmd_path); //yuxin it is the cmd found
+	return (cmd_path);
+
 }

@@ -1,7 +1,7 @@
 #include "minishell.h"
 
 // creat_heredoc_file should be moved to right before execution
-t_redir	*create_redir_node(t_token *redir_tok, t_token *file_tok, t_exec_path *cmd, char **envp)
+t_redir	*create_redir_node(t_token *redir_tok, t_token *file_tok, t_exec_path *cmd)
 {
 	t_redir	*new;
 
@@ -10,12 +10,13 @@ t_redir	*create_redir_node(t_token *redir_tok, t_token *file_tok, t_exec_path *c
 		return ((t_redir *)free_malloc_fail_null(NULL));
 	new->type = redir_tok->t_type;
 	new->next = NULL;
+	new->quoted = file_tok->quote_type; //should give quote type here
 	if (redir_tok->t_type == 5)
 	{
 		new->heredoc_delim = ft_strdup(file_tok->str);
 		if (!new->heredoc_delim)
 			return (free(new), perror("malloc: "), NULL);
-		new->file = creat_heredoc_file(cmd, new->heredoc_delim, envp);
+		new->file = creat_heredoc_file(new->heredoc_delim, new->quoted, cmd); //modify
 		if (!new->file)
 			return (free(new->heredoc_delim), free(new), NULL);
 		// new->heredoc_delim = ft_strdup(file_tok->str);
@@ -41,7 +42,7 @@ t_token	*get_one_redirection(t_cmd *cmd, t_token *tokens, t_exec_path *exec_cmd)
 	t_token	*next;
 
 	next = tokens->next;
-	new_redir = create_redir_node(tokens, next, exec_cmd, exec_cmd->envp);
+	new_redir = create_redir_node(tokens, next, exec_cmd); //modify
 	if (!new_redir)
 		return (NULL);
 	new_redir->quoted = tokens->quote_type;

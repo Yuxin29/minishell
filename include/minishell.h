@@ -174,11 +174,17 @@ t_token		*loop_to_next(t_token *token_head);
 t_token		*get_one_new_cmd(t_token *token_head, t_cmd *cmd_current, t_exec_path *exec_cmd);
 
 // parser.c
-t_redir		*create_redir_node(t_token *redir_tok, t_token *file_tok, t_exec_path *cmd, char **envp);
+// t_redir		*create_redir_node(t_token *redir_tok, t_token *file_tok, t_exec_path *cmd, char **envp);
+// t_token		*get_one_redirection(t_cmd *cmd, t_token *tokens, t_exec_path *exec_cmd);
+// t_token		*parse_redirections(t_cmd *cmd, t_token *tokens, t_exec_path *exec_cmd);
+// int			malloc_for_agrv(t_cmd *cmd, t_token *tokens);
+// t_token		*parse_argv(t_cmd *cmd, t_token *tokens);
+t_redir		*create_redir_node(t_token *redir_tok, t_token *file_tok, t_exec_path *cmd); //modify
 t_token		*get_one_redirection(t_cmd *cmd, t_token *tokens, t_exec_path *exec_cmd);
 t_token		*parse_redirections(t_cmd *cmd, t_token *tokens, t_exec_path *exec_cmd);
 int			malloc_for_agrv(t_cmd *cmd, t_token *tokens);
 t_token		*parse_argv(t_cmd *cmd, t_token *tokens);
+
 
 // parsing_to_cmd_list.c
 int			check_new_cmd(t_exec_path *cmd, t_token *token, t_cmd *cmd1, t_cmd *cmd2);
@@ -187,11 +193,16 @@ t_cmd		*build_command_list(t_exec_path *cmd, t_token *token_head);
 
 // expander.c
 // called after parsing, expanding every thing but not heredocs
-char		*get_env_value(char **envp, const char *key);
-char		*get_env_value_from_substr(char *input, int start, int var_len, char **envp);
-char		*replace_variable(t_exec_path *cmd, char *input, int pos, char **envp);
-char		*expand_variables_in_str(t_exec_path *cmd, char *input, char **envp);
-void		expand_heredoc_delim(t_exec_path *cmd, t_cmd *cmd_list, char **envp);
+// char		*get_env_value(char **envp, const char *key);
+// char		*get_env_value_from_substr(char *input, int start, int var_len, char **envp);
+// char		*replace_variable(t_exec_path *cmd, char *input, int pos, char **envp);
+// char		*expand_variables_in_str(t_exec_path *cmd, char *input, char **envp);
+// void		expand_heredoc_delim(t_exec_path *cmd, t_cmd *cmd_list, char **envp);
+char	*get_env_value(char **envp, const char *key);
+char	*get_env_value_from_substr(char *input, int start, int var_len, char **envp);
+char	*replace_variable(t_exec_path *cmd, char *input, int pos, char **envp);
+char	*expand_variables_in_str(t_exec_path *cmd, char *input, char **envp);
+void	expand_heredoc_delim(t_exec_path *cmd, t_cmd *cmd_list, char **envp);
 
 //---------------------------exec part---------------------------------------------//
 
@@ -217,9 +228,7 @@ char		*cleanup_heredoc(int fd, int saved_stdin, char *tmp_file, const char *err_
 int			check_and_apply_redirections(t_cmd *cmd);
 
 //heredoc
-//char		*creat_heredoc_file(char *delim);
-// yuxin added
-char		*creat_heredoc_file(t_exec_path *cmd, char *delim, char **envp);
+char	*creat_heredoc_file(char *delim, int quoted, t_exec_path *cmd); //modify 0816
 
 //get_path
 char		*get_env(t_env *env, char *key);

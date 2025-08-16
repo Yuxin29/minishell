@@ -39,25 +39,59 @@ static int	get_tmpfile_fd(char **tmp_file)
 }
 
 // static int	handle_heredoc_input(int fd, char *delim)
-static int	handle_heredoc_input(t_exec_path *cmd, int fd, char *delim, char **envp) // yuxin added
+// {
+// 	char	*line;
+
+// 	while (1)
+// 	{
+// 		line = readline("minishell heredoc> ");
+// 		if (g_signal == 1 || !line)
+// 			break ;
+// 		if (ft_strcmp(line, delim) == 0)
+// 		{
+// 			free(line);
+// 			break ;
+// 		}
+// 		ft_putendl_fd(line, fd);
+// 		free(line);
+// 	}
+// 	return (g_signal);
+// }
+
+static int	handle_heredoc_input(int fd, char *delim, t_exec_path *cmd, int quoted)
 {
 	char	*line;
-	char	*expanded; // yuxin added
+	char	*expanded;
 
+	char *test_user = get_env_value(cmd->envp, "USER");
+	printf("DEBUG: cmd->envp['USER'] = %s\n", test_user ? test_user : "(null)");
+	free(test_user);
 	while (1)
 	{
 		line = readline("minishell heredoc> ");
 		if (g_signal == 1 || !line)
 			break ;
+
+		printf("DEBUG: input='%s', delimiter='%s'\n", line, delim);
+
 		if (ft_strcmp(line, delim) == 0)
 		{
+			printf("DEBUG: heredoc ended\n");
 			free(line);
 			break ;
 		}
-		expanded = expand_variables_in_str(cmd, line, envp); // yuxin added
-		ft_putendl_fd(line, fd);
-		if (expanded != line)
-			free(expanded); // yuxin added
+		printf("quoted: %d\n", quoted);
+		if (quoted)
+			ft_putendl_fd(line, fd);
+		else
+		{
+			expanded = expand_variables_in_str(cmd, line, cmd->envp);
+			printf("DEBUG: expanded='%s'\n", expanded);
+
+			ft_putendl_fd(expanded, fd);
+			if (expanded != line)
+				free(expanded);
+		}
 		free(line);
 	}
 	return (g_signal);
@@ -75,8 +109,7 @@ static int	restore_stdin(int saved_stdin)
 	return (1);
 }
 
-// char	*creat_heredoc_file(char *delim)
-char	*creat_heredoc_file(t_exec_path *cmd, char *delim, char **envp) // yuxin added
+char	*creat_heredoc_file(char *delim, int quoted, t_exec_path *cmd) //modify 0816
 {
 	int		fd;
 	char	*tmp_file;
@@ -91,8 +124,7 @@ char	*creat_heredoc_file(t_exec_path *cmd, char *delim, char **envp) // yuxin ad
 	if (saved_stdin < 0)
 		return (cleanup_heredoc(fd, -1, tmp_file, "dup"));
 	signal_heredoc();
-	//interrupted = handle_heredoc_input(fd , delim);
-	interrupted = handle_heredoc_input(cmd, fd , delim, envp); // yuxin added
+	interrupted = handle_heredoc_input(fd , delim, cmd, quoted); //modify 0816
 	signal_init();
 	if (!restore_stdin(saved_stdin))
 		return (cleanup_heredoc(fd, saved_stdin, tmp_file, "dup2"));

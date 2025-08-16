@@ -56,7 +56,5 @@ char	*get_cmd_path(char *cmd, t_env *env_list, t_exec_path *exec_cmd)
 		return (free_malloc_fail_null_status(NULL, exec_cmd));
 	cmd_path = match_cmd_in_path(paths, cmd);
 	ft_free_arr(paths);
-	if (!cmd_path)
-		return (free_malloc_fail_null_status(NULL, exec_cmd));
 	return (cmd_path);
 }

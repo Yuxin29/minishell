@@ -1,5 +1,13 @@
 #include "minishell.h"
 
+// use for syntax cheack in before lexing and parsing
+void	errmsg_set_status(char *msg, t_exec_path *cmd)
+{
+	if (msg)
+		ft_putendl_fd(msg, 2);
+	cmd->exit_status = 2;
+}
+
 //for cd
 int	perror_return_one(char *str)
 {
@@ -16,13 +24,7 @@ int	errmsg_return_one(char *str)
 	return (1);
 }
 
-void	errmsg_set_status(char *msg, t_exec_path *cmd)
-{
-	if (msg)
-		ft_putendl_fd(msg, 2);
-	cmd->exit_status = 2;
-}
-
+// used for export error msg
 void	print_error(const char *arg)
 {
 	ft_putstr_fd("export: ", 2);
@@ -30,6 +32,7 @@ void	print_error(const char *arg)
 	ft_putstr_fd(" : not a valid identifier\n", 2);
 }
 
+//used in main
 int	handle_token_build_failure(t_exec_path *exec_cmd, t_env **env_list)
 {
 	ft_free_arr(exec_cmd->envp);

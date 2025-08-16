@@ -35,18 +35,19 @@ static int	run_command(t_exec_path *exec_cmd, t_env **env_list)
 	return (1);
 }
 
+// lexing, parsing, and post-expand
 static int	parse_and_expand(t_exec_path *exec_cmd, char *expanded_line, t_env **env_list)
 {
-	t_token *token_list;
+	t_token	*token_list;
 
-	token_list = get_token_list(exec_cmd, expanded_line); //covert line to token list
+	token_list = get_token_list(exec_cmd, expanded_line);
 	free(expanded_line);
 	if (!token_list)
 	{
 		if (!handle_token_build_failure(exec_cmd, env_list))
 			return (0);
 	}
-	exec_cmd->whole_cmd = build_command_list(exec_cmd, token_list); //convert token list to command list
+	exec_cmd->whole_cmd = build_command_list(exec_cmd, token_list);
 	free_token_list(token_list);
 	if (!exec_cmd->whole_cmd)
 	{
@@ -61,6 +62,7 @@ static int	parse_and_expand(t_exec_path *exec_cmd, char *expanded_line, t_env **
 	return (1);
 }
 
+// initiate envp, pre-expand line, lexing, "parse_and_expand", finally run cmd
 static void	handle_line(char *line, t_env **env_list, t_exec_path *exec_cmd)
 {
 	char	*expanded_line;
@@ -73,7 +75,7 @@ static void	handle_line(char *line, t_env **env_list, t_exec_path *exec_cmd)
 		ft_putstr_fd("Error: env list initialized failed\n", 2);
 		exit(EXIT_FAILURE);
 	}
-	expanded_line = pre_expand_line(exec_cmd, line); //null check this one
+	expanded_line = pre_expand_line(exec_cmd, line);
 	free(line);
 	if (!expanded_line)
 	{
@@ -89,6 +91,7 @@ static void	handle_line(char *line, t_env **env_list, t_exec_path *exec_cmd)
 	free_t_exec_path(exec_cmd);
 }
 
+//read line, execute cmd loop of minishell
 static void	minishell_loop(t_env *env_list)
 {
 	t_exec_path	exec_cmd;
@@ -103,7 +106,7 @@ static void	minishell_loop(t_env *env_list)
 			printf("exit\n");
 			break ;
 		}
-		if(*line)
+		if (*line)
 		{
 			add_history(line);
 			handle_line(line, &env_list, &exec_cmd);
@@ -113,7 +116,8 @@ static void	minishell_loop(t_env *env_list)
 	free_env_list(env_list);
 }
 
-int main(int argc, char **argv, char **envp)
+//initiate env and enter cmd loop
+int	main(int argc, char **argv, char **envp)
 {
 	t_env	*env_list;
 

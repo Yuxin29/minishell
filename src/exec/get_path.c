@@ -11,7 +11,7 @@ char	*get_env(t_env *env, char *key)
 	return (NULL);
 }
 
-static char	*match_cmd_in_path(char **paths, char *cmd)
+static char	*match_cmd_in_path(char **paths, char *cmd, t_exec_path *exec_cmd)
 {
 	int		i;
 	char	*joinslash;
@@ -22,20 +22,22 @@ static char	*match_cmd_in_path(char **paths, char *cmd)
 	{
 		joinslash = ft_strjoin(paths[i], "/");
 		if (!joinslash)
-			return (NULL);
-		com_path = ft_strjoin(joinslash, cmd);
-		free(joinslash); //!!free it before return, because after return it can't free anymore
-		if (!com_path)
-			return (NULL);
+			// return (NULL);
+			return (free_malloc_fail_null_status(NULL, exec_cmd)); //yuxin: it is a malloc fail, should we set status to 1
+		com_path = ft_strjoin(joinslash, cmd); 
+		free(joinslash);
+		if (!com_path) 
+			//return (NULL);
+			return (free_malloc_fail_null_status(NULL, exec_cmd)); //yuxin it is a malloc fail, should we set status to 1
 		if (access(com_path, X_OK) == 0) //0 means ok, if it can be executed then free everything
 			return (com_path);
 		free(com_path);
 		i++;
 	}
-	return (NULL);
+	return (NULL); //yuxin: it is a normal cmd not found
 }
 
-char	*get_cmd_path(char *cmd, t_env *env_list, t_exec_path *exec_cmd)
+char		*get_cmd_path(char *cmd, t_env *env_list, t_exec_path *exec_cmd)
 {
 	char	**paths;
 	char	*path_value;
@@ -53,10 +55,13 @@ char	*get_cmd_path(char *cmd, t_env *env_list, t_exec_path *exec_cmd)
 		return (NULL);
 	paths = ft_split(path_value, ':');
 	if (!paths)
-		return (free_malloc_fail_null_status(NULL, exec_cmd));
-	cmd_path = match_cmd_in_path(paths, cmd);
+		return (free_malloc_fail_null_status(NULL, exec_cmd)); //it is a malloc fail, should we set status to 1
+	cmd_path = match_cmd_in_path(paths, cmd, exec_cmd);
 	ft_free_arr(paths);
-	if (!cmd_path)
-		return (free_malloc_fail_null_status(NULL, exec_cmd));
-	return (cmd_path);
+	// if (!cmd_path) 
+	//if ((!cmd_path) && (exec_cmd->exit_status != 1))
+		//return (free_malloc_fail_null(NULL));  //yuxin it is normal cmd not found
+	//else if (!cmd_path) // yuxin null from mem failure, already perroed
+		//return (NULL);
+	return (cmd_path); //yuxin it is the cmd found
 }

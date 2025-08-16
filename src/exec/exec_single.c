@@ -13,7 +13,7 @@ void	precheck_path_or_exit(char *path)
 	if (stat(path, &st) == -1)
 	{
 		ft_putstr_fd(path, 2); //It checks the file at path and fills the struct stat (st) with its info.
-		ft_putstr_fd(": No such file or directory\n", 2);
+		ft_putstr_fd(": No such file or directory\n", 2);  //possible bug
 		exit(127);
 	}
 	if (S_ISDIR(st.st_mode)) //st_mode:what kind of file it is; what perssion it has;  S_ISDIR:Is this file a directory?

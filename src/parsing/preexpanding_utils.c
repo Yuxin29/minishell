@@ -67,7 +67,7 @@ int	handle_heredoc_skip(char *raw_line, int ids[2], char *res)
 			if (!in_sq && !in_dq)
 			{
 				if (c == ' ' || c == '\t' || c == '|' || c == '<' || c == '>')
-					break;
+					break ;
 			}
 			if (c == '\'' && !in_dq)
 				in_sq = !in_sq;

@@ -42,11 +42,23 @@ t_token	*malloc_and_set_token(char *temp, int q, t_exec_path *cmd)
 	return (token);
 }
 
-char	*append_next_part(char *temp, char *line, int *i, char *part_quote, t_exec_path *cmd)
+// helper to store/retrieve last quote type
+int	save_last_quote(int new_val, int mode)
+{
+	int last;
+
+	last = 0;
+	if (mode == 1) // set
+		last = new_val;
+	return (last);
+}
+
+char	*append_next_part(char *temp, char *line, int *i, t_exec_path *cmd)
 {
 	char	*part;
+	char	part_quote;
 
-	part = get_part(line, i, part_quote, cmd);
+	part = get_part(line, i, &part_quote, cmd);
 	if (!part)
 	{
 		if (temp)
@@ -56,6 +68,7 @@ char	*append_next_part(char *temp, char *line, int *i, char *part_quote, t_exec_
 	temp = ft_strjoin_free(temp, part);
 	if (!temp)
 		return (free_malloc_fail_null_status(part, cmd));
+	save_last_quote(part_quote, 1);
 	return (temp);
 }
 
@@ -64,16 +77,17 @@ t_token	*build_word_token(char *line, int *i, t_exec_path *cmd)
 {
 	char	*temp;
 	char	q;
-	char	part_quote;
+	int		part_quote;
 
 	q = 0;
 	temp = NULL;
 	while (line[*i] && !ft_isspace(line[*i])
 		&& line[*i] != '<' && line[*i] != '>' && line[*i] != '|')
 	{
-		temp = append_next_part(temp, line, i, &part_quote, cmd);
+		temp = append_next_part(temp, line, i, cmd);
 		if (!temp)
 			return (NULL);
+		part_quote = save_last_quote(0, 0); 
 		if (q == 0)
 			q = part_quote;
 		else if (q != part_quote)

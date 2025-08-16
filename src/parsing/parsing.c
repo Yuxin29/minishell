@@ -1,5 +1,6 @@
 #include "minishell.h"
 
+// creat_heredoc_file should be moved to right before execution
 t_redir	*create_redir_node(t_token *redir_tok, t_token *file_tok, t_exec_path *cmd, char **envp)
 {
 	t_redir	*new;
@@ -17,6 +18,10 @@ t_redir	*create_redir_node(t_token *redir_tok, t_token *file_tok, t_exec_path *c
 		new->file = creat_heredoc_file(cmd, new->heredoc_delim, envp);
 		if (!new->file)
 			return (free(new->heredoc_delim), free(new), NULL);
+		// new->heredoc_delim = ft_strdup(file_tok->str);
+		// if (!new->heredoc_delim)
+		// 	return (free(new), (t_redir *)free_malloc_fail_null(NULL));
+   		// new->file = NULL;
 	}
 	else
 	{

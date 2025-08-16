@@ -190,7 +190,7 @@ char		*get_env_value(char **envp, const char *key);
 char		*get_env_value_from_substr(char *input, int start, int var_len, char **envp);
 char		*replace_variable(t_exec_path *cmd, char *input, int pos, char **envp);
 char		*expand_variables_in_str(t_exec_path *cmd, char *input, char **envp);
-void		expand_all_cmds(t_exec_path *cmd, t_cmd *cmd_list, char **envp);
+void		expand_heredoc_delim(t_exec_path *cmd, t_cmd *cmd_list, char **envp);
 
 //---------------------------exec part---------------------------------------------//
 

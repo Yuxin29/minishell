@@ -35,7 +35,7 @@ static int	run_command(t_exec_path *exec_cmd, t_env **env_list)
 	return (1);
 }
 
-// lexing, parsing, and post-expand
+// lexing, parsing, and post-expandh eredoc_delim
 static int	parse_and_expand(t_exec_path *exec_cmd, char *expanded_line, t_env **env_list)
 {
 	t_token	*token_list;
@@ -58,7 +58,7 @@ static int	parse_and_expand(t_exec_path *exec_cmd, char *expanded_line, t_env **
 		ft_putstr_fd("Error: build command list failed from memory failure\n", 2);
 		exit(EXIT_FAILURE);
 	}
-	expand_all_cmds(exec_cmd, exec_cmd->whole_cmd, exec_cmd->envp);
+	expand_heredoc_delim(exec_cmd, exec_cmd->whole_cmd, exec_cmd->envp);
 	return (1);
 }
 

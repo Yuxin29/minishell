@@ -38,15 +38,15 @@ int	handle_quotes(char c, int quotes[2], char *res, int *j)
 	return (0);
 }
 
-// heredoc is skiped in epanding
+// heredoc is skiped in expanding
 // skip_expand is used to track if it shoudl be skiped
-// ATTERNTION
 // Bash behavior
-// << EOF ： expand
-// << 'EOF' 或 << "EOF"：no expansion
-// cat << $USER, not expansion
-// cat << ""$USER, not expansion, ""removed
-// cat << $USER", not expansion, ""removed
+// cat << $USER, not expansion, but expanded in the heredoc files
+// cat << ""$USER, not expansion anywhere, ""removed
+// cat << $USER"", not expansion anywhere, ""removed
+// cat << "$USER", not expansion anywhere, "     "removed
+// cat << "$USE"R, not expansion anywhere, "    "removed
+// cat << "$USER, waiting for second quote, in minishell syntax error
 int	handle_heredoc_skip(char *raw_line, int ids[2], char *res)
 {
 	int		in_sq;

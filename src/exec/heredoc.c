@@ -80,7 +80,7 @@ static int	handle_heredoc_input(int fd, char *delim, t_exec_path *cmd, int quote
 			free(line);
 			break ;
 		}
-		printf("quoted: %d\n", quoted);
+		//printf("quoted: %d\n", quoted);
 		if (quoted)
 			ft_putendl_fd(line, fd);
 		else

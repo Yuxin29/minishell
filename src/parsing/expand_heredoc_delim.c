@@ -8,7 +8,7 @@ char	*get_env_value(char **envp, const char *key)
 	char	**split;
 	char	*new_value;
 
-	j = 0;
+	j = -1;
 	while (envp[++j])
 	{
 		split = ft_split(envp[j], '=');

@@ -47,6 +47,7 @@ int	handle_quotes(char c, int quotes[2], char *res, int *j)
 // cat << "$USER", not expansion anywhere, "     "removed
 // cat << "$USE"R, not expansion anywhere, "    "removed
 // cat << "$USER, waiting for second quote, in minishell syntax error
+// yuwu@c2r6p13:~/42/Rank3_minishell$ cat << $""USER
 int	handle_heredoc_skip(char *raw_line, int ids[2], char *res)
 {
 	int		in_sq;

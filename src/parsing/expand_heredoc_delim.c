@@ -63,7 +63,7 @@ char	*replace_variable(t_exec_path *cmd, char *input, int pos, char **envp)
 		var_len++;
 	value = get_env_value_from_substr(input, start, var_len, envp);
 	if (!value)
-		value = EMPTY_STRING;
+		value = ft_strdup(""); //null chekck
 	prefix = ft_substr(input, 0, pos);
 	suffix = ft_strdup(input + start + var_len);
 	if (!prefix)
@@ -96,8 +96,11 @@ char	*expand_variables_in_str(t_exec_path *cmd, char *input, char **envp)
 	return (input);
 }
 
+
+//call this after getting the cmd list
+// I only need to expand << str here,
 // call this after getting the cmd list
-// I only need to expand << $str, str without any quotes here, 
+// I only need to expand << $str, str without any quotes here,
 // mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ cat << $USER
 // > mikko 123
 // > $USER 123
@@ -110,7 +113,7 @@ char	*expand_variables_in_str(t_exec_path *cmd, char *input, char **envp)
 // mikko 123
 // $USER 123
 // mikko
-// minishell$ 
+// minishell$
 // creat_heredoc_file created in parsing phase before this already
 void	expand_heredoc_delim(t_exec_path *cmd, t_cmd *cmd_list, char **envp)
 {

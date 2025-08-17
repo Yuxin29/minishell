@@ -31,14 +31,8 @@ extern volatile sig_atomic_t	g_signal;
 	"minishell: syntax error: unclosed quotes"
 
 //common shell cmd line max length
-# define BUF_SIZE 8192
-
+# define LINE_SIZE 8192
 # define PATH_MAX 4096
-
-//needed for expand, EMPTY=   
-//!!! not sure it can be used, there is risk of freeing stack memory
-# define EMPTY_STRING ""
-
 //yuxin added for exit, stoll based on long long
 # define LLONG_MAX_STR "9223372036854775807"
 # define LLONG_MIN_STR "9223372036854775808"
@@ -83,7 +77,7 @@ typedef struct s_redir
 	struct s_redir	*next;
 }	t_redir;
 
-// quote_type; 
+// quote_type;
 // inherete from t_token: 0, 1, 2, 3 removed when removing quotes
 // ATTENTION: argv is empty is allowed
 // case 1: < infile
@@ -136,7 +130,7 @@ int			handle_exit_status(char *raw_line, int ids[2], char *res, t_exec_path *cmd
 
 //preexpander.c
 void		append_to_res(char *res, int *res_idx, const char *val);
-//int			try_expand_env_var(char *raw_line, int idx[2], char *res, char **envp);
+int			try_expand_env_var(char *raw_line, int idx[2], char *res, t_exec_path *cmd);
 int			skip_copy(char *raw_line, int idx[2], char *res, int quotes[2]);
 void		expand_loop(char *raw_line, char *res, int idx[2], t_exec_path *cmd);
 char		*pre_expand_line(t_exec_path *cmd, char *raw_line);
@@ -153,7 +147,7 @@ char		*get_quoted_part(char *s, int *i, t_exec_path *cmd);
 // lexing_w_token.c
 char		*get_part(char *line, int *i, char	*part_quote, t_exec_path *cmd);
 t_token		*malloc_and_set_token(char *temp, int q, t_exec_path *cmd);
-//char		*append_next_part(char *temp, char *line, int *i, t_exec_path *cmd, int *q);
+char		*append_next_part(char *temp, char *part, int part_quote, int *q);
 int			save_last_quote(int new_val, int mode);
 t_token		*build_word_token(char *line, int *i, t_exec_path *cmd);
 
@@ -228,32 +222,35 @@ char		*cleanup_heredoc(int fd, int saved_stdin, char *tmp_file, const char *err_
 int			check_and_apply_redirections(t_cmd *cmd);
 
 //heredoc
-char	*creat_heredoc_file(char *delim, int quoted, t_exec_path *cmd); //modify 0816
+char		*creat_heredoc_file(char *delim, int quoted, t_exec_path *cmd);
 
 //get_path
 char		*get_env(t_env *env, char *key);
 char		*get_cmd_path(char *cmd, t_env *env_list, t_exec_path *exec_cmd);
-//char		*get_cmd_path(char *cmd, t_env *env_list);
 
 //---------------------------built_in part------------------------------------//
 
 //7 builtin cmds:
 //builtins_opera1
-int			ft_cd(char **argv, t_env **env);
-int			ft_echo(char **argv);
-int			ft_exit(char **argv, t_exec_path *exec_cmd);
-
+int		ft_cd(char **argv, t_env *env); //modify
+int		ft_echo(char **argv);
+int		ft_exit(char **argv, t_exec_path *exec_cmd);
+//builtins_opera2
+int		ft_pwd(void);
+int		ft_env(t_env *env);
+int		ft_unset(char **argv, t_env **env);
+//builtins_opera3
+int		ft_export(char **argv, t_env **env);
 //builtins_opera2
 int			ft_pwd(void);
 int			ft_env(t_env *env);
 int			ft_unset(char **argv, t_env **env);
-
 //builtins_opera3
 int			ft_export(char **argv, t_env **env);
 
 //---------------------------env part---------------------------------------------//
 // NOTES
-// in minishell, 
+// in minishell,
 // we might change the elements of the original env(impletment unset, export),
 // so we have to copy the oringal env, and change them in copy version
 // first step is converting every envp[i] to a signal node,

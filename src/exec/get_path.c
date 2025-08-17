@@ -22,22 +22,20 @@ static char	*match_cmd_in_path(char **paths, char *cmd, t_exec_path *exec_cmd)
 	{
 		joinslash = ft_strjoin(paths[i], "/");
 		if (!joinslash)
-			// return (NULL);
-			return (free_malloc_fail_null_status(NULL, exec_cmd)); //yuxin: it is a malloc fail, should we set status to 1
-		com_path = ft_strjoin(joinslash, cmd); 
+			return (free_malloc_fail_null_status(NULL, exec_cmd));
+		com_path = ft_strjoin(joinslash, cmd);
 		free(joinslash);
-		if (!com_path) 
-			//return (NULL);
-			return (free_malloc_fail_null_status(NULL, exec_cmd)); //yuxin it is a malloc fail, should we set status to 1
-		if (access(com_path, X_OK) == 0) //0 means ok, if it can be executed then free everything
+		if (!com_path)
+			return (free_malloc_fail_null_status(NULL, exec_cmd));
+		if (access(com_path, X_OK) == 0)
 			return (com_path);
 		free(com_path);
 		i++;
 	}
-	return (NULL); //yuxin: it is a normal cmd not found
+	return (NULL);
 }
 
-char		*get_cmd_path(char *cmd, t_env *env_list, t_exec_path *exec_cmd)
+char	*get_cmd_path(char *cmd, t_env *env_list, t_exec_path *exec_cmd)
 {
 	char	**paths;
 	char	*path_value;
@@ -55,7 +53,7 @@ char		*get_cmd_path(char *cmd, t_env *env_list, t_exec_path *exec_cmd)
 		return (NULL);
 	paths = ft_split(path_value, ':');
 	if (!paths)
-		return (free_malloc_fail_null_status(NULL, exec_cmd)); //it is a malloc fail, should we set status to 1
+		return (free_malloc_fail_null_status(NULL, exec_cmd));
 	cmd_path = match_cmd_in_path(paths, cmd, exec_cmd);
 	ft_free_arr(paths);
 	return (cmd_path);

@@ -97,7 +97,7 @@ char	*pre_expand_line(t_exec_path *cmd, char *raw_line)
 
 	idx[0] = 0;
 	idx[1] = 0;
-	res = malloc(BUF_SIZE);
+	res = malloc(LINE_SIZE);
 	if (!res)
 		return (free_malloc_fail_null(NULL));
 	expand_loop(raw_line, res, idx, cmd);

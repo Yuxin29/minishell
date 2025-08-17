@@ -1,5 +1,7 @@
 #include "minishell.h"
 
+// $" treated as quoted type 3, skip $ and then treat as a double quote
+// return part and updated the part_quote
 char	*get_part(char *line, int *i, char *part_quote, t_exec_path *cmd)
 {
 	char	*part;
@@ -44,16 +46,18 @@ t_token	*malloc_and_set_token(char *temp, int q, t_exec_path *cmd)
 	return (token);
 }
 
+// NOT USED, TO BE DELETED
 // helper to store/retrieve last quote type
-int	save_last_quote(int new_val, int mode)
-{
-	int	last;
+// mode, bool to update last or not,
+// int	save_last_quote(int new_val, int mode)
+// {
+// 	int	last;
 
-	last = 0;
-	if (mode == 1)
-		last = new_val;
-	return (last);
-}
+// 	last = 0;
+// 	if (mode == 1)
+// 		last = new_val;
+// 	return (last);
+// }
 
 // get the content of the world toekn
 char	*append_next_part(char *temp, char *part, int part_quote, int *q)
@@ -84,11 +88,14 @@ t_token	*build_word_token(char *line, int *i, t_exec_path *cmd)
 		{
 			if (temp)
 				free(temp);
-			return (NULL);
+			return ((t_token *)NULL);
 		}
 		temp = append_next_part(temp, part, part_quote, &q);
 		if (!temp)
-			return ((t_token *)free_malloc_fail_null_status(NULL, cmd));
+		{
+			cmd->exit_status = 1;
+			return ((t_token *)NULL);
+		}
 		if (q && (line[*i] == '<' || line[*i] == '>' || line[*i] == '|'
 				|| ft_isspace(line[*i]) || line[*i] == '\0'))
 			break ;

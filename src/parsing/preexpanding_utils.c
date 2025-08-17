@@ -49,8 +49,7 @@ int	handle_quotes(char c, int quotes[2], char *res, int *j)
 // cat << "$USER, waiting for second quote, in minishell syntax error
 // in minishell
 // heredoc is skiped in expanding
-// skip_expand is used to track if it shoudl be skiped
-// yuwu@c2r6p13:~/42/Rank3_minishell$ cat << $""USER
+// return 1 if heredoc found & processed, return 0 if not a heredoc
 int	handle_heredoc_skip(char *raw_line, int ids[2], char *res)
 {
 	int		in_sq;
@@ -84,6 +83,8 @@ int	handle_heredoc_skip(char *raw_line, int ids[2], char *res)
 	return (0);
 }
 
+// handke $"..."
+// in bash $" is not expanded, copy directly
 int	handle_dollar_dquote(char *raw_line, int ids[2], char *res)
 {
 	if (raw_line[ids[0]] == '$' && raw_line[ids[0] + 1] == '"')
@@ -99,6 +100,7 @@ int	handle_dollar_dquote(char *raw_line, int ids[2], char *res)
 	return (0);
 }
 
+// $? expanded here directly
 int	handle_exit_status(char *raw_line, int ids[2], char *res, t_exec_path *cmd)
 {
 	int		k;

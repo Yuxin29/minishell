@@ -1,8 +1,9 @@
 #include "minishell.h"
 
-// precheck validity of the expanderd raw_line
-// send error msgs and set up the exit status in cmd
+// precheck unclosed quotes of the expanderd raw_line
 // !raw_line[i] check unnecessary, for example $EMPTY
+// no memory allocation involved here
+// send error msgs and set up the exit status in cmd
 void	check_raw_line_syntax(char *raw_line, t_exec_path *cmd)
 {
 	int	i;
@@ -33,6 +34,8 @@ void	check_raw_line_syntax(char *raw_line, t_exec_path *cmd)
 
 // if it is a word without quotes, it can not contain special character
 // with quotes, all chars are fine
+// no memory allocation involved here
+// send error msgs and set up the exit status in cmd
 void	precheck_special_chars_rawline(char *line, t_exec_path *cmd)
 {
 	int	in_single;
@@ -60,7 +63,8 @@ void	precheck_special_chars_rawline(char *line, t_exec_path *cmd)
 	}
 }
 
-// get the type of a token
+// get the type of a redirection token: 1 - 5
+// "<" is allowed as a word token, first exclude this case, type 0
 // non mem involved in this one
 void	get_token_type(t_token *token)
 {
@@ -83,7 +87,8 @@ void	get_token_type(t_token *token)
 		token->t_type = T_WORD;
 }
 
-//return null if fails, null checked when it is used
+// return null if fails, null checked when it is used
+// status -> 1 when malloc fails, no need to reset again
 char	*get_unquoted_part(char *s, int *i, t_exec_path *cmd)
 {
 	int		start;
@@ -99,7 +104,8 @@ char	*get_unquoted_part(char *s, int *i, t_exec_path *cmd)
 	return (part);
 }
 
-//return null if fails, null checked when it is used
+// return null if fails, null checked when it is used
+// status -> 1 when malloc fails, no need to reset again
 char	*get_quoted_part(char *s, int *i, t_exec_path *cmd)
 {
 	int		start;

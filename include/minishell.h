@@ -155,7 +155,7 @@ char		*get_quoted_part(char *s, int *i, t_exec_path *cmd);
 char		*get_part(char *line, int *i, char	*part_quote, t_exec_path *cmd);
 t_token		*malloc_and_set_token(char *temp, int q, t_exec_path *cmd);
 char		*append_next_part(char *temp, char *part, int part_quote, int *q);
-int			save_last_quote(int new_val, int mode);
+//int			save_last_quote(int new_val, int mode); not used
 t_token		*build_word_token(char *line, int *i, t_exec_path *cmd);
 
 // lex.c

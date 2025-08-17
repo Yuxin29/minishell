@@ -40,15 +40,50 @@ int	ft_echo(char **argv)
 
 // in bash, if we exit, we exit bash into zsh shel
 // subject requriements: exit with no options, ?
+// ---------> version below accrording to subjet, but it will fail a lot in tester lukas
+// int	ft_exit(char **argv, t_exec_path *exec_cmd)
+// {
+// 	int status;
+
+// 	if (argv[1])
+// 		return (errmsg_return_one("exit with options not required in minishell"));
+// 	else
+// 	{
+// 		status = exec_cmd->exit_status;
+// 		free_t_exec_path(exec_cmd);
+// 		exit(status);
+// 		return (0);
+// 	}
+// }
+
+// in bash, if we exit, we exit bash into zsh shel
+// exit — cause the shell to exit:	exit [n]
+// if (ft_is_numeric(argv[1])): we exit 2
+// minishell process ends with a specific exit code,
+// and the parent shell (bash/zsh) automatically stores
+// that exit code in the special variable $?.
+// in the terminal, echo $? to check the (unsigned char)status
+// subject requriements: exit with no options, so we only need one lines?
 int	ft_exit(char **argv, t_exec_path *exec_cmd)
 {
-	if (argv[1])
-		return (errmsg_return_one("exit with options not required in minishell"));
-	else
-	{
+	long long	status;
+
+	if (!argv[1])
 		exit(exec_cmd->exit_status);
-		return (0);
+	if (ft_is_numeric(argv[1]))
+	{
+		ft_putstr_fd("minishell: exit: ", 2);
+		ft_putstr_fd(argv[1], 2);
+		ft_putstr_fd(": numeric argument required", 2);
+		exit (2);
 	}
+	if (argv[2])
+	{
+		ft_putstr_fd("exit: too many arguments\n", 2);
+		exit (1);
+	}
+	status = ft_atoll(argv[1]);
+	exit((unsigned char)status);
 }
 
 // pwd
@@ -85,32 +120,3 @@ int	ft_env(t_env *env)
 	return (0);
 }
 
-// in bash, if we exit, we exit bash into zsh shel
-// exit — cause the shell to exit:	exit [n]
-// if (ft_is_numeric(argv[1])): we exit 2
-// minishell process ends with a specific exit code,
-// and the parent shell (bash/zsh) automatically stores
-// that exit code in the special variable $?.
-// in the terminal, echo $? to check the (unsigned char)status
-// subject requriements: exit with no options, so we only need one lines?
-// int	ft_exit(char **argv, t_exec_path *exec_cmd)
-// {
-// 	long long	status;
-
-// 	if (!argv[1])
-// 		exit(exec_cmd->exit_status);
-// 	if (ft_is_numeric(argv[1]))
-// 	{
-// 		ft_putstr_fd("minishell: exit: ", 2);
-// 		ft_putstr_fd(argv[1], 2);
-// 		ft_putstr_fd(": numeric argument required", 2);
-// 		exit (2);
-// 	}
-// 	if (argv[2])
-// 	{
-// 		ft_putstr_fd("exit: too many arguments\n", 2);
-// 		exit (1);
-// 	}
-// 	status = ft_atoll(argv[1]);
-// 	exit((unsigned char)status);
-// }

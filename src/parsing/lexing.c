@@ -1,8 +1,9 @@
 #include "minishell.h"
 
-// loop through raw_line and build token list
+// loop through raw_line and build token list.
+// if passing syntax check, enter tokenize loop
 // no need to check null in rawline, checked in main
-// if (raw_line[0] == '\0')  // $EMPTY,  //not mem error
+// if (raw_line[0] == '\0')  // $EMPTY, not mem error, it is allowed
 t_token	*get_token_list(t_exec_path *cmd, char *raw_line)
 {
 	cmd->exit_status = 0;
@@ -35,7 +36,10 @@ t_token	*tokenize_loop(char *raw_line, t_exec_path *cmd)
 			break ;
 		new = build_token_from_next_word(raw_line, &i, cmd);
 		if (!new)
+		{
+			free_token_list(head); // yuxin added 0817, added same logic in all linked list, marked with // yuxin added 
 			return (NULL);
+		}
 		if (!head)
 			head = new;
 		else
@@ -45,7 +49,7 @@ t_token	*tokenize_loop(char *raw_line, t_exec_path *cmd)
 	return (head);
 }
 
-//in case of mem failure, already perrored inside it
+// in case of mem failure, already perrored inside it
 // build the <, <<, >, >> and |
 t_token	*build_operator_token(char *line, int *i, t_exec_path *cmd)
 {

@@ -1,6 +1,7 @@
 #include "minishell.h"
 
 /* ************************************************************************** */
+
 // there might be overflow when char length beyond BUFF_SIZE
 void	append_to_res(char *res, int *res_idx, const char *val)
 {
@@ -11,10 +12,9 @@ void	append_to_res(char *res, int *res_idx, const char *val)
 		res[(*res_idx)++] = val[k++];
 }
 
-// success, expanded
-// not an env var to expand here
-// if (!key) return (0); //malloc fails, need to perror here
-// val = ft_strdup(""); null check
+// 1 for success, expanded
+// 0 for not expanded, skiped
+// if (!val), not found or EMPTY found, -> ""
 int	try_expand_env_var(char *raw_line, int idx[2], char *res, t_exec_path *cmd)
 {
 	int		len;
@@ -42,7 +42,7 @@ int	try_expand_env_var(char *raw_line, int idx[2], char *res, t_exec_path *cmd)
 			return (0);
 		}
 		append_to_res(res, &idx[1], val);
-		if (val != NULL && val[0] != '\0')
+		if (val)
 			free(val);
 		return (1);
 	}

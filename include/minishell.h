@@ -3,17 +3,17 @@
 
 //----------------------header files and global variable-------------------//
 # include "../libft/libft.h"
-# include <unistd.h>         //access, access, close, fork
-# include <stdlib.h>         //malloc, free
-# include <fcntl.h>
-# include <stdio.h>                 //readline
-# include <signal.h>
-# include <sys/types.h>
-# include <readline/readline.h>
-# include <readline/history.h>
-# include <sys/wait.h>
-# include <errno.h>
-# include <sys/stat.h>
+# include <unistd.h>         	//access, close, fork, dup, execve, getcwd,
+# include <stdlib.h>         	//malloc, free, exit
+# include <fcntl.h>				//open 
+# include <stdio.h>             //readline
+# include <signal.h>			//signal, kill
+# include <sys/types.h>			// pid_t ????? not sure
+# include <readline/readline.h>	//readline  
+# include <readline/history.h>	//readline  
+# include <sys/wait.h>			//wait
+# include <errno.h>				//perror
+# include <sys/stat.h>			// stat() ????? not sure
 
 extern volatile sig_atomic_t	g_signal;
 
@@ -37,15 +37,13 @@ extern volatile sig_atomic_t	g_signal;
 # define LLONG_MIN_STR "9223372036854775808"
 
 //---------------------------struct part--------------------------------//
-
 // 	T_WORD,			0			string			a cmd, a arguement
 // 	T_PIPE,			1    |      pipe
 // 	T_REDIRECT_IN,	2     <     input   		Reads from a file
 // 	T_REDIRECT_OUT,	3     >     output  		Writes to a file, replacing.
 // 	T_APPEND,       4     >>    output append   writes to a file, appends.
 // 	T_HEREDOC,      5    <<   	heredoc input   Feeds inline text as stdin.
-// token tyoe
-typedef enum e_token_type
+typedef enum s_token_type
 {
 	T_WORD,
 	T_PIPE,
@@ -55,8 +53,7 @@ typedef enum e_token_type
 	T_HEREDOC,
 }	t_token_type;
 
-// quote_type
-// 0: no quote; 1: single quote; 2: double quote, 3: QUOTE_DOLLAR_DOUBLE
+// quote_type: 0 no qt; 1 single qt; 2: double qt, 3: QUOTE_DOLLAR_DOUBLE
 typedef struct s_token
 {
 	char			*str;
@@ -65,8 +62,10 @@ typedef struct s_token
 	struct s_token	*next;
 }	t_token;
 
-// list of redirections
-// int	type; inherete from t_token: 2 - 5
+// linked list of redirections
+// type: redirection type:  inherete from t_token: 2 - 5
+// quoted: 0 no qt; 1 single qt; 2: double qt, 3: QUOTE_DOLLAR_DOUBLE
+// heredoc_delim: null when 2 - 4,
 typedef struct s_redir
 {
 	char			*file;
@@ -78,6 +77,7 @@ typedef struct s_redir
 
 // quote_type;
 // inherete from t_token: 0, 1, 2, 3 removed when removing quotes
+// cmd_path: null at parsing phase
 // ATTENTION: argv is empty is allowed
 // case 1: < infile
 // case 2: "   " or $EMPTY ----> argv = NULL / argv[0] = NULL
@@ -92,7 +92,7 @@ typedef struct s_cmd
 
 //exec
 // *whole_cmd;	whole cmd_list
-// **envp;  	the copy one
+// **envp:  	the copy one
 typedef struct s_exec_path
 {
 	t_cmd	*whole_cmd;
@@ -136,6 +136,7 @@ char		*pre_expand_line(t_exec_path *cmd, char *raw_line);
 
 // lex_utils.c
 // ATTENTION: empty token list is alloweed. when its leagal, status = 0
+// when it is empty but status == 1, it is from malloc failure
 // when it is empty but status == 2, it is from symtax error
 void		precheck_special_chars_rawline(char *line, t_exec_path *cmd);
 void		check_raw_line_syntax(char *raw_line, t_exec_path *cmd);
@@ -187,7 +188,6 @@ char		*expand_variables_in_str(t_exec_path *cmd, char *input, char **envp);
 void		expand_heredoc_delim(t_exec_path *cmd, t_cmd *cmd_list, char **envp);
 
 //---------------------------exec part---------------------------------------------//
-
 //execute builtins cmd with redir
 int			is_builtin(char *cmd);
 int			execute_builtin_cmd(char **argv, t_env **env, t_exec_path *exec_cmd);
@@ -217,7 +217,6 @@ char		*get_env(t_env *env, char *key);
 char		*get_cmd_path(char *cmd, t_env *env_list, t_exec_path *exec_cmd);
 
 //---------------------------built_in part--------------------------------//
-
 //7 builtin cmds:
 //builtins_opera1
 int			ft_cd(char **argv, t_env *env); //modify
@@ -281,8 +280,8 @@ void		free_cmd_list(t_cmd *cmd_head);
 void		free_cmd_node(t_cmd *c);
 void		free_t_exec_path(t_exec_path *cmd_and_path);
 
-//str_utils.c
-//needed for expander and mallac failure halding in parsing
+// str_utils.c
+// needed for expander and mallac failure halding in parsing
 int			ft_check_valid_var_name(char c);
 char		*ft_strjoin_free(char *s1, char *s2);
 char		*join_three_and_free(char *s1, char *s2, char *s3);
@@ -290,7 +289,7 @@ char		*free_malloc_fail_null(char	*str);
 char		*free_malloc_fail_null_status(char *str, t_exec_path *cmd);
 
 //err_msg.c
-//used in builtin, syntax check and main
+//used in builtin(export and cd), syntax check(stat 2) and main
 void		print_error(const char *arg);
 int			perror_return_one(char *str);
 int			errmsg_return_one(char *str);

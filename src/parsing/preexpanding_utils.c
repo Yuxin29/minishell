@@ -1,6 +1,7 @@
 #include "minishell.h"
 
 // return the length of a valid variable name
+// not malloc involved
 // $ skipped already
 int	var_name_len(const char *str)
 {
@@ -17,6 +18,7 @@ int	var_name_len(const char *str)
 }
 
 // trackign and switch quotes status
+// return 1 if quoted, 0 if not quoted
 // quotes[0] -> single quotes
 // quotes[1] -> double quotes
 int	handle_quotes(char c, int quotes[2], char *res, int *j)
@@ -38,8 +40,6 @@ int	handle_quotes(char c, int quotes[2], char *res, int *j)
 	return (0);
 }
 
-// heredoc is skiped in expanding
-// skip_expand is used to track if it shoudl be skiped
 // Bash behavior
 // cat << $USER, not expansion, but expanded in the heredoc files
 // cat << ""$USER, not expansion anywhere, ""removed
@@ -47,6 +47,9 @@ int	handle_quotes(char c, int quotes[2], char *res, int *j)
 // cat << "$USER", not expansion anywhere, "     "removed
 // cat << "$USE"R, not expansion anywhere, "    "removed
 // cat << "$USER, waiting for second quote, in minishell syntax error
+// in minishell
+// heredoc is skiped in expanding
+// skip_expand is used to track if it shoudl be skiped
 // yuwu@c2r6p13:~/42/Rank3_minishell$ cat << $""USER
 int	handle_heredoc_skip(char *raw_line, int ids[2], char *res)
 {

@@ -6,14 +6,14 @@
 # include <unistd.h>         	//access, close, fork, dup, execve, getcwd,
 # include <stdlib.h>         	//malloc, free, exit
 # include <fcntl.h>				//open 
-# include <stdio.h>             //readline
+# include <stdio.h>             //perror
 # include <signal.h>			//signal, kill
-# include <sys/types.h>			// pid_t ????? not sure
+# include <sys/types.h>			// pid_t
 # include <readline/readline.h>	//readline  
 # include <readline/history.h>	//readline  
 # include <sys/wait.h>			//wait
 # include <errno.h>				//perror
-# include <sys/stat.h>			// stat() ????? not sure
+# include <sys/stat.h>			// stat()
 
 extern volatile sig_atomic_t	g_signal;
 
@@ -29,10 +29,17 @@ extern volatile sig_atomic_t	g_signal;
 	"minishell: syntax error: special characters"
 # define SYNTAX_ERR_QUOTES \
 	"minishell: syntax error: unclosed quotes"
+
 //common shell cmd line max length
+#ifndef LINE_SIZE
 # define LINE_SIZE 8192
+#endif
+
+#ifndef PATH_MAX
 # define PATH_MAX 4096
-//yuxin added for exit, stoll based on long long
+#endif
+
+//yuxin added for exit, stoll based on long long // probably not needed
 # define LLONG_MAX_STR "9223372036854775807"
 # define LLONG_MIN_STR "9223372036854775808"
 

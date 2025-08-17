@@ -1,5 +1,6 @@
 #include "minishell.h"
 
+/* ************************************************************************** */
 // there might be overflow when char length beyond BUFF_SIZE
 void	append_to_res(char *res, int *res_idx, const char *val)
 {
@@ -94,8 +95,8 @@ void	expand_loop(char *raw_line, char *res, int idx[2], t_exec_path *cmd)
 // used before lexing, to solve presaved cmd like $A = "echo hello"
 // can handle $A$B$C as well
 // not doing anything to << heredoc
-	// idx[0] = 0; // i
-	// idx[1] = 0; // j
+// idx[0] = 0; // i, current position in raw_line
+// idx[1] = 0; // j, current position in res (output buffer)
 char	*pre_expand_line(t_exec_path *cmd, char *raw_line)
 {
 	char	*res;

@@ -262,6 +262,10 @@ I chose preexpandingh
     abc sdfkljsdfkjl
     $USER"abc"
     abcok
+
+    -> ⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️ one more test case ⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️
+    cat << $""USER
+    
 6. multiple $, or ""
     mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo $
     $
@@ -375,6 +379,9 @@ mini output = (hi bye)
 bash output = ()
 .-------> agreed with lin that its not our problem
 
+=====================how to run minishell in a clean environment ==========================================
+env -i ./minishell:                     ignore existing environment
+env -i PATH=/usr/bin ./minishell        manually write in with the path
 
 ====================================later to check forbiddent functions and header file =============================
 

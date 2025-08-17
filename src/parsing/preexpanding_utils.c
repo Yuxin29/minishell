@@ -38,15 +38,16 @@ int	handle_quotes(char c, int quotes[2], char *res, int *j)
 	return (0);
 }
 
-// heredoc is skiped in epanding
+// heredoc is skiped in expanding
 // skip_expand is used to track if it shoudl be skiped
-// ATTERNTION
 // Bash behavior
-// << EOF ： expand
-// << 'EOF' 或 << "EOF"：no expansion
-// cat << $USER, not expansion
-// cat << ""$USER, not expansion, ""removed
-// cat << $USER", not expansion, ""removed
+// cat << $USER, not expansion, but expanded in the heredoc files
+// cat << ""$USER, not expansion anywhere, ""removed
+// cat << $USER"", not expansion anywhere, ""removed
+// cat << "$USER", not expansion anywhere, "     "removed
+// cat << "$USE"R, not expansion anywhere, "    "removed
+// cat << "$USER, waiting for second quote, in minishell syntax error
+// yuwu@c2r6p13:~/42/Rank3_minishell$ cat << $""USER
 int	handle_heredoc_skip(char *raw_line, int ids[2], char *res)
 {
 	int		in_sq;
@@ -61,19 +62,18 @@ int	handle_heredoc_skip(char *raw_line, int ids[2], char *res)
 			res[ids[1]++] = raw_line[ids[0]++];
 		in_sq = 0;
 		in_dq = 0;
-		c = raw_line[ids[0]];
-		while (c != '\0')
+		while (raw_line[ids[0]] != '\0')
 		{
+			c = raw_line[ids[0]];
 			if (!in_sq && !in_dq)
 			{
 				if (c == ' ' || c == '\t' || c == '|' || c == '<' || c == '>')
-					break;
+					break ;
 			}
 			if (c == '\'' && !in_dq)
 				in_sq = !in_sq;
 			else if (c == '"' && !in_sq)
 				in_dq = !in_dq;
-			c = raw_line[ids[0]];
 			res[ids[1]++] = raw_line[ids[0]++];
 		}
 		return (1);

@@ -17,7 +17,7 @@ void	free_token_list(t_token *token_head)
 	}
 }
 
-//free the linked  redirection list within a cmd
+//free the linked redirection list within a cmd
 void	free_redirections(t_cmd *cmd_head)
 {
 	t_redir	*tmp;
@@ -40,10 +40,6 @@ void	free_redirections(t_cmd *cmd_head)
 }
 
 //free a linked list of t_cmds
-// yuxins version, no need to check null before free somehow, just
-// ft_free_arr(cmd_head->argv);
-// free(cmd_head->quote_type);
-// free_redirections(cmd_head);
 void	free_cmd_list(t_cmd *cmd_head)
 {
 	t_cmd	*tmp;
@@ -66,6 +62,7 @@ void	free_cmd_list(t_cmd *cmd_head)
 	}
 }
 
+// free one single cmd node
 void	free_cmd_node(t_cmd *c)
 {
 	if (!c)

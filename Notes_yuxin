@@ -172,11 +172,11 @@ next:        NULL
 
 “预展开 raw line（整行扫描预处理）”
 
-⚠️ 优点
+✅  优点
 - 在词法分析前就把 $VAR / $? 等替换掉，后面 parser 更简单。
 - 对“预保存命令”这类需求（你提到的 $A="echo hello"）可以一次性摊平
 
-❌ 缺点（关键）
+⚠️ 缺点（关键）
 - 会和语法/引号/操作符边界打架，尤其是 << 之后的heredoc 定界符：定界符不能做变量展开，而且是否展开 heredoc 正文是由定界符是否包含引号来决定的（有引号→不展开，无引号→展开）。
 - 拿你的失败用例 << $ABC"" 来说：
   你当前代码在看到 << 后一遇到空格就结束“跳过展开”状态，导致后面的 $ABC"" 被错误地展开了——这是不允许的。定界符是一个完整的“词”（word），
@@ -184,14 +184,14 @@ next:        NULL
 - 还会牵涉 <<<、<<- 等边角（42 一般不要求，但容易踩）。
 
 “先词法/语法→再对 token/AST 做展开（推荐）”
-⚠️ 优点（更贴近 Bash）
+✅  优点（更贴近 Bash）
 先把输入切成操作符（| < > << >>）和词（含引号信息），去掉词内的引号（quote removal），然后：
 - 对 argv、重定向文件名等做参数展开（单引号内不展开、双引号内可展开）。
 - 对 << 的下一个词（定界符）只做quote removal，不做变量展开；同时记录一个布尔位“定界符是否带引号”。
 - 读 heredoc 正文时，若“定界符带引号”→正文不做任何展开；若不带引号→正文进行参数/命令/算术（你项目一般只做 $VAR 和 $?）展开。
 - 不容易和语法打架，行为和 Bash 一致。
 
-❌ 缺点
+⚠️ 缺点
 - parser 要保存更多元信息（比如“这个 heredoc 的 delimiter 是否带过引号”）。
 - 稍微多写一点代码，但一次写对后期最省心。
 
@@ -223,7 +223,7 @@ I chose preexpandingh
     ->  minishell$ echo << $USER                    
         > skfd
         > mikko
-        > $USER
+        > $USER⚠️ 
     ->  minishell$ echo << $SUER                    
         minishell: syntax error: missing filename or delimiter after redirection
 
@@ -377,6 +377,7 @@ bash output = ()
 
 
 ====================================later to check forbiddent functions and header file =============================
+
 // External functs allowed .
 // readline            - get a line from a user with editing       get a line from a user with editing
 // rl_clear_history    ??
@@ -440,3 +441,32 @@ minishell$ echo hello
 malloc: Success
 minishell$ echo $?
 malloc: Success
+
+
+为什么 malloc 或 fork 失败要用状态码 1
+
+状态码 1 是 POSIX 定义的“普通错误（general error）”，表示命令执行失败或系统调用失败。
+
+Bash 行为对齐规则：
+
+1 → 命令执行失败、系统调用失败（如 fork、pipe、dup、malloc）
+
+2 → 语法错误或内置命令使用错误
+
+126 → 命令存在但不可执行（权限问题或是目录）
+
+127 → 命令不存在
+
+128 + N → 被信号 N 终止（Ctrl-C 是 130）
+
+所以 malloc/fork/pipe/dup 出错时，你设置 $? = 1 是符合 Bash 行为的。
+
+⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️
+出错类型	                                            Bash 行为	            Minishell 实现
+shell 内部 malloc（env_list, exec_cmd->envp）失败	    fatal	                exit(EXIT_FAILURE)
+命令 malloc/fork/pipe/dup 出错	                        $? = 1，继续提示符	     设置 exec_cmd->exit_status = 1，返回提示符
+语法错误	                                            $? = 2	               exec_cmd->exit_status = 2，返回提示符
+Ctrl-C 中断	                                           $? = 130	               exec_cmd->exit_status = 130，返回提示符
+命令不可执行	                                        $? = 126	            使用 error_126()
+命令不存在	                                            $? = 127	            使用 error_127()
+✅ 

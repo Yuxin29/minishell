@@ -8,7 +8,7 @@ char	*get_env_value(char **envp, const char *key)
 	char	**split;
 	char	*new_value;
 
-	j = 0;
+	j = -1;
 	while (envp[++j])
 	{
 		split = ft_split(envp[j], '=');
@@ -96,9 +96,26 @@ char	*expand_variables_in_str(t_exec_path *cmd, char *input, char **envp)
 	return (input);
 }
 
+
 //call this after getting the cmd list
 // I only need to expand << str here,
-void	expand_all_cmds(t_exec_path *cmd, t_cmd *cmd_list, char **envp)
+// call this after getting the cmd list
+// I only need to expand << $str, str without any quotes here,
+// mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ cat << $USER
+// > mikko 123
+// > $USER 123
+// > mikko
+// > $USER
+// mikko 123
+// mikko 123
+// mikko
+// minishell heredoc> $USER
+// mikko 123
+// $USER 123
+// mikko
+// minishell$
+// creat_heredoc_file created in parsing phase before this already
+void	expand_heredoc_delim(t_exec_path *cmd, t_cmd *cmd_list, char **envp)
 {
 	t_redir	*redir;
 	char	*value;
@@ -106,23 +123,26 @@ void	expand_all_cmds(t_exec_path *cmd, t_cmd *cmd_list, char **envp)
 	while (cmd_list)
 	{
 		redir = cmd_list->redirections;
-		while (redir)
+		if (redir)
 		{
-			if (redir->type == 5 && redir->quoted == 0 && redir->heredoc_delim)
+			while (redir)
 			{
-				if (ft_strchr(redir->heredoc_delim, '$'))
+				if (redir->type == 5 && redir->quoted == 0 && redir->heredoc_delim)
 				{
-					value = expand_variables_in_str(cmd, redir->heredoc_delim, envp);
-					if (!value)
-						return ;
-					if (value != redir->heredoc_delim)
+					if (ft_strchr(redir->heredoc_delim, '$'))
 					{
-						free(redir->heredoc_delim);
-						redir->heredoc_delim = value;
+						value = expand_variables_in_str(cmd, redir->heredoc_delim, envp);
+						if (!value)
+							return ;
+						if (value != redir->heredoc_delim)
+						{
+							free(redir->heredoc_delim);
+							redir->heredoc_delim = value;
+						}
 					}
 				}
+				redir = redir->next;
 			}
-			redir = redir->next;
 		}
 		cmd_list = cmd_list->next;
 	}

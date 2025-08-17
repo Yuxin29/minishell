@@ -35,7 +35,6 @@ static char	*match_cmd_in_path(char **paths, char *cmd, t_exec_path *exec_cmd)
 	return (NULL);
 }
 
-
 char	*get_cmd_path(char *cmd, t_env *env_list, t_exec_path *exec_cmd)
 {
 	char	**paths;
@@ -58,4 +57,5 @@ char	*get_cmd_path(char *cmd, t_env *env_list, t_exec_path *exec_cmd)
 	cmd_path = match_cmd_in_path(paths, cmd, exec_cmd);
 	ft_free_arr(paths);
 	return (cmd_path);
+
 }

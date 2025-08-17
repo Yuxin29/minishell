@@ -33,7 +33,7 @@ char	*free_malloc_fail_null(char	*str)
 
 // used in checking malloc strs or strdup, strjoin and so on
 // perror included, and it can free one string
-char	*free_malloc_fail_null_status(char	*str,  t_exec_path *cmd)
+char	*free_malloc_fail_null_status(char *str, t_exec_path *cmd)
 {
 	if (str)
 		free (str);

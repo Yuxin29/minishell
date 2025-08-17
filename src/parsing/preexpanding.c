@@ -13,7 +13,7 @@ void	append_to_res(char *res, int *res_idx, const char *val)
 // success, expanded
 // not an env var to expand here
 //if (!key) return (0); //malloc fails, need to perror here
-int	try_expand_env_var(char *raw_line, int idx[2], char *res, char **envp)
+int	try_expand_env_var(char *raw_line, int idx[2], char *res, t_exec_path *cmd)
 {
 	int		len;
 	char	*val;
@@ -29,11 +29,11 @@ int	try_expand_env_var(char *raw_line, int idx[2], char *res, char **envp)
 			perror("malloc: ");
 			return (0);
 		}
-		val = get_env_value(envp, key);
+		val = get_env_value(cmd->envp, key);
 		free(key);
 		idx[0] += len + 1;
 		if (!val)
-			val = EMPTY_STRING;
+			val = ft_strdup(""); //null check
 		append_to_res(res, &idx[1], val);
 		if (val != NULL && val[0] != '\0')
 			free(val);
@@ -79,7 +79,7 @@ void	expand_loop(char *raw_line, char *res, int idx[2], t_exec_path *cmd)
 			continue ;
 		if (handle_exit_status(raw_line, idx, res, cmd))
 			continue ;
-		if (try_expand_env_var(raw_line, idx, res, cmd->envp))
+		if (try_expand_env_var(raw_line, idx, res, cmd))
 			continue ;
 		res[idx[1]++] = raw_line[idx[0]++];
 	}

@@ -38,63 +38,60 @@ int	ft_unset(char **argv, t_env **env)
 	return (0);
 }
 
-// yuxin working on this now; I passed t_env **env into ft_cd
+// used in ft_cd
+// cd: no argv, cd to HOME, I still have this even subject does not require
+// cd -:  return to last folder and print out last folder, do we need to hand do this
+// cd tatgert: change to target
+// subject: cd with only a relative or absolute path
+// static char *get_target_location(char **argv, t_env *env)
+// {
+// 	char *target;
+	
+// 	if (!argv[1])
+// 	{
+// 		target = get_env(env, "HOME");
+// 		if (!target)
+// 		{
+// 			ft_putendl_fd("cd: HOME not set", 2);
+// 			return (NULL);
+// 		}
+// 	}
+// 	else if (strcmp(argv[1], "-") == 0)
+// 	{
+// 		target = get_env(env, "OLDPWD");
+// 		if (!target)
+// 		{
+// 			ft_putendl_fd("cd: OLDPWD not set", 2);
+// 			return (NULL);
+// 		}
+// 		printf("%s\n", target);
+// 	}
+// 	else
+// 		target = argv[1];
+// 	return (target);
+// }
+
 // NAME		chdir, - change working directory
 // SYNOPSIS	int chdir(const char *path);
 // On success, zero is returned.  On error, -1 is returned
-// buf is a local mem, path pointing to it, so need need to free path ever
+// no need to free target, from argv[1], mem from minishell argv
 int	ft_cd(char **argv, t_env *env)
 {
-	char	*path;
-	char	*path_new;
-	char	buf[1024];
-	char	*target;
+	char	oldpwd[4096];
+	char	newpwd[4096];
 
-	if (argv[2])
-		return (errmsg_return_one("cd: too many arguments"));
-	path = getcwd(buf, sizeof(buf));
-	//if (!path)
-	//	return (perror_return_one("cd: getcwd (old)"));
-	target = argv[1];
-	if (!target)
-		target = get_env(env, "HOME");
-	if (!target)
-		return (errmsg_return_one("cd: HOME not set"));
-	if (chdir(target) != 0)
+	if (!argv[1])
+		return (errmsg_return_one("cd: missing argument\n"));
+	if (argv[1] && argv[2])
+		return (errmsg_return_one("cd: too many arguments\n"));
+	if (!getcwd(oldpwd, sizeof(oldpwd)))
+		oldpwd[0] = '\0';
+	if (chdir(argv[1]) != 0)  // subject requirement: cd with only a relative or absolute path
 		return (perror_return_one("cd"));
-	if (path)
-		set_env(&env, "OLDPWD", path);
-	//free (path);
-	path_new = getcwd(buf, sizeof(buf));
-	if (path_new)
-		//return (perror_return_one("cd: getcwd (new)"));
-		set_env(&env, "PWD", path_new);
-	//free(path_new);
+	if (getcwd(newpwd, sizeof(newpwd)))
+	{
+		set_env(&env, "OLDPWD", oldpwd);
+		set_env(&env, "PWD", newpwd);
+	}
 	return (0);
 }
-
-// int	ft_cd(char **argv, t_env *env)
-// {
-// 	char	oldpwd[4096];
-// 	char	newpwd[4096];
-
-// 	if (!argv[1])
-// 	{
-// 		fprintf(stderr, "cd: missing argument\n");
-// 		return (1);
-// 	}
-// 	if (!getcwd(oldpwd, sizeof(oldpwd)))
-// 		oldpwd[0] = '\0';
-
-// 	if (chdir(argv[1]) != 0)
-// 	{
-// 		perror("cd");
-// 		return (1);
-// 	}
-// 	if (getcwd(newpwd, sizeof(newpwd)))
-// 	{
-// 		set_env(&env, "OLDPWD", oldpwd);
-// 		set_env(&env, "PWD", newpwd);
-// 	}
-// 	return (0);
-// }

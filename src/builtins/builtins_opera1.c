@@ -39,34 +39,18 @@ int	ft_echo(char **argv)
 }
 
 // in bash, if we exit, we exit bash into zsh shel
-// do we need to update signals? probably not
-// exit — cause the shell to exit:	exit [n]
-// if (ft_is_numeric(argv[1])) fatal error 255 / exit 2 ?
-// minishell process ends with a specific exit code,
-// and the parent shell (bash/zsh) automatically stores
-// that exit code in the special variable $?.
-//in the terminal, echo $? to check the (unsigned char)status
+// subject requriements: exit with no options, ?
 int	ft_exit(char **argv, t_exec_path *exec_cmd)
 {
-	long long	status;
-
-	if (!argv[1])
+	if (argv[1])
+		return (errmsg_return_one("exit with options not required in minishell"));
+	else
+	{
 		exit(exec_cmd->exit_status);
-	if (ft_is_numeric(argv[1]))
-	{
-		ft_putstr_fd("minishell: exit: ", 2);
-		ft_putstr_fd(argv[1], 2);
-		ft_putstr_fd(": numeric argument required", 2);
-		exit (2);
+		return (0);
 	}
-	if (argv[2])
-	{
-		ft_putstr_fd("exit: too many arguments\n", 2);
-		exit (1);
-	}
-	status = ft_atoll(argv[1]);
-	exit((unsigned char)status);
 }
+
 // pwd
 // The getcwd() function copies an absolute pathname
 // of the current working directory
@@ -77,7 +61,6 @@ int	ft_exit(char **argv, t_exec_path *exec_cmd)
 // In the case of getcwd() and getwd() this is the same value as buf.
 // On failure, these functions return NULL, and errno is set.
 // The contents of the  array  pointed to by buf are undefined on error.
-
 int	ft_pwd(void)
 {
 	char	buf[PATH_MAX];
@@ -101,3 +84,33 @@ int	ft_env(t_env *env)
 	}
 	return (0);
 }
+
+// in bash, if we exit, we exit bash into zsh shel
+// exit — cause the shell to exit:	exit [n]
+// if (ft_is_numeric(argv[1])): we exit 2
+// minishell process ends with a specific exit code,
+// and the parent shell (bash/zsh) automatically stores
+// that exit code in the special variable $?.
+// in the terminal, echo $? to check the (unsigned char)status
+// subject requriements: exit with no options, so we only need one lines?
+// int	ft_exit(char **argv, t_exec_path *exec_cmd)
+// {
+// 	long long	status;
+
+// 	if (!argv[1])
+// 		exit(exec_cmd->exit_status);
+// 	if (ft_is_numeric(argv[1]))
+// 	{
+// 		ft_putstr_fd("minishell: exit: ", 2);
+// 		ft_putstr_fd(argv[1], 2);
+// 		ft_putstr_fd(": numeric argument required", 2);
+// 		exit (2);
+// 	}
+// 	if (argv[2])
+// 	{
+// 		ft_putstr_fd("exit: too many arguments\n", 2);
+// 		exit (1);
+// 	}
+// 	status = ft_atoll(argv[1]);
+// 	exit((unsigned char)status);
+// }

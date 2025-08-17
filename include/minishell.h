@@ -136,7 +136,7 @@ int			handle_exit_status(char *raw_line, int ids[2], char *res, t_exec_path *cmd
 
 //preexpander.c
 void		append_to_res(char *res, int *res_idx, const char *val);
-int			try_expand_env_var(char *raw_line, int idx[2], char *res, char **envp);
+//int			try_expand_env_var(char *raw_line, int idx[2], char *res, char **envp);
 int			skip_copy(char *raw_line, int idx[2], char *res, int quotes[2]);
 void		expand_loop(char *raw_line, char *res, int idx[2], t_exec_path *cmd);
 char		*pre_expand_line(t_exec_path *cmd, char *raw_line);
@@ -153,10 +153,8 @@ char		*get_quoted_part(char *s, int *i, t_exec_path *cmd);
 // lexing_w_token.c
 char		*get_part(char *line, int *i, char	*part_quote, t_exec_path *cmd);
 t_token		*malloc_and_set_token(char *temp, int q, t_exec_path *cmd);
-//char		*append_next_part(char *temp, char *line, int *i, char *part_quote, t_exec_path *cmd);
-char	*append_next_part(char *temp, char *line, int *i, t_exec_path *cmd, int *q);
-int	save_last_quote(int new_val, int mode);
-//char	*append_next_part(char *temp, char *line, int *i, t_exec_path *cmd);
+//char		*append_next_part(char *temp, char *line, int *i, t_exec_path *cmd, int *q);
+int			save_last_quote(int new_val, int mode);
 t_token		*build_word_token(char *line, int *i, t_exec_path *cmd);
 
 // lex.c

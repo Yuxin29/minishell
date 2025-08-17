@@ -433,16 +433,6 @@ exit(127);
 
 
 ⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️
-!!!! lexing phase, if malloc fails, need to set exit status to 1
-    	//debug
-	//token = NULL;
-yuwu@c3r1p3:~/42/Rank3_minishell$ ./minishell
-minishell$ echo hello
-malloc: Success
-minishell$ echo $?
-malloc: Success
-
-
 为什么 malloc 或 fork 失败要用状态码 1
 
 状态码 1 是 POSIX 定义的“普通错误（general error）”，表示命令执行失败或系统调用失败。
@@ -470,3 +460,170 @@ Ctrl-C 中断	                                           $? = 130	              
 命令不可执行	                                        $? = 126	            使用 error_126()
 命令不存在	                                            $? = 127	            使用 error_127()
 ✅ 
+
+
+📊 heredoc 行为对照表
+写法	                     delimiter 最终值	            输入内容是否展开变量	    结束条件 (delimiter 匹配)
+cat << EOF	                EOF（不展开）	                 ✅ 展开 $VAR	        输入行等于 EOF 时结束
+cat << $USER	            展开一次 → yuwu	                 ✅ 展开 $VAR	        输入行等于 yuwu 时结束
+cat << "EOF"	            "EOF"（去掉引号后是 EOF）	       ❌ 不展开 $VAR	        输入行等于 EOF 时结束
+cat << '$USER'	            "$USER"（去掉引号后是 $USER）	   ❌ 不展开 $VAR	        输入行等于 $USER 时结束
+cat << "$USER"	            展开一次 → yuwu	                    ❌ 不展开 $VAR	     输入行等于 yuwu 时结束
+
+
+
+//used in main
+int	handle_token_build_failure(t_exec_path *exec_cmd, t_env **env_list)
+{
+	ft_free_arr(exec_cmd->envp);
+	if (exec_cmd->exit_status == 2 || exec_cmd->exit_status == 0)
+		return (0);
+	free_env_list(*env_list);
+	ft_putstr_fd("Error: get token list failed from memory failure\n", 2);
+	//exit(EXIT_FAILURE);
+	return (0);
+}
+
+volatile sig_atomic_t	g_signal = 0;
+
+static int	run_command(t_exec_path *exec_cmd, t_env **env_list)
+{
+	t_cmd	*tmp;
+
+	tmp = exec_cmd->whole_cmd;
+	while (tmp)
+	{
+		if (!tmp->argv || !tmp->argv[0])
+			tmp->cmd_path = NULL;
+		else if (!is_builtin(tmp->argv[0]))
+		{
+			tmp->cmd_path = get_cmd_path(tmp->argv[0], *env_list, exec_cmd);
+			if (exec_cmd->exit_status == 1)
+				return (free_t_exec_path(exec_cmd), 0);
+		}
+		else
+			tmp->cmd_path = NULL;
+		tmp = tmp->next;
+	}
+	if (!exec_cmd->whole_cmd->next)
+	{
+		if (exec_cmd->whole_cmd->argv && is_builtin(exec_cmd->whole_cmd->argv[0]))
+			run_builtin_with_redir(exec_cmd, env_list);
+		else
+			execute_single_cmd(exec_cmd);
+	}
+	else
+		execute_pipeline(exec_cmd, *env_list);
+	if (exec_cmd->exit_status == 1)
+		return (free_t_exec_path(exec_cmd), 0);
+	return (1);
+}
+
+// lexing, parsing, and post-expandh eredoc_delim
+static int	parse_and_expand(t_exec_path *exec_cmd, char *expanded_line, t_env **env_list)
+{
+	t_token	*token_list;
+
+	token_list = get_token_list(exec_cmd, expanded_line);
+	free(expanded_line);
+	if (!token_list)
+	{
+		// if (!handle_token_build_failure(exec_cmd, env_list))
+		// 	return (0);
+		return handle_token_build_failure(exec_cmd, env_list);
+	}
+	exec_cmd->whole_cmd = build_command_list(exec_cmd, token_list);
+	free_token_list(token_list);
+	if (!exec_cmd->whole_cmd)
+	{
+		ft_free_arr(exec_cmd->envp);
+		if (exec_cmd->exit_status == 2 || exec_cmd->exit_status == 130)
+			return (0);
+		free_env_list(*env_list);
+		ft_putstr_fd("Error: build command list failed from memory failure\n", 2);
+		//exit(EXIT_FAILURE);
+		return (0); 
+	}
+	expand_heredoc_delim(exec_cmd, exec_cmd->whole_cmd, exec_cmd->envp);
+	return (1);
+}
+
+// initiate envp, pre-expand line, lexing, "parse_and_expand", finally run cmd
+static void	handle_line(char *line, t_env **env_list, t_exec_path *exec_cmd)
+{
+	char	*expanded_line;
+
+	exec_cmd->envp = env_list_to_envp(*env_list);
+	if (!exec_cmd->envp)
+	{
+		free(line);
+		free_env_list(*env_list);
+		ft_putstr_fd("Error: env list initialized failed\n", 2);
+		//exit(EXIT_FAILURE);
+		exec_cmd->exit_status = 1;
+		return ;
+	}
+	expanded_line = pre_expand_line(exec_cmd, line);
+	free(line);
+	if (!expanded_line)
+	{
+		ft_free_arr(exec_cmd->envp);
+		free_env_list(*env_list);
+		ft_putstr_fd("Error: pre expanding failure\n", 2);
+		//exit(EXIT_FAILURE);
+		exec_cmd->exit_status = 1;
+		return ;
+	}
+	if (!parse_and_expand(exec_cmd, expanded_line, env_list))
+		return ;
+	if (!run_command(exec_cmd, env_list))
+		return ;
+	free_t_exec_path(exec_cmd);
+}
+
+//read line, execute cmd loop of minishell
+//static void	minishell_loop(t_env *env_list)
+static int minishell_loop(t_env *env_list) //yuxin added
+{
+	t_exec_path	exec_cmd;
+	char		*line;
+
+	ft_memset(&exec_cmd, 0, sizeof(exec_cmd));
+	while (1)
+	{
+		line = readline("minishell$ ");
+		if (!line)
+		{
+			printf("exit\n");
+			break ;
+		}
+		if (*line)
+		{
+			add_history(line);
+			handle_line(line, &env_list, &exec_cmd);
+		}
+	}
+	rl_clear_history();
+	free_env_list(env_list);
+	return (exec_cmd.exit_status); //yuxin added
+}
+
+//initiate env and enter cmd loop
+int	main(int argc, char **argv, char **envp)
+{
+	t_env	*env_list;
+
+	(void)argc;
+	(void)argv;
+	rl_catch_signals = 0;
+	signal_init();
+	env_list = env_list_init(envp);
+	if (!env_list)
+	{
+		ft_putstr_fd("Error: env list initialized failed\n", 2);
+		exit(EXIT_FAILURE);
+	}
+	// minishell_loop(env_list);
+	// return (0);
+	return (minishell_loop(env_list));
+}

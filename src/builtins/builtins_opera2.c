@@ -46,14 +46,15 @@ int	ft_unset(char **argv, t_env **env)
 int	ft_cd(char **argv, t_env **env)
 {
 	char	*path;
+	char	*path_new;
 	char	buf[1024];
 	char	*target;
 
 	if (argv[2])
 		return (errmsg_return_one("cd: too many arguments"));
 	path = getcwd(buf, sizeof(buf));
-	if (!path)
-		return (perror_return_one("cd: getcwd (old)"));
+	//if (!path)
+	//	return (perror_return_one("cd: getcwd (old)"));
 	target = argv[1];
 	if (!target)
 		target = get_env(*env, "HOME");
@@ -61,10 +62,14 @@ int	ft_cd(char **argv, t_env **env)
 		return (errmsg_return_one("cd: HOME not set"));
 	if (chdir(target) != 0)
 		return (perror_return_one("cd"));
-	set_env(env, "OLDPWD", path);
-	path = getcwd(buf, sizeof(buf));
-	if (!path)
-		return (perror_return_one("cd: getcwd (new)"));
-	set_env(env, "PWD", path);
+	if (path)
+		set_env(env, "OLDPWD", path);
+	//free (path);
+	path_new = getcwd(buf, sizeof(buf));
+	if (path_new)
+		//return (perror_return_one("cd: getcwd (new)"));
+		set_env(env, "PWD", path_new);
+	//free(path_new);
 	return (0);
+
 }

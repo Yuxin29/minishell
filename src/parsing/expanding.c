@@ -97,7 +97,7 @@ char	*expand_variables_in_str(t_exec_path *cmd, char *input, char **envp)
 }
 
 //call this after getting the cmd list
-// I only need to expand << str here, 
+// I only need to expand << str here,
 void	expand_all_cmds(t_exec_path *cmd, t_cmd *cmd_list, char **envp)
 {
 	t_redir	*redir;

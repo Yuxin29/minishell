@@ -222,7 +222,8 @@ char	*get_cmd_path(char *cmd, t_env *env_list, t_exec_path *exec_cmd);
 
 //7 builtin cmds:
 //builtins_opera1
-int		ft_cd(char **argv, t_env **env);
+//int		ft_cd(char **argv, t_env **env);
+int		ft_cd(char **argv, t_env *env); //modify
 int		ft_echo(char **argv);
 int		ft_exit(char **argv, t_exec_path *exec_cmd);
 //builtins_opera2

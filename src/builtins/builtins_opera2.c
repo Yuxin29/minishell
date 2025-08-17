@@ -43,28 +43,55 @@ int	ft_unset(char **argv, t_env **env)
 // SYNOPSIS	int chdir(const char *path);
 // On success, zero is returned.  On error, -1 is returned
 // buf is a local mem, path pointing to it, so need need to free path ever
-int	ft_cd(char **argv, t_env **env)
-{
-	char	*path;
-	char	buf[1024];
-	char	*target;
+// int	ft_cd(char **argv, t_env **env)
+// {
+// 	char	*path;
+// 	char	buf[1024];
+// 	char	*target;
 
-	if (argv[2])
-		return (errmsg_return_one("cd: too many arguments"));
-	path = getcwd(buf, sizeof(buf));
-	if (!path)
-		return (perror_return_one("cd: getcwd (old)"));
-	target = argv[1];
-	if (!target)
-		target = get_env(*env, "HOME");
-	if (!target)
-		return (errmsg_return_one("cd: HOME not set"));
-	if (chdir(target) != 0)
-		return (perror_return_one("cd"));
-	set_env(env, "OLDPWD", path);
-	path = getcwd(buf, sizeof(buf));
-	if (!path)
-		return (perror_return_one("cd: getcwd (new)"));
-	set_env(env, "PWD", path);
+// 	if (argv[2])
+// 		return (errmsg_return_one("cd: too many arguments"));
+// 	path = getcwd(buf, sizeof(buf));
+// 	if (!path)
+// 		return (perror_return_one("cd: getcwd (old)"));
+// 	target = argv[1];
+// 	if (!target)
+// 		target = get_env(*env, "HOME");
+// 	if (!target)
+// 		return (errmsg_return_one("cd: HOME not set"));
+// 	if (chdir(target) != 0)
+// 		return (perror_return_one("cd"));
+// 	set_env(env, "OLDPWD", path);
+// 	path = getcwd(buf, sizeof(buf));
+// 	if (!path)
+// 		return (perror_return_one("cd: getcwd (new)"));
+// 	set_env(env, "PWD", path);
+// 	return (0);
+// }
+
+
+int	ft_cd(char **argv, t_env *env)
+{
+	char	oldpwd[4096];
+	char	newpwd[4096];
+
+	if (!argv[1])
+	{
+		fprintf(stderr, "cd: missing argument\n");
+		return (1);
+	}
+	if (!getcwd(oldpwd, sizeof(oldpwd)))
+		oldpwd[0] = '\0';
+
+	if (chdir(argv[1]) != 0)
+	{
+		perror("cd");
+		return (1);
+	}
+	if (getcwd(newpwd, sizeof(newpwd)))
+	{
+		set_env(&env, "OLDPWD", oldpwd);
+		set_env(&env, "PWD", newpwd);
+	}
 	return (0);
 }

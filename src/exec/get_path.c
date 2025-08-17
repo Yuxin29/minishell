@@ -11,7 +11,7 @@ char	*get_env(t_env *env, char *key)
 	return (NULL);
 }
 
-static char	*match_cmd_in_path(char **paths, char *cmd)
+static char	*match_cmd_in_path(char **paths, char *cmd, t_exec_path *exec_cmd)
 {
 	int		i;
 	char	*joinslash;
@@ -22,18 +22,19 @@ static char	*match_cmd_in_path(char **paths, char *cmd)
 	{
 		joinslash = ft_strjoin(paths[i], "/");
 		if (!joinslash)
-			return (NULL);
+			return (free_malloc_fail_null_status(NULL, exec_cmd));
 		com_path = ft_strjoin(joinslash, cmd);
-		free(joinslash); //!!free it before return, because after return it can't free anymore
+		free(joinslash);
 		if (!com_path)
-			return (NULL);
-		if (access(com_path, X_OK) == 0) //0 means ok, if it can be executed then free everything
+			return (free_malloc_fail_null_status(NULL, exec_cmd));
+		if (access(com_path, X_OK) == 0)
 			return (com_path);
 		free(com_path);
 		i++;
 	}
 	return (NULL);
 }
+
 
 char	*get_cmd_path(char *cmd, t_env *env_list, t_exec_path *exec_cmd)
 {
@@ -54,7 +55,7 @@ char	*get_cmd_path(char *cmd, t_env *env_list, t_exec_path *exec_cmd)
 	paths = ft_split(path_value, ':');
 	if (!paths)
 		return (free_malloc_fail_null_status(NULL, exec_cmd));
-	cmd_path = match_cmd_in_path(paths, cmd);
+	cmd_path = match_cmd_in_path(paths, cmd, exec_cmd);
 	ft_free_arr(paths);
 	return (cmd_path);
 }

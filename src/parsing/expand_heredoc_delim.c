@@ -47,7 +47,7 @@ char	*get_env_value_from_substr(char *input, int start, int len, char **envp)
 // examlpe of variable expandable in a redirection, and this variable is $?
 // ls > output_$?.txt
 // cat output_0.txt
-// FIX ME value = ft_strdup(""); //null chekck
+// value = ft_strdup(""); null chekck
 char	*replace_variable(t_exec_path *cmd, char *input, int pos, char **envp)
 {
 	int		start;
@@ -64,6 +64,8 @@ char	*replace_variable(t_exec_path *cmd, char *input, int pos, char **envp)
 	value = get_env_value_from_substr(input, start, var_len, envp);
 	if (!value)
 		value = ft_strdup("");
+	if (!value)
+		return(free_malloc_fail_null(NULL));
 	prefix = ft_substr(input, 0, pos);
 	suffix = ft_strdup(input + start + var_len);
 	if (!prefix)

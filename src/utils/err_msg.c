@@ -1,6 +1,7 @@
 #include "minishell.h"
 
 // use for syntax cheack in before lexing and parsing
+// set status to 2 for syntax error
 void	errmsg_set_status(char *msg, t_exec_path *cmd)
 {
 	if (msg)
@@ -8,7 +9,7 @@ void	errmsg_set_status(char *msg, t_exec_path *cmd)
 	cmd->exit_status = 2;
 }
 
-//for cd
+// for cd system error 
 int	perror_return_one(char *str)
 {
 	if (str)
@@ -16,7 +17,7 @@ int	perror_return_one(char *str)
 	return (1);
 }
 
-//for cd
+//for cd other erros like non numeric argv
 int	errmsg_return_one(char *str)
 {
 	if (str)
@@ -32,7 +33,7 @@ void	print_error(const char *arg)
 	ft_putstr_fd(" : not a valid identifier\n", 2);
 }
 
-//used in main
+// used in main
 int	handle_token_build_failure(t_exec_path *exec_cmd, t_env **env_list)
 {
 	ft_free_arr(exec_cmd->envp);

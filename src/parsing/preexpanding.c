@@ -13,7 +13,7 @@ void	append_to_res(char *res, int *res_idx, const char *val)
 // success, expanded
 // not an env var to expand here
 // if (!key) return (0); //malloc fails, need to perror here
-// FIX ME val = ft_strdup(""); null check
+// val = ft_strdup(""); null check
 int	try_expand_env_var(char *raw_line, int idx[2], char *res, t_exec_path *cmd)
 {
 	int		len;
@@ -27,7 +27,7 @@ int	try_expand_env_var(char *raw_line, int idx[2], char *res, t_exec_path *cmd)
 		key = ft_substr(raw_line, idx[0] + 1, len);
 		if (!key)
 		{
-			perror("malloc: ");
+			perror("malloc");
 			return (0);
 		}
 		val = get_env_value(cmd->envp, key);
@@ -35,6 +35,11 @@ int	try_expand_env_var(char *raw_line, int idx[2], char *res, t_exec_path *cmd)
 		idx[0] += len + 1;
 		if (!val)
 			val = ft_strdup("");
+		if (!val)
+		{
+			perror("malloc");
+			return (0);
+		}
 		append_to_res(res, &idx[1], val);
 		if (val != NULL && val[0] != '\0')
 			free(val);

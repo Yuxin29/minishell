@@ -1,7 +1,6 @@
 #include "minishell.h"
 
 // need to null check the return value, but not need to free source str
-// ATTENTION: when use it, need to be sure s1 and s2 are malloced
 char	*ft_strjoin_free(char *s1, char *s2)
 {
 	char	*joined;

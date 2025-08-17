@@ -15,7 +15,7 @@ t_redir	*create_redir_node(t_token *redir_tok, t_token *file_tok, t_exec_path *c
 	{
 		new->heredoc_delim = ft_strdup(file_tok->str);
 		if (!new->heredoc_delim)
-			return (free(new), perror("malloc: "), NULL);
+			return (free(new), perror("malloc"), NULL);
 		new->file = creat_heredoc_file(new->heredoc_delim, new->quoted, cmd);
 		if (!new->file)
 			return (free(new->heredoc_delim), free(new), NULL);
@@ -83,14 +83,14 @@ int	malloc_for_agrv(t_cmd *cmd, t_token *tokens)
 	cmd->argv = malloc(sizeof(char *) * (len + 1));
 	if (!cmd->argv)
 	{
-		perror("malloc: ");
+		perror("malloc");
 		return (-1);
 	}
 	cmd->quote_type = malloc(sizeof(int) * len);
 	if (!cmd->quote_type)
 	{
 		ft_free_arr(cmd->argv);
-		perror("malloc: ");
+		perror("malloc");
 		return (-1);
 	}
 	return (len);

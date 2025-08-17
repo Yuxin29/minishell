@@ -408,10 +408,7 @@ bash output = ()
 
 // #include <unistd.h>         //access, access, close, fork
 // #include <stdlib.h>         //malloc, free
-// #include <fcntl.h
-> $USER
-ksdjf
->
+// #include <fcntl.h>
 // #include <stdio.h>  //readline, printf
 // #include <string.h>
 // # include <errno.h>

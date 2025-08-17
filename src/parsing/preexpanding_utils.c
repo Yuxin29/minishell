@@ -107,7 +107,7 @@ int	handle_exit_status(char *raw_line, int ids[2], char *res, t_exec_path *cmd)
 		exit_status_str = ft_itoa(cmd->exit_status);
 		if (!exit_status_str)
 		{
-			perror("malloc: ");
+			perror("malloc");
 			return (0);
 		}
 		while (exit_status_str[k])

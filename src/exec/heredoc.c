@@ -25,7 +25,7 @@ static int	get_tmpfile_fd(char **tmp_file)
 	*tmp_file = get_tmp_filepath();
 	if (!*tmp_file)
 	{
-		perror("malloc: ");
+		perror("malloc");
 		return (-1);
 	}
 	fd = open(*tmp_file, O_WRONLY | O_CREAT | O_TRUNC, 0600);

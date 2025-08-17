@@ -1,31 +1,31 @@
 #include "minishell.h"
 
-char	*get_part(char *line, int *i, char	*part_quote, t_exec_path *cmd)
+char *get_part(char *line, int *i, char *part_quote, t_exec_path *cmd)
 {
-	char	*part;
+    char *part;
 
-	if (line[*i] == '$' && line[*i + 1] == '"')
-	{
-		(*i)++;
-		part = get_quoted_part(line, i, cmd);
-		*part_quote = 3;
-	}
-	else if (line[*i] == '\'')
-	{
-		part = get_quoted_part(line, i, cmd);
-		*part_quote = 1;
-	}
-	else if (line[*i] == '"')
-	{
-		part = get_quoted_part(line, i, cmd);
-		*part_quote = 2;
-	}
-	else
-	{
-		part = get_unquoted_part(line, i, cmd);
-		*part_quote = 0;
-	}
-	return (part);
+    if (line[*i] == '$' && line[*i + 1] == '"')  // $"
+    {
+        (*i)++;
+        *part_quote = 3;
+        part = get_quoted_part(line, i, cmd);
+    }
+    else if (line[*i] == '\'')  // single quote
+    {
+        *part_quote = 1;
+        part = get_quoted_part(line, i, cmd);
+    }
+    else if (line[*i] == '"')  // double quote
+    {
+        *part_quote = 2;
+        part = get_quoted_part(line, i, cmd);
+    }
+    else  // unquoted
+    {
+        *part_quote = 0;
+        part = get_unquoted_part(line, i, cmd);
+    }
+    return part;
 }
 
 t_token	*malloc_and_set_token(char *temp, int q, t_exec_path *cmd)
@@ -45,7 +45,7 @@ t_token	*malloc_and_set_token(char *temp, int q, t_exec_path *cmd)
 // helper to store/retrieve last quote type
 int	save_last_quote(int new_val, int mode)
 {
-	int last;
+	static int last;
 
 	last = 0;
 	if (mode == 1) // set
@@ -53,7 +53,7 @@ int	save_last_quote(int new_val, int mode)
 	return (last);
 }
 
-char	*append_next_part(char *temp, char *line, int *i, t_exec_path *cmd)
+char	*append_next_part(char *temp, char *line, int *i, t_exec_path *cmd, int *q)
 {
 	char	*part;
 	char	part_quote;
@@ -68,31 +68,26 @@ char	*append_next_part(char *temp, char *line, int *i, t_exec_path *cmd)
 	temp = ft_strjoin_free(temp, part);
 	if (!temp)
 		return (free_malloc_fail_null_status(part, cmd));
+	if (part_quote > *q)        // <-- minimal fix: track highest-priority quote
+		*q = part_quote;
 	save_last_quote(part_quote, 1);
 	return (temp);
 }
 
-// if it is a world token
 t_token	*build_word_token(char *line, int *i, t_exec_path *cmd)
 {
 	char	*temp;
-	char	q;
-	int		part_quote;
+	int		q;
 
 	q = 0;
 	temp = NULL;
 	while (line[*i] && !ft_isspace(line[*i])
 		&& line[*i] != '<' && line[*i] != '>' && line[*i] != '|')
 	{
-		temp = append_next_part(temp, line, i, cmd);
+		temp = append_next_part(temp, line, i, cmd, &q);  // pass &q
 		if (!temp)
 			return (NULL);
-		part_quote = save_last_quote(0, 0); 
-		if (q == 0)
-			q = part_quote;
-		else if (q != part_quote)
-			q = 0;
-		if (part_quote && (line[*i] == '<' || line[*i] == '>' || line[*i] == '|'
+		if (q && (line[*i] == '<' || line[*i] == '>' || line[*i] == '|'
 				|| ft_isspace(line[*i]) || line[*i] == '\0'))
 			break ;
 	}

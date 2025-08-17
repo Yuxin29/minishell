@@ -10,6 +10,8 @@ t_redir	*create_redir_node(t_token *redir_tok, t_token *file_tok, t_exec_path *c
 		return ((t_redir *)free_malloc_fail_null(NULL));
 	new->type = redir_tok->t_type;
 	new->next = NULL;
+	//printf("%s\n", "yuxin debug");
+	//printf("%i\n", file_tok->quote_type);
 	new->quoted = file_tok->quote_type; //should give quote type here
 	if (redir_tok->t_type == 5)
 	{

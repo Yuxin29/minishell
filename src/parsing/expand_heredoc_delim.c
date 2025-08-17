@@ -47,7 +47,7 @@ char	*get_env_value_from_substr(char *input, int start, int len, char **envp)
 // examlpe of variable expandable in a redirection, and this variable is $?
 // ls > output_$?.txt
 // cat output_0.txt
-// value = get_env_value_from_substr(input, start, var_len, envp);
+// FIX ME value = ft_strdup(""); //null chekck
 char	*replace_variable(t_exec_path *cmd, char *input, int pos, char **envp)
 {
 	int		start;
@@ -63,7 +63,7 @@ char	*replace_variable(t_exec_path *cmd, char *input, int pos, char **envp)
 		var_len++;
 	value = get_env_value_from_substr(input, start, var_len, envp);
 	if (!value)
-		value = ft_strdup(""); //null chekck
+		value = ft_strdup("");
 	prefix = ft_substr(input, 0, pos);
 	suffix = ft_strdup(input + start + var_len);
 	if (!prefix)
@@ -96,24 +96,8 @@ char	*expand_variables_in_str(t_exec_path *cmd, char *input, char **envp)
 	return (input);
 }
 
-
-//call this after getting the cmd list
-// I only need to expand << str here,
-// call this after getting the cmd list
-// I only need to expand << $str, str without any quotes here,
-// mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ cat << $USER
-// > mikko 123
-// > $USER 123
-// > mikko
-// > $USER
-// mikko 123
-// mikko 123
-// mikko
-// minishell heredoc> $USER
-// mikko 123
-// $USER 123
-// mikko
-// minishell$
+// I call this after getting the cmd list
+// I only need to expand the delim of << $str, str without any quotes here,
 // creat_heredoc_file created in parsing phase before this already
 void	expand_heredoc_delim(t_exec_path *cmd, t_cmd *cmd_list, char **envp)
 {

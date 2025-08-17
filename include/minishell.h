@@ -29,7 +29,6 @@ extern volatile sig_atomic_t	g_signal;
 	"minishell: syntax error: special characters"
 # define SYNTAX_ERR_QUOTES \
 	"minishell: syntax error: unclosed quotes"
-
 //common shell cmd line max length
 # define LINE_SIZE 8192
 # define PATH_MAX 4096
@@ -168,17 +167,11 @@ t_token		*loop_to_next(t_token *token_head);
 t_token		*get_one_new_cmd(t_token *token_head, t_cmd *cmd_current, t_exec_path *exec_cmd);
 
 // parser.c
-// t_redir		*create_redir_node(t_token *redir_tok, t_token *file_tok, t_exec_path *cmd, char **envp);
-// t_token		*get_one_redirection(t_cmd *cmd, t_token *tokens, t_exec_path *exec_cmd);
-// t_token		*parse_redirections(t_cmd *cmd, t_token *tokens, t_exec_path *exec_cmd);
-// int			malloc_for_agrv(t_cmd *cmd, t_token *tokens);
-// t_token		*parse_argv(t_cmd *cmd, t_token *tokens);
-t_redir		*create_redir_node(t_token *redir_tok, t_token *file_tok, t_exec_path *cmd); //modify
+t_redir		*create_redir_node(t_token *redir_tok, t_token *file_tok, t_exec_path *cmd);
 t_token		*get_one_redirection(t_cmd *cmd, t_token *tokens, t_exec_path *exec_cmd);
 t_token		*parse_redirections(t_cmd *cmd, t_token *tokens, t_exec_path *exec_cmd);
 int			malloc_for_agrv(t_cmd *cmd, t_token *tokens);
 t_token		*parse_argv(t_cmd *cmd, t_token *tokens);
-
 
 // parsing_to_cmd_list.c
 int			check_new_cmd(t_exec_path *cmd, t_token *token, t_cmd *cmd1, t_cmd *cmd2);
@@ -187,16 +180,11 @@ t_cmd		*build_command_list(t_exec_path *cmd, t_token *token_head);
 
 // expander.c
 // called after parsing, expanding every thing but not heredocs
-// char		*get_env_value(char **envp, const char *key);
-// char		*get_env_value_from_substr(char *input, int start, int var_len, char **envp);
-// char		*replace_variable(t_exec_path *cmd, char *input, int pos, char **envp);
-// char		*expand_variables_in_str(t_exec_path *cmd, char *input, char **envp);
-// void		expand_heredoc_delim(t_exec_path *cmd, t_cmd *cmd_list, char **envp);
-char	*get_env_value(char **envp, const char *key);
-char	*get_env_value_from_substr(char *input, int start, int var_len, char **envp);
-char	*replace_variable(t_exec_path *cmd, char *input, int pos, char **envp);
-char	*expand_variables_in_str(t_exec_path *cmd, char *input, char **envp);
-void	expand_heredoc_delim(t_exec_path *cmd, t_cmd *cmd_list, char **envp);
+char		*get_env_value(char **envp, const char *key);
+char		*get_env_value_from_substr(char *input, int start, int var_len, char **envp);
+char		*replace_variable(t_exec_path *cmd, char *input, int pos, char **envp);
+char		*expand_variables_in_str(t_exec_path *cmd, char *input, char **envp);
+void		expand_heredoc_delim(t_exec_path *cmd, t_cmd *cmd_list, char **envp);
 
 //---------------------------exec part---------------------------------------------//
 
@@ -216,7 +204,7 @@ void		execute_pipeline(t_exec_path *exec_cmd, t_env *env_list);
 //heredoc_pipline_utils
 void		handle_execve_or_exit_inchild(t_exec_path *exec_cmd, t_cmd *cmd);
 void		wait_exit(t_exec_path *exec_cmd, pid_t last_pid);
-char		*cleanup_heredoc(int fd, int saved_stdin, char *tmp_file, const char *err_msg);
+char		*cleanup_heredoc(int fd, int saved_stdin, char *tmp_file, char *err_msg);
 
 //redir
 int			check_and_apply_redirections(t_cmd *cmd);
@@ -228,19 +216,19 @@ char		*creat_heredoc_file(char *delim, int quoted, t_exec_path *cmd);
 char		*get_env(t_env *env, char *key);
 char		*get_cmd_path(char *cmd, t_env *env_list, t_exec_path *exec_cmd);
 
-//---------------------------built_in part------------------------------------//
+//---------------------------built_in part--------------------------------//
 
 //7 builtin cmds:
 //builtins_opera1
-int		ft_cd(char **argv, t_env *env); //modify
-int		ft_echo(char **argv);
-int		ft_exit(char **argv, t_exec_path *exec_cmd);
+int			ft_cd(char **argv, t_env *env); //modify
+int			ft_echo(char **argv);
+int			ft_exit(char **argv, t_exec_path *exec_cmd);
 //builtins_opera2
-int		ft_pwd(void);
-int		ft_env(t_env *env);
-int		ft_unset(char **argv, t_env **env);
+int			ft_pwd(void);
+int			ft_env(t_env *env);
+int			ft_unset(char **argv, t_env **env);
 //builtins_opera3
-int		ft_export(char **argv, t_env **env);
+int			ft_export(char **argv, t_env **env);
 //builtins_opera2
 int			ft_pwd(void);
 int			ft_env(t_env *env);
@@ -248,7 +236,7 @@ int			ft_unset(char **argv, t_env **env);
 //builtins_opera3
 int			ft_export(char **argv, t_env **env);
 
-//---------------------------env part---------------------------------------------//
+//---------------------------env part---------------------------------------//
 // NOTES
 // in minishell,
 // we might change the elements of the original env(impletment unset, export),
@@ -273,7 +261,7 @@ int			ft_is_numeric(char *str);
 int			env_count(t_env *env);
 void		sort_copy_list(t_env **copy_list, int size);
 
-//---------------------------signal part---------------------------------------------//
+//---------------------------signal part-------------------------------------//
 //signals.c
 // 2 + 2 static inside
 void		signal_init(void);
@@ -284,7 +272,7 @@ void		signal_heredoc(void);
 void		signal_ignore(void);
 int			hd_is_interrupted(void);
 
-//---------------------------utils part----------------------------------------------//
+//---------------------------utils part---------------------------------//
 // free.c
 // free all kind of linked node or single node
 void		free_token_list(t_token *token_head);

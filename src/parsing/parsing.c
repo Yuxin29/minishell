@@ -10,9 +10,7 @@ t_redir	*create_redir_node(t_token *redir_tok, t_token *file_tok, t_exec_path *c
 		return ((t_redir *)free_malloc_fail_null(NULL));
 	new->type = redir_tok->t_type;
 	new->next = NULL;
-	//printf("%s\n", "yuxin debug");
-	//printf("%i\n", file_tok->quote_type);
-	new->quoted = file_tok->quote_type; //should give quote type here
+	new->quoted = file_tok->quote_type; 
 	if (redir_tok->t_type == 5)
 	{
 		new->heredoc_delim = ft_strdup(file_tok->str);
@@ -21,10 +19,6 @@ t_redir	*create_redir_node(t_token *redir_tok, t_token *file_tok, t_exec_path *c
 		new->file = creat_heredoc_file(new->heredoc_delim, new->quoted, cmd); //modify
 		if (!new->file)
 			return (free(new->heredoc_delim), free(new), NULL);
-		// new->heredoc_delim = ft_strdup(file_tok->str);
-		// if (!new->heredoc_delim)
-		// 	return (free(new), (t_redir *)free_malloc_fail_null(NULL));
-   		// new->file = NULL;
 	}
 	else
 	{

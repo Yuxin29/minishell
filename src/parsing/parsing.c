@@ -15,16 +15,16 @@ t_redir	*create_redir_node(t_token *redir_tok, t_token *file_tok, t_exec_path *c
 	{
 		new->heredoc_delim = ft_strdup(file_tok->str);
 		if (!new->heredoc_delim)
-			return (free(new), perror("malloc"), NULL);
+			return (free(new), perror("malloc"), (t_redir *)NULL);
 		new->file = creat_heredoc_file(new->heredoc_delim, new->quoted, cmd);
 		if (!new->file)
-			return (free(new->heredoc_delim), free(new), NULL);
+			return (free(new->heredoc_delim), free(new), NULL); //yuxin question is (!new->file already perrored in creat_heredoc_file)
 	}
 	else
 	{
 		new->file = ft_strdup(file_tok->str);
 		if (!new->file)
-			return (free(new), (t_redir *)free_malloc_fail_null(NULL));
+			return (free(new), perror("malloc"), (t_redir *)NULL);
 		new->heredoc_delim = NULL;
 	}
 	return (new);
@@ -43,10 +43,7 @@ t_token	*get_one_redirection(t_cmd *cmd, t_token *tokens, t_exec_path *exec_cmd)
 		return (NULL);
 	new_redir->quoted = tokens->quote_type;
 	if (!cmd->redirections)
-	{
-		free_redirections(cmd);
 		cmd->redirections = new_redir;
-	}
 	else
 	{
 		last = cmd->redirections;
@@ -97,8 +94,7 @@ int	malloc_for_agrv(t_cmd *cmd, t_token *tokens)
 }
 
 // handle normal word_tokens, string and strings
-// if (!tokens)
-// 	return (NULL);
+// tokens = tokens->next->next; safe becuase syntax already checked
 t_token	*parse_argv(t_cmd *cmd, t_token *tokens)
 {
 	int	i;

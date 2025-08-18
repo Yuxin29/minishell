@@ -58,7 +58,8 @@ static int	parse_and_expand(t_exec_path *exec_cmd, char *expanded_line, t_env **
 		ft_putstr_fd("Error: build command list failed from memory failure\n", 2);
 		exit(EXIT_FAILURE);
 	}
-	expand_heredoc_delim(exec_cmd, exec_cmd->whole_cmd, exec_cmd->envp);
+	//expand_heredoc_delim(exec_cmd, exec_cmd->whole_cmd, exec_cmd->envp); // yuxin added not needed, lin has expanded in heredoc,c, handle_heredoc_input
+	// but expand_heredoc_delim.c is still needed, helpers functions useful inside
 	return (1);
 }
 

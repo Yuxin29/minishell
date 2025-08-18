@@ -5,8 +5,7 @@
 // after redirections it can not be followed by pipe or redirectiosn
 // after pipe, it can not be followed by another pipe
 // at the end of the tokens, it can not be pipe or redirections
-// if (!token_head)
-	// 	return (1); this already check in main??
+// if (!token_head) already check in  main
 void	check_token_syntax(t_token *token_head, t_exec_path *cmd)
 {
 	cmd->exit_status = 0;
@@ -28,7 +27,8 @@ void	check_token_syntax(t_token *token_head, t_exec_path *cmd)
 	}
 }
 
-//used in parse_argv, for malloc str of strs
+// used in parse_argv, for malloc str of strs
+// > followed by no file already sorted out in check_token_syntax
 int	count_argv(t_token *start)
 {
 	int	count;

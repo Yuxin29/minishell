@@ -14,8 +14,7 @@ char	*get_env_value(char **envp, const char *key)
 		split = ft_split(envp[j], '=');
 		if (!split || !*split)
 		{
-			if (!split)
-				ft_free_arr(split);
+			ft_free_arr(split);
 			return (free_malloc_fail_null(NULL));
 		}
 		if (ft_strcmp(split[0], (char *)key) == 0)
@@ -31,6 +30,7 @@ char	*get_env_value(char **envp, const char *key)
 	return (NULL);
 }
 
+//
 char	*get_env_value_from_substr(char *input, int start, int len, char **envp)
 {
 	char	*var_name;

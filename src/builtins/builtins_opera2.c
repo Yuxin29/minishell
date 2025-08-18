@@ -69,7 +69,6 @@ int	ft_unset(char **argv, t_env **env)
 // 	return (0);
 // }
 
-
 int	ft_cd(char **argv, t_env *env)
 {
 	char	oldpwd[4096];
@@ -80,9 +79,10 @@ int	ft_cd(char **argv, t_env *env)
 		fprintf(stderr, "cd: missing argument\n");
 		return (1);
 	}
+	if (argv[2])
+		return (errmsg_return_one("cd: too many arguments")); //modify 0818
 	if (!getcwd(oldpwd, sizeof(oldpwd)))
 		oldpwd[0] = '\0';
-
 	if (chdir(argv[1]) != 0)
 	{
 		perror("cd");

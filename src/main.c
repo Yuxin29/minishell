@@ -2,7 +2,7 @@
 
 volatile sig_atomic_t	g_signal = 0;
 
-static int	run_command(t_exec_path *exec_cmd, t_env **env_list)
+static int	setup_command_paths(t_exec_path *exec_cmd, t_env **env_list)
 {
 	t_cmd	*tmp;
 
@@ -15,15 +15,26 @@ static int	run_command(t_exec_path *exec_cmd, t_env **env_list)
 		{
 			tmp->cmd_path = get_cmd_path(tmp->argv[0], *env_list, exec_cmd);
 			if (exec_cmd->exit_status == 1)
-				return (free_t_exec_path(exec_cmd), 0);
+				return (0);
 		}
 		else
 			tmp->cmd_path = NULL;
 		tmp = tmp->next;
 	}
+	return (1);
+}
+
+static int	run_command(t_exec_path *exec_cmd, t_env **env_list)
+{
+	if (!setup_command_paths(exec_cmd, env_list))
+	{
+		free_t_exec_path(exec_cmd);
+		return (0);
+	}
 	if (!exec_cmd->whole_cmd->next)
 	{
-		if (exec_cmd->whole_cmd->argv && is_builtin(exec_cmd->whole_cmd->argv[0]))
+		if (exec_cmd->whole_cmd->argv
+			&& is_builtin(exec_cmd->whole_cmd->argv[0]))
 			run_builtin_with_redir(exec_cmd, env_list);
 		else
 			execute_single_cmd(exec_cmd);
@@ -31,12 +42,16 @@ static int	run_command(t_exec_path *exec_cmd, t_env **env_list)
 	else
 		execute_pipeline(exec_cmd, *env_list);
 	if (exec_cmd->exit_status == 1)
-		return (free_t_exec_path(exec_cmd), 0);
+	{
+		free_t_exec_path(exec_cmd);
+		return (0);
+	}
 	return (1);
 }
 
 // lexing, parsing, and post-expandh eredoc_delim
-static int	parse_and_expand(t_exec_path *exec_cmd, char *expanded_line, t_env **env_list)
+static int	parse_and_expand(t_exec_path *exec_cmd, char *expanded_line,
+	t_env **env_list)
 {
 	t_token	*token_list;
 
@@ -55,7 +70,7 @@ static int	parse_and_expand(t_exec_path *exec_cmd, char *expanded_line, t_env **
 		if (exec_cmd->exit_status == 2 || exec_cmd->exit_status == 130)
 			return (0);
 		free_env_list(*env_list);
-		ft_putstr_fd("Error: build command list failed from memory failure\n", 2);
+		ft_putstr_fd("Error: build command list failed\n", 2);
 		exit(EXIT_FAILURE);
 	}
 	expand_heredoc_delim(exec_cmd, exec_cmd->whole_cmd, exec_cmd->envp);
@@ -92,7 +107,7 @@ static void	handle_line(char *line, t_env **env_list, t_exec_path *exec_cmd)
 }
 
 //read line, execute cmd loop of minishell
-static void	minishell_loop(t_env *env_list)
+static void	minishell_loop(t_env **env_list)
 {
 	t_exec_path	exec_cmd;
 	char		*line;
@@ -109,11 +124,11 @@ static void	minishell_loop(t_env *env_list)
 		if (*line)
 		{
 			add_history(line);
-			handle_line(line, &env_list, &exec_cmd);
+			handle_line(line, env_list, &exec_cmd);
 		}
 	}
 	rl_clear_history();
-	free_env_list(env_list);
+	free_env_list(*env_list);
 }
 
 //initiate env and enter cmd loop
@@ -131,6 +146,6 @@ int	main(int argc, char **argv, char **envp)
 		ft_putstr_fd("Error: env list initialized failed\n", 2);
 		exit(EXIT_FAILURE);
 	}
-	minishell_loop(env_list);
+	minishell_loop(&env_list);
 	return (0);
 }

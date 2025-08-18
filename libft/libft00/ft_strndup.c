@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strndup.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yuwu <yuwu@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: linliu <linliu@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/23 16:34:58 by yuwu              #+#    #+#             */
-/*   Updated: 2025/07/23 16:35:25 by yuwu             ###   ########.fr       */
+/*   Created: 2025/08/18 14:58:11 by linliu            #+#    #+#             */
+/*   Updated: 2025/08/18 15:00:21 by linliu           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 char	*ft_strndup(const char *s, int n)
 {
 	char	*dst;
-	int	i;
+	int		i;
 
 	if (!s)
 		return (NULL);

@@ -64,9 +64,10 @@ t_token	*parse_if_no_argv(t_cmd *cmd_current, t_token *token_head)
 }
 
 // generate on single cmd struct
-// parse_argv(cmd_current, argv_tok); 
+// parse_argv(cmd_current, argv_tok);
 // this function has a return value, need to chekc
-t_token	*get_one_new_cmd(t_token *token_head, t_cmd *cmd_current, t_exec_path *exec_cmd)
+t_token	*get_one_new_cmd(t_token *token_head, t_cmd *cmd_current,
+	t_exec_path *exec_cmd)
 {
 	t_token	*argv_tok1;
 

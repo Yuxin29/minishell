@@ -10,7 +10,7 @@ static int	split_env(char *str, char **key, char **value)
 		*key = ft_strdup(str);
 		if (!*key)
 			return (0);
-		*value = ft_strdup(""); // FOO
+		*value = ft_strdup("");
 		if (!*value)
 			return (free(*key), 0);
 	}

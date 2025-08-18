@@ -33,7 +33,7 @@ extern volatile sig_atomic_t	g_signal;
 //common shell cmd line max length
 # define BUF_SIZE 8192
 
-# define PATH_MAX 4096
+# define PATH_MAX 4096 //PATH_MAX is 4096 on Linux by convention and practicality.
 
 //needed for expand, EMPTY=
 //!!! not sure it can be used, there is risk of freeing stack memory
@@ -98,18 +98,15 @@ typedef struct s_cmd
 }	t_cmd;
 
 //exec
-// *whole_cmd;	whole cmd_list
-// **envp;  	the copy one
 typedef struct s_exec_path
 {
 	t_cmd	*whole_cmd;
 	char	**envp;
 	int		exit_status;
+	int		orig_std[2]; //modify 0818
 }	t_exec_path;
 
 //for inv
-//eg. 	key		USER
-// 		value 	LinLiu
 typedef struct s_env
 {
 	char			*key;
@@ -174,12 +171,7 @@ t_token		*loop_to_next(t_token *token_head);
 t_token		*get_one_new_cmd(t_token *token_head, t_cmd *cmd_current, t_exec_path *exec_cmd);
 
 // parser.c
-// t_redir		*create_redir_node(t_token *redir_tok, t_token *file_tok, t_exec_path *cmd, char **envp);
-// t_token		*get_one_redirection(t_cmd *cmd, t_token *tokens, t_exec_path *exec_cmd);
-// t_token		*parse_redirections(t_cmd *cmd, t_token *tokens, t_exec_path *exec_cmd);
-// int			malloc_for_agrv(t_cmd *cmd, t_token *tokens);
-// t_token		*parse_argv(t_cmd *cmd, t_token *tokens);
-t_redir		*create_redir_node(t_token *redir_tok, t_token *file_tok, t_exec_path *cmd); //modify
+t_redir		*create_redir_node(t_token *redir_tok, t_token *file_tok, t_exec_path *cmd);
 t_token		*get_one_redirection(t_cmd *cmd, t_token *tokens, t_exec_path *exec_cmd);
 t_token		*parse_redirections(t_cmd *cmd, t_token *tokens, t_exec_path *exec_cmd);
 int			malloc_for_agrv(t_cmd *cmd, t_token *tokens);
@@ -193,16 +185,11 @@ t_cmd		*build_command_list(t_exec_path *cmd, t_token *token_head);
 
 // expander.c
 // called after parsing, expanding every thing but not heredocs
-// char		*get_env_value(char **envp, const char *key);
-// char		*get_env_value_from_substr(char *input, int start, int var_len, char **envp);
-// char		*replace_variable(t_exec_path *cmd, char *input, int pos, char **envp);
-// char		*expand_variables_in_str(t_exec_path *cmd, char *input, char **envp);
-// void		expand_heredoc_delim(t_exec_path *cmd, t_cmd *cmd_list, char **envp);
-char	*get_env_value(char **envp, const char *key);
-char	*get_env_value_from_substr(char *input, int start, int var_len, char **envp);
-char	*replace_variable(t_exec_path *cmd, char *input, int pos, char **envp);
-char	*expand_variables_in_str(t_exec_path *cmd, char *input, char **envp);
-void	expand_heredoc_delim(t_exec_path *cmd, t_cmd *cmd_list, char **envp);
+char		*get_env_value(char **envp, const char *key);
+char		*get_env_value_from_substr(char *input, int start, int var_len, char **envp);
+char		*replace_variable(t_exec_path *cmd, char *input, int pos, char **envp);
+char		*expand_variables_in_str(t_exec_path *cmd, char *input, char **envp);
+void		expand_heredoc_delim(t_exec_path *cmd, t_cmd *cmd_list, char **envp);
 
 //---------------------------exec part---------------------------------------------//
 
@@ -238,32 +225,17 @@ char		*get_cmd_path(char *cmd, t_env *env_list, t_exec_path *exec_cmd);
 
 //7 builtin cmds:
 //builtins_opera1
-int		ft_cd(char **argv, t_env *env); //modify
+int		ft_cd(char **argv, t_env *env);
 int		ft_echo(char **argv);
-int		ft_exit(char **argv, t_exec_path *exec_cmd);
+int		ft_exit(char **argv, t_exec_path *exec_cmd, t_env **env_list);//modify 0818
 //builtins_opera2
 int		ft_pwd(void);
 int		ft_env(t_env *env);
 int		ft_unset(char **argv, t_env **env);
 //builtins_opera3
 int		ft_export(char **argv, t_env **env);
-//builtins_opera2
-int			ft_pwd(void);
-int			ft_env(t_env *env);
-int			ft_unset(char **argv, t_env **env);
-//builtins_opera3
-int			ft_export(char **argv, t_env **env);
 
 //---------------------------env part---------------------------------------------//
-// NOTES
-// in minishell,
-// we might change the elements of the original env(impletment unset, export),
-// so we have to copy the oringal env, and change them in copy version
-// first step is converting every envp[i] to a signal node,
-// and connect these nodes to a linked list,
-// in which we can add or delete env elements more easily than in array,
-// after modifying the env list, we should convert linked list to array
-
 //get env list
 t_env		*env_new_node(char *key, char *value);
 t_env		*env_list_init(char **envp);

@@ -5,14 +5,14 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: linliu <linliu@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/23 16:34:46 by yuwu              #+#    #+#             */
-/*   Updated: 2025/08/15 17:22:20 by linliu           ###   ########.fr       */
+/*   Created: 2025/08/18 14:59:12 by linliu            #+#    #+#             */
+/*   Updated: 2025/08/18 14:59:15 by linliu           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-int ft_isspace(char c)
+int	ft_isspace(char c)
 {
 	return (c == ' ' || c == '\t' || c == '\n'
 		|| c == '\v' || c == '\f' || c == '\r');

@@ -1,5 +1,16 @@
 #include "minishell.h"
 
+int	ft_env(t_env *env)
+{
+	while (env)
+	{
+		if (env->key && env->value != NULL)
+			printf("%s=%s\n", env->key, env->value);
+		env = env->next;
+	}
+	return (0);
+}
+
 static void	unset_env(t_env **env, char *key)
 {
 	t_env	*cur;
@@ -38,7 +49,6 @@ int	ft_unset(char **argv, t_env **env)
 	return (0);
 }
 
-
 // NAME		chdir, - change working directory
 // SYNOPSIS	int chdir(const char *path);
 // On success, zero is returned.  On error, -1 is returned
@@ -69,18 +79,16 @@ int	ft_unset(char **argv, t_env **env)
 // 	set_env(env, "PWD", path);
 // 	return (0);
 // }
+// return (errmsg_return_one("cd: too many arguments")); //modify 0818
 int	ft_cd(char **argv, t_env *env)
 {
 	char	oldpwd[4096];
 	char	newpwd[4096];
 
 	if (!argv[1])
-	{
-		fprintf(stderr, "cd: missing argument\n");
-		return (1);
-	}
+		return (errmsg_return_nbr("cd: missing argument", 0, 1));
 	if (argv[2])
-		return (errmsg_return_one("cd: too many arguments")); //modify 0818
+		return (errmsg_return_nbr("cd: too many arguments", 0, 1));
 	if (!getcwd(oldpwd, sizeof(oldpwd)))
 		oldpwd[0] = '\0';
 	if (chdir(argv[1]) != 0)

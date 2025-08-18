@@ -2,29 +2,31 @@
 
 // $" treated as quoted type 3, skip $ and then treat as a double quote
 // return part and updated the part_quote
+// $"
+// $"
+// double quote
+// unquoted
 char	*get_part(char *line, int *i, char *part_quote, t_exec_path *cmd)
 {
 	char	*part;
 
-	if (line[*i] == '$' && line[*i + 1] == '"')  // $"
+	if (line[*i] == '$' && line[*i + 1] == '"')
 	{
 		(*i)++;
 		*part_quote = 3;
 		part = get_quoted_part(line, i, cmd);
 	}
-	else if (line[*i] == '\'')  // single quote
-
+	else if (line[*i] == '\'')
 	{
 		*part_quote = 1;
 		part = get_quoted_part(line, i, cmd);
 	}
-	else if (line[*i] == '"')  // double quote
+	else if (line[*i] == '"')
 	{
 		*part_quote = 2;
 		part = get_quoted_part(line, i, cmd);
 	}
-	else  // unquoted
-
+	else
 	{
 		*part_quote = 0;
 		part = get_unquoted_part(line, i, cmd);
@@ -72,6 +74,13 @@ char	*append_next_part(char *temp, char *part, int part_quote, int *q)
 	return (temp);
 }
 
+static t_token	*possible_free_return_null(char *temp)
+{
+	if (temp)
+		free(temp);
+	return (NULL);
+}
+
 // build t_world token and also redirect file token
 t_token	*build_word_token(char *line, int *i, t_exec_path *cmd)
 {
@@ -87,16 +96,12 @@ t_token	*build_word_token(char *line, int *i, t_exec_path *cmd)
 	{
 		part = get_part(line, i, &part_quote, cmd);
 		if (!part)
-		{
-			if (temp)
-				free(temp);
-			return ((t_token *)NULL);
-		}
+			return (possible_free_return_null(temp));
 		temp = append_next_part(temp, part, part_quote, &q);
 		if (!temp)
 		{
 			cmd->exit_status = 1;
-			return ((t_token *)NULL);
+			return (NULL);
 		}
 		if (q && (line[*i] == '<' || line[*i] == '>' || line[*i] == '|'
 				|| ft_isspace(line[*i]) || line[*i] == '\0'))

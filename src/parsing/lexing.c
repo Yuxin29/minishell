@@ -18,6 +18,7 @@ t_token	*get_token_list(t_exec_path *cmd, char *raw_line)
 
 // called in get_token list, this is the actual getting token loop
 // skip all meaningless space if any, stop until '\0'
+// free_token_list(head); yuxin added 0817, added same logic in all linked list
 t_token	*tokenize_loop(char *raw_line, t_exec_path *cmd)
 {
 	t_token	*head;
@@ -36,10 +37,7 @@ t_token	*tokenize_loop(char *raw_line, t_exec_path *cmd)
 			break ;
 		new = build_token_from_next_word(raw_line, &i, cmd);
 		if (!new)
-		{
-			free_token_list(head); // yuxin added 0817, added same logic in all linked list, marked with // yuxin added 
-			return (NULL);
-		}
+			return (free_token_list(head), NULL);
 		if (!head)
 			head = new;
 		else

@@ -54,7 +54,6 @@ int	handle_heredoc_skip(char *raw_line, int ids[2], char *res)
 {
 	int		in_sq;
 	int		in_dq;
-	char	c;
 
 	if (raw_line[ids[0]] == '<' && raw_line[ids[0] + 1] == '<')
 	{
@@ -66,15 +65,11 @@ int	handle_heredoc_skip(char *raw_line, int ids[2], char *res)
 		in_dq = 0;
 		while (raw_line[ids[0]] != '\0')
 		{
-			c = raw_line[ids[0]];
-			if (!in_sq && !in_dq)
-			{
-				if (c == ' ' || c == '\t' || c == '|' || c == '<' || c == '>')
-					break ;
-			}
-			if (c == '\'' && !in_dq)
+			if (!in_sq && !in_dq && is_empty_or_redirect(raw_line[ids[0]]))
+				break ;
+			if (raw_line[ids[0]] == '\'' && !in_dq)
 				in_sq = !in_sq;
-			else if (c == '"' && !in_sq)
+			else if (raw_line[ids[0]] == '"' && !in_sq)
 				in_dq = !in_dq;
 			res[ids[1]++] = raw_line[ids[0]++];
 		}

@@ -1,6 +1,7 @@
 #include "minishell.h"
 
 // creat_heredoc_file should be moved to right before execution
+// (!new->file already perrored in creat_heredoc_file)
 t_redir	*create_redir_node(t_token *redir_tok, t_token *file_tok,
 	t_exec_path *cmd)
 {
@@ -16,16 +17,16 @@ t_redir	*create_redir_node(t_token *redir_tok, t_token *file_tok,
 	{
 		new->heredoc_delim = ft_strdup(file_tok->str);
 		if (!new->heredoc_delim)
-			return (free(new), perror("malloc"), (t_redir *)NULL);
+			return (free(new), perror("malloc"), NULL);
 		new->file = creat_heredoc_file(new->heredoc_delim, new->quoted, cmd);
 		if (!new->file)
-			return (free(new->heredoc_delim), free(new), NULL); //yuxin question is (!new->file already perrored in creat_heredoc_file)
+			return (free(new->heredoc_delim), free(new), NULL);
 	}
 	else
 	{
 		new->file = ft_strdup(file_tok->str);
 		if (!new->file)
-			return (free(new), perror("malloc"), (t_redir *)NULL);
+			return (free(new), perror("malloc"), NULL);
 		new->heredoc_delim = NULL;
 	}
 	return (new);

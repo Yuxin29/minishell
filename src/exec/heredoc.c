@@ -1,6 +1,10 @@
 #include "minishell.h"
 
-/*every thread has a unique pid(precess ID), so we can use pid to differ heredoc, for every heredoc we should have a temperary file to save lines, so in this case, cat << out << 1 << 2, we should have 3 different tmp files, so we should use pid to name different tmp filename
+/*every thread has a unique pid(precess ID), 
+so we can use pid to differ heredoc, for every heredoc 
+we should have a temperary file to save lines, 
+so in this case, cat << out << 1 << 2, we should have 3 different tmp files, 
+so we should use pid to name different tmp filename
 than this tmp file should become the infile in the process*/
 //static int	i: generate unique tmp filename, should be static
 static char	*get_tmp_filepath(void)
@@ -58,7 +62,7 @@ static int	handle_input(int fd, char *delim, t_exec_path *cmd, int quoted)
 			ft_putendl_fd(line, fd);
 		else
 		{
-			expanded = pre_expand_line(cmd, line); //modify 0818
+			expanded = pre_expand_line(cmd, line);
 			ft_putendl_fd(expanded, fd);
 			if (expanded != line)
 				free(expanded);

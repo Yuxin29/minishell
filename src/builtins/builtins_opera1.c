@@ -40,13 +40,15 @@ int	ft_echo(char **argv)
 
 // in bash, if we exit, we exit bash into zsh shel
 // subject requriements: exit with no options, ?
-// ---------> version below accrording to subjet, but it will fail a lot in tester lukas
+// ---------> version below accrording to subjet
+// but it will fail a lot in tester lukas
 // int	ft_exit(char **argv, t_exec_path *exec_cmd)
 // {
 // 	int status;
 
 // 	if (argv[1])
-// 		return (errmsg_return_one("exit with options not required in minishell"));
+// 		return 
+// 		(errmsg_return_one("exit with options not required in minishell"));
 // 	else
 // 	{
 // 		status = exec_cmd->exit_status;
@@ -55,6 +57,13 @@ int	ft_echo(char **argv)
 // 		return (0);
 // 	}
 // }
+
+static void	free_two(t_exec_path *exec_cmd, t_env **env_list)
+{
+	free_t_exec_path(exec_cmd);
+	free_env_list(*env_list);
+	return ;
+}
 
 // in bash, if we exit, we exit bash into zsh shel
 // exit — cause the shell to exit:	exit [n]
@@ -72,8 +81,7 @@ int	ft_exit(char **argv, t_exec_path *exec_cmd, t_env **env_list)
 	rl_clear_history();
 	if (!argv[1])
 	{
-		free_t_exec_path(exec_cmd);
-		free_env_list(*env_list);
+		free_two(exec_cmd, env_list);
 		exit(exec_cmd->exit_status);
 	}
 	if (ft_is_numeric(argv[1]))
@@ -81,20 +89,17 @@ int	ft_exit(char **argv, t_exec_path *exec_cmd, t_env **env_list)
 		ft_putstr_fd("minishell: exit: ", 2);
 		ft_putstr_fd(argv[1], 2);
 		ft_putstr_fd(": numeric argument required", 2);
-		free_env_list(*env_list);
-		free_t_exec_path(exec_cmd);
+		free_two(exec_cmd, env_list);
 		exit (2);
 	}
 	if (argv[2])
 	{
 		ft_putstr_fd("exit: too many arguments\n", 2);
-		free_env_list(*env_list);
-		free_t_exec_path(exec_cmd);
+		free_two(exec_cmd, env_list);
 		exit (1);
 	}
 	status = ft_atoll(argv[1]);
-	free_env_list(*env_list);
-	free_t_exec_path(exec_cmd);
+	free_two(exec_cmd, env_list);
 	exit((unsigned char)status);
 }
 
@@ -138,14 +143,13 @@ int	ft_pwd(void)
 	return (1);
 }
 
-int	ft_env(t_env *env)
-{
-	while (env)
-	{
-		if (env->key && env->value != NULL)
-			printf("%s=%s\n", env->key, env->value);
-		env = env->next;
-	}
-	return (0);
-}
-
+// int	ft_env(t_env *env)
+// {
+// 	while (env)
+// 	{
+// 		if (env->key && env->value != NULL)
+// 			printf("%s=%s\n", env->key, env->value);
+// 		env = env->next;
+// 	}
+// 	return (0);
+// }

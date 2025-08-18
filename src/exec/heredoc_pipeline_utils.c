@@ -39,7 +39,8 @@ static void	wait_diff_status(int status, int *last_exit)
 }
 
 //while 1: //While there is at least one child process still running,
-// keep waiting for them to finish.if pass NULL, meaning “I don’t care about the exit status.
+// keep waiting for them to finish.if pass NULL,
+// meaning “I don’t care about the exit status.
 //line 56: Interrupted by signal, keep waiting
 //line 59: No more child processes, done
 //62: Some unexpected error (e.g. internal waitpid failure)

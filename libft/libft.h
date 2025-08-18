@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: linliu <linliu@student.hive.fi>            +#+  +:+       +#+        */
+/*   By: yuwu <yuwu@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 15:27:21 by linliu            #+#    #+#             */
-/*   Updated: 2025/07/28 11:22:26 by linliu           ###   ########.fr       */
+/*   Updated: 2025/08/18 19:49:29 by yuwu             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,7 @@ void	ft_free_arr(char **arr);
 int		ft_isspace(char c);
 char	*ft_strndup(const char *s, int n);
 int		ft_strcmp(char *s1, char *s2);
+int		is_empty_or_redirect(char c);
 
 t_list	*ft_lstnew(void *content);
 void	ft_lstadd_front(t_list **lst, t_list *new);

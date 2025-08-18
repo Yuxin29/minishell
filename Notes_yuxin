@@ -219,11 +219,11 @@ I chose preexpandingh
         echo "Mix$VAR1and$VAR2"	                "Mixval1andval2" 
         echo "yuxin $USER '$USER' "user" kk,"
 
-3. heredoc without quotes should not be expanded 
+3. heredoc without quotes should be expanded 
     ->  minishell$ echo << $USER                    
         > skfd
         > mikko
-        > $USER⚠️ 
+        > $USER
     ->  minishell$ echo << $SUER                    
         minishell: syntax error: missing filename or delimiter after redirection
 
@@ -383,45 +383,65 @@ bash output = ()
 env -i ./minishell:                     ignore existing environment
 env -i PATH=/usr/bin ./minishell        manually write in with the path
 
-====================================later to check forbiddent functions and header file =============================
+=====================how to run check forbidden functions ==========================================
+nm your_program | grep U
 
-// External functs allowed .
-// readline            - get a line from a user with editing       get a line from a user with editing
-// rl_clear_history    ??
-// rl_on_new_line      ??
-// rl_replace_line     ??
-// rl_redisplay        ??
-// add_history         ??
-// printf              ??
-// malloc, free
-// write               ??
-// access             -check user's permissions for a file
-// open                ??
-// read                ??
-// close               - close a file descriptor                  int close(int fd);
-// fork                -  create a child proces                   pid_t fork(void);
-// wait, waitpid, wait3, wait4                                     ??
-// signal              - ANSI C signal handling                    sighandler_t signal(int signum, sighandler_t handler);
-// sigaction           - examine and change a signal action
-// sigemptyset         ??
-// sigaddset           - POSIX signal set operations
-// kill                 - send a signal to a processq
-// exit,                — cause the shell to exit              exit [n]
-// getcwd, chdir, stat, lstat, fstat, unlink, execve,
-// dup, dup2, pipe, opendir, readdir, closedir,
-// strerror, perror, isatty, ttyname, ttyslot, ioctl,
-// getenv, tcsetattr, tcgetattr, tgetent, tgetflag,
-// tgetnum, tgetstr, tgoto, tputs
+⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️
+                 U access@GLIBC_2.2.5
+                 U add_history⚠️                        ok
+                 U chdir@GLIBC_2.2.5⚠️                  ok
+                 U close@GLIBC_2.2.5
+                 U dup2@GLIBC_2.2.5
+                 U dup@GLIBC_2.2.5
+                 U __errno_location@GLIBC_2.2.5⚠️       ??
+                 U execve@GLIBC_2.2.5
+                 U exit@GLIBC_2.2.5⚠️                   ok
+                 U fork@GLIBC_2.2.5
+                 U fprintf@GLIBC_2.2.5⚠️                ok
+                 U free@GLIBC_2.2.5
+                 U getcwd@GLIBC_2.2.5⚠️                 ok
+0000000000409400 r __GNU_EH_FRAME_HDR
+                 U __libc_start_main@GLIBC_2.34
+                 U malloc@GLIBC_2.2.5
+                 U open@GLIBC_2.2.5
+                 U perror@GLIBC_2.2.5
+                 U pipe@GLIBC_2.2.5
+                 U printf@GLIBC_2.2.5
+                 U readline
+                 U rl_clear_history
+                 U rl_on_new_line
+                 U rl_redisplay
+                 U rl_replace_line
+                 U signal@GLIBC_2.2.5
+                 U stat@GLIBC_2.33 ⚠️                       ok
+                 U unlink@GLIBC_2.2.5⚠️                     ok
+                 U waitpid@GLIBC_2.2.5
+                 U write@GLIBC_2.2.5⚠️                      ok
 
-// #include <unistd.h>         //access, access, close, fork
-// #include <stdlib.h>         //malloc, free
-// #include <fcntl.h>
-// #include <stdio.h>  //readline, printf
-// #include <string.h>
-// # include <errno.h>
-// sigaddset
-// #include <signal.h>         //signal, sigaction,
-// # include <sys/wait.h>
+External functs.
+readline, rl_clear_history, rl_on_new_line,
+rl_replace_line, rl_redisplay, add_history,
+printf, malloc, free, write, access, open, read,
+close, fork, wait, waitpid, wait3, wait4, signal,
+sigaction, sigemptyset, sigaddset, kill, exit,
+getcwd, chdir, stat, lstat, fstat, unlink, execve,
+dup, dup2, pipe, opendir, readdir, closedir,
+strerror, perror, isatty, ttyname, ttyslot, ioctl,
+getenv, tcsetattr, tcgetattr, tgetent, tgetflag,
+tgetnum, tgetstr, tgoto, tputs
+
+# include "../libft/libft.h"
+# include <unistd.h>         	//access, close, fork, dup, dup2, execve, getcwd, pipe
+# include <stdlib.h>         	//malloc, free, exit
+# include <fcntl.h>				//open 
+# include <stdio.h>             //perror
+# include <signal.h>			//signal, kill
+# include <sys/types.h>			// pid_t, fork, waitpid
+# include <readline/readline.h>	//readline  
+# include <readline/history.h>	//readline  
+# include <sys/wait.h>			//wait, waitpid
+# include <errno.h>				//perror
+# include <sys/stat.h>			// stat()
 
 =======================================About signal adn exec error in child===============
 （可选但推荐）：子进程出错时是否用 errno？

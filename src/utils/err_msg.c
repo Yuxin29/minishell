@@ -9,20 +9,20 @@ void	errmsg_set_status(char *msg, t_exec_path *cmd)
 	cmd->exit_status = 2;
 }
 
-// for cd system error 
-int	perror_return_one(char *str)
+// 1 for perror, 0 for stderr
+int	errmsg_return_nbr(char *str, int i, int nbr)
 {
-	if (str)
-		perror(str);
-	return (1);
-}
-
-//for cd other erros like non numeric argv
-int	errmsg_return_one(char *str)
-{
-	if (str)
-		ft_putendl_fd(str, 2);
-	return (1);
+	if (i)
+	{
+		if (str)
+			perror(str);
+	}
+	else
+	{
+		if (str)
+			ft_putendl_fd(str, 2);
+	}
+	return (nbr);
 }
 
 // used for export error msg

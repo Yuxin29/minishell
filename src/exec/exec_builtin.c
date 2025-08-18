@@ -1,8 +1,10 @@
 #include "minishell.h"
 
 // Builtin commands are executed in the parent process (not in a child).
-// So, when we use dup2 to redirect input or output, the redirection affects the shell itself.
-// To prevent this from breaking the shell, we save the original stdin/stdout first,
+// So, when we use dup2 to redirect input or output, 
+// the redirection affects the shell itself.
+// To prevent this from breaking the shell, 
+// we save the original stdin/stdout first,
 // and restore them after executing the builtin command.
 int	is_builtin(char *cmd)
 {
@@ -44,7 +46,7 @@ int	execute_builtin_cmd(char **argv, t_env **env, t_exec_path *exec_cmd)
 		return (ft_env(*env));
 	if (ft_strcmp(argv[0], "exit") == 0)
 	{
-		restore_stdio(exec_cmd->orig_std[0], exec_cmd->orig_std[1]); //modify 0818
+		restore_stdio(exec_cmd->orig_std[0], exec_cmd->orig_std[1]);
 		return (ft_exit(argv, exec_cmd, env));
 	}
 	return (1);

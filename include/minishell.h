@@ -3,17 +3,17 @@
 
 //----------------------header files and global variable-------------------//
 # include "../libft/libft.h"
-# include <unistd.h>         	//access, close, fork, dup, execve, getcwd,
-# include <stdlib.h>         	//malloc, free, exit
-# include <fcntl.h>				//open 
-# include <stdio.h>             //perror
-# include <signal.h>			//signal, kill
-# include <sys/types.h>			// pid_t
-# include <readline/readline.h>	//readline  
-# include <readline/history.h>	//readline  
-# include <sys/wait.h>			//wait
-# include <errno.h>				//perror
-# include <sys/stat.h>			// stat()
+# include <unistd.h>
+# include <stdlib.h>
+# include <fcntl.h>
+# include <stdio.h>
+# include <signal.h>
+# include <sys/types.h>
+# include <readline/readline.h>
+# include <readline/history.h>
+# include <sys/wait.h>
+# include <errno.h>
+# include <sys/stat.h>
 
 extern volatile sig_atomic_t	g_signal;
 
@@ -31,12 +31,9 @@ extern volatile sig_atomic_t	g_signal;
 	"minishell: syntax error: unclosed quotes"
 
 //common shell cmd line max length
-#ifndef LINE_SIZE
 # define LINE_SIZE 8192
-#endif
-
-# define PATH_MAX 4096 //PATH_MAX is 4096 on Linux by convention and practicality.
-
+//PATH_MAX is 4096 on Linux by convention and practicality.
+# define PATH_MAX 4096 
 //yuxin added for exit, stoll based on long long // probably not needed
 # define LLONG_MAX_STR "9223372036854775807"
 # define LLONG_MIN_STR "9223372036854775808"
@@ -123,19 +120,30 @@ typedef struct s_pipe_ex
 	pid_t	last_pid;
 }	t_pipe_ex;
 
+//---------------------------main helper----------------------------------//
+int			setup_command_paths(t_exec_path *exec_cmd, t_env **env_list);
+int			run_command(t_exec_path *exec_cmd, t_env **env_list);
+int			parse_and_expand(t_exec_path *exec_cmd, char *expanded_line,\
+	t_env **env_list);
+void		handle_line(char *line, t_env **env_list, t_exec_path *exec_cmd);
+void		minishell_loop(t_env **env_list);
+
 //---------------------------parsing part----------------------------------//
 //preexpander_utils.c
 int			var_name_len(const char *str);
 int			handle_quotes(char c, int quotes[2], char *res, int *j);
 int			handle_heredoc_skip(char *raw_line, int ids[2], char *res);
 int			handle_dollar_dquote(char *raw_line, int ids[2], char *res);
-int			handle_exit_status(char *raw_line, int ids[2], char *res, t_exec_path *cmd);
+int			handle_exit_status(char *raw_line, int ids[2], char *res,\
+	t_exec_path *cmd);
 
 //preexpander.c
 void		append_to_res(char *res, int *res_idx, const char *val);
-int			try_expand_env_var(char *raw_line, int idx[2], char *res, t_exec_path *cmd);
+int			try_expand_env_var(char *raw_line, int idx[2], char *res,\
+	t_exec_path *cmd);
 int			skip_copy(char *raw_line, int idx[2], char *res, int quotes[2]);
-void		expand_loop(char *raw_line, char *res, int idx[2], t_exec_path *cmd);
+void		expand_loop(char *raw_line, char *res, int idx[2],\
+	t_exec_path *cmd);
 char		*pre_expand_line(t_exec_path *cmd, char *raw_line);
 
 // lex_utils.c
@@ -169,32 +177,30 @@ void		check_token_syntax(t_token *token_head, t_exec_path *cmd);
 int			count_argv(t_token *start);
 t_token		*parse_if_no_argv(t_cmd *cmd_current, t_token *token_head);
 t_token		*loop_to_next(t_token *token_head);
-t_token		*get_one_new_cmd(t_token *token_head, t_cmd *cmd_current, t_exec_path *exec_cmd);
+t_token		*get_one_new_cmd(t_token *token_head, t_cmd *cmd_current,\
+	t_exec_path *exec_cmd);
 
 // parser.c
-t_redir		*create_redir_node(t_token *redir_tok, t_token *file_tok, t_exec_path *cmd);
-t_token		*get_one_redirection(t_cmd *cmd, t_token *tokens, t_exec_path *exec_cmd);
-t_token		*parse_redirections(t_cmd *cmd, t_token *tokens, t_exec_path *exec_cmd);
+t_redir		*create_redir_node(t_token *redir_tok, t_token *file_tok,\
+	t_exec_path *cmd);
+t_token		*get_one_redirection(t_cmd *cmd, t_token *tokens,\
+	t_exec_path *exec_cmd);
+t_token		*parse_redirections(t_cmd *cmd, t_token *tokens,\
+	t_exec_path *exec_cmd);
 int			malloc_for_agrv(t_cmd *cmd, t_token *tokens);
 t_token		*parse_argv(t_cmd *cmd, t_token *tokens);
 
 // parsing_to_cmd_list.c
-int			check_new_cmd(t_exec_path *cmd, t_token *token, t_cmd *cmd1, t_cmd *cmd2);
+int			check_new_cmd(t_exec_path *cmd, t_token *token, t_cmd *cmd1,\
+	t_cmd *cmd2);
 t_cmd		*malloc_for_new_cmd(t_cmd *cmd_head);
 t_cmd		*build_command_list(t_exec_path *cmd, t_token *token_head);
 
-// expander.c
-// called after parsing, expanding every thing but not heredocs
-char		*get_env_value(char **envp, const char *key);
-char		*get_env_value_from_substr(char *input, int start, int var_len, char **envp);
-char		*replace_variable(t_exec_path *cmd, char *input, int pos, char **envp);
-char		*expand_variables_in_str(t_exec_path *cmd, char *input, char **envp);
-void		expand_heredoc_delim(t_exec_path *cmd, t_cmd *cmd_list, char **envp);
-
-//---------------------------exec part---------------------------------------------//
+//---------------------------exec part------------------------------------//
 //execute builtins cmd with redir
 int			is_builtin(char *cmd);
-int			execute_builtin_cmd(char **argv, t_env **env, t_exec_path *exec_cmd);
+int			execute_builtin_cmd(char **argv, t_env **env,\
+	t_exec_path *exec_cmd);
 void		run_builtin_with_redir(t_exec_path *exec_cmd, t_env **env_list);
 
 //single
@@ -208,7 +214,8 @@ void		execute_pipeline(t_exec_path *exec_cmd, t_env *env_list);
 //heredoc_pipline_utils
 void		handle_execve_or_exit_inchild(t_exec_path *exec_cmd, t_cmd *cmd);
 void		wait_exit(t_exec_path *exec_cmd, pid_t last_pid);
-char		*cleanup_heredoc(int fd, int saved_stdin, char *tmp_file, char *err_msg);
+char		*cleanup_heredoc(int fd, int saved_stdin, char *tmp_file,\
+	char *err_msg);
 
 //redir
 int			check_and_apply_redirections(t_cmd *cmd);
@@ -223,9 +230,10 @@ char		*get_cmd_path(char *cmd, t_env *env_list, t_exec_path *exec_cmd);
 //---------------------------built_in part--------------------------------//
 //7 builtin cmds:
 //builtins_opera1
-int		ft_cd(char **argv, t_env *env);
-int		ft_echo(char **argv);
-int		ft_exit(char **argv, t_exec_path *exec_cmd, t_env **env_list);//modify 0818
+int			ft_cd(char **argv, t_env *env);
+int			ft_echo(char **argv);
+int			ft_exit(char **argv, t_exec_path *exec_cmd, t_env **env_list);
+
 //builtins_opera2
 int			ft_pwd(void);
 int			ft_env(t_env *env);
@@ -243,18 +251,15 @@ int			ft_export(char **argv, t_env **env);
 // in which we can add or delete env elements more easily than in array,
 // after modifying the env list, we should convert linked list to array
 
-=======
-int		ft_export(char **argv, t_env **env);
-
-//---------------------------env part---------------------------------------------//
->>>>>>> lin
 //get env list
 t_env		*env_new_node(char *key, char *value);
 t_env		*env_list_init(char **envp);
 void		free_env_list(t_env *head);
 
 //env list to envp
+// second used in preexpander
 char		**env_list_to_envp(t_env *head);
+char		*get_env_value(char **envp, const char *key);
 
 //builtins_utils
 void		set_env(t_env **env, char *key, char *value);
@@ -294,8 +299,7 @@ char		*free_malloc_fail_null_status(char *str, t_exec_path *cmd);
 //err_msg.c
 //used in builtin(export and cd), syntax check(stat 2) and main
 void		print_error(const char *arg);
-int			perror_return_one(char *str);
-int			errmsg_return_one(char *str);
+int			errmsg_return_nbr(char *str, int i, int nbr);
 void		errmsg_set_status(char *msg, t_exec_path *cmd);
 int			handle_token_build_failure(t_exec_path *exec_cmd, t_env **env_list);
 

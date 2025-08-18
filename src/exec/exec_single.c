@@ -9,11 +9,13 @@ void	print_error_and_exit(t_cmd *cmd)
 
 //a structure that holds detailed information about a file.（man 2 stat)
 //stat checks the file at path and fills the struct stat (st) with its info.
-//st_mode:what kind of file it is; what perssion it has;S_ISDIR:Is this file a directory
+//st_mode:what kind of file it is; what perssion it has;
+// S_ISDIR:Is this file a directory
 //access checks whether the file can be accessed with the given mode
 void	precheck_path_or_exit(char *path)
 {
 	struct stat	st;
+
 	if (stat(path, &st) == -1)
 	{
 		ft_putstr_fd(path, 2);
@@ -66,7 +68,8 @@ static void	exec_single_child(t_exec_path *cmd)
 }
 
 //eintr: Interrupted
-//even id the waitpid be interupted by ctrl c, the waitpid still need to goning on
+//even id the waitpid be interupted by ctrl c, 
+// the waitpid still need to goning on
 //line 80:killed by which signal, if killed by SIGINT(2),return 130 (128+2)
 static void	wait_child_and_exit(t_exec_path *cmd, pid_t pid)
 {

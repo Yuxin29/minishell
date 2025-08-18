@@ -1,5 +1,6 @@
 #include "minishell.h"
 
+// line 20 if no exit node, create a new one
 void	set_env(t_env **env, char *key, char *value)
 {
 	t_env	*cur;
@@ -16,7 +17,6 @@ void	set_env(t_env **env, char *key, char *value)
 		}
 		cur = cur->next;
 	}
-	// if no exit node, create a new one
 	new_node = env_new_node(key, value);
 	new_node->exported = 1;
 	new_node->next = *env;
@@ -52,7 +52,9 @@ long long	ft_atoll(char *str)
 }
 
 // need for builtin exit
-int ft_is_numeric(char *str)
+// 74:error: too small
+// 78:I compare the string direclyt
+int	ft_is_numeric(char *str)
 {
 	int	n;
 
@@ -70,17 +72,17 @@ int ft_is_numeric(char *str)
 	if (str[0] == '-')
 	{
 		if (ft_strcmp(str, LLONG_MIN_STR) > 0)
-			return (1); // error: too small
+			return (1);
 	}
 	else
 	{
-		if (ft_strcmp(LLONG_MAX_STR, str) < 0) // I compare the string direclyt
+		if (ft_strcmp(LLONG_MAX_STR, str) < 0)
 			return (1);
 	}
 	return (0);
 }
 
-int env_count(t_env *env)
+int	env_count(t_env *env)
 {
 	int	count;
 
@@ -105,10 +107,10 @@ void	sort_copy_list(t_env **copy_list, int size)
 		j = i + 1;
 		while (j < size - 1)
 		{
-			if (ft_strcmp(copy_list[i]->key , copy_list[j]->key) > 0)
+			if (ft_strcmp(copy_list[i]->key, copy_list[j]->key) > 0)
 			{
 				tmp = copy_list[i];
-				copy_list[i] =  copy_list[j];
+				copy_list[i] = copy_list[j];
 				copy_list[j] = tmp;
 			}
 			j++;

@@ -87,14 +87,14 @@ static void	print_export(t_env *env)
 		env = env->next;
 	}
 	sort_copy_list(copy_list, size);
-	i = 0;
-	while (i < size)
+	i = -1;
+	while (++i < size)
 	{
 		if (copy_list[i]->value == NULL)
 			printf("declare -x %s\n", copy_list[i]->key);
 		else
-			printf("declare -x %s=\"%s\"\n", copy_list[i]->key, copy_list[i]->value);
-		i++;
+			printf("declare -x %s=\"%s\"\n", copy_list[i]->key,
+				copy_list[i]->value);
 	}
 	free(copy_list);
 }

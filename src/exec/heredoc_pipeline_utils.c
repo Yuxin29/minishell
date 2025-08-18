@@ -14,14 +14,14 @@ void	handle_execve_or_exit_inchild(t_exec_path *exec_cmd, t_cmd *cmd)
 		if (ft_strchr(cmd->argv[0], '/'))
 			precheck_path_or_exit(cmd->argv[0]);
 		else
-			print_error_and_exit(cmd);//only deal with no /
+			print_error_and_exit(cmd);
 	}
 	else
-		precheck_path_or_exit(cmd->cmd_path); //even if we got the path, still check the path
+		precheck_path_or_exit(cmd->cmd_path);
 	execve(cmd->cmd_path, cmd->argv, exec_cmd->envp);
 	perror("execve");
-	if (errno == EACCES) //should i use errno?
-		exit(126); //permission denied， EACCEA means error:access
+	if (errno == EACCES)
+		exit(126);
 	exit(127);
 }
 
@@ -38,6 +38,11 @@ static void	wait_diff_status(int status, int *last_exit)
 		*last_exit = 1;
 }
 
+//while 1: //While there is at least one child process still running,
+// keep waiting for them to finish.if pass NULL, meaning “I don’t care about the exit status.
+//line 56: Interrupted by signal, keep waiting
+//line 59: No more child processes, done
+//62: Some unexpected error (e.g. internal waitpid failure)
 void	wait_exit(t_exec_path *exec_cmd, pid_t last_pid)
 {
 	int		status;
@@ -45,16 +50,16 @@ void	wait_exit(t_exec_path *exec_cmd, pid_t last_pid)
 	int		last_exit;
 
 	last_exit = 0;
-	while (1) //While there is at least one child process still running, keep waiting for them to finish.if pass NULL, meaning “I don’t care about the exit status.
+	while (1)
 	{
 		wpid = waitpid(-1, &status, 0);
 		if (wpid == -1)
 		{
-			if (errno == EINTR) // Interrupted by signal, keep waiting
+			if (errno == EINTR)
 				continue ;
-			if (errno == ECHILD) // No more child processes, done
+			if (errno == ECHILD)
 				break ;
-			exec_cmd->exit_status = 1; // Some unexpected error (e.g. internal waitpid failure)
+			exec_cmd->exit_status = 1;
 			return ;
 		}
 		if (wpid == last_pid)

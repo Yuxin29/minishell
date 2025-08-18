@@ -15,6 +15,11 @@ void	append_to_res(char *res, int *res_idx, const char *val)
 // 1 for success, expanded
 // 0 for not expanded, skiped
 // if (!val), not found or EMPTY found, -> ""
+// success, expanded
+// not an env var to expand here
+// if (!key) return (0); //malloc fails, need to perror here
+// 36: null check
+>>>>>>> lin
 int	try_expand_env_var(char *raw_line, int idx[2], char *res, t_exec_path *cmd)
 {
 	int		len;

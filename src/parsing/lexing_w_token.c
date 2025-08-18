@@ -6,23 +6,25 @@ char	*get_part(char *line, int *i, char *part_quote, t_exec_path *cmd)
 {
 	char	*part;
 
-	if (line[*i] == '$' && line[*i + 1] == '"')
+	if (line[*i] == '$' && line[*i + 1] == '"')  // $"
 	{
 		(*i)++;
 		*part_quote = 3;
 		part = get_quoted_part(line, i, cmd);
 	}
-	else if (line[*i] == '\'')
+	else if (line[*i] == '\'')  // single quote
+
 	{
 		*part_quote = 1;
 		part = get_quoted_part(line, i, cmd);
 	}
-	else if (line[*i] == '"')
+	else if (line[*i] == '"')  // double quote
 	{
 		*part_quote = 2;
 		part = get_quoted_part(line, i, cmd);
 	}
-	else
+	else  // unquoted
+
 	{
 		*part_quote = 0;
 		part = get_unquoted_part(line, i, cmd);
@@ -52,7 +54,7 @@ t_token	*malloc_and_set_token(char *temp, int q, t_exec_path *cmd)
 // int	save_last_quote(int new_val, int mode)
 // {
 // 	int	last;
-
+//
 // 	last = 0;
 // 	if (mode == 1)
 // 		last = new_val;

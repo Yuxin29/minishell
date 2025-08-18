@@ -2,9 +2,10 @@
 
 /*every thread has a unique pid(precess ID), so we can use pid to differ heredoc, for every heredoc we should have a temperary file to save lines, so in this case, cat << out << 1 << 2, we should have 3 different tmp files, so we should use pid to name different tmp filename
 than this tmp file should become the infile in the process*/
+//static int	i: generate unique tmp filename, should be static
 static char	*get_tmp_filepath(void)
 {
-	static int	i; //generate unique tmp filename, should be static
+	static int	i;
 	char		*tmp_filepath;
 	char		*fake_pid;
 
@@ -38,7 +39,7 @@ static int	get_tmpfile_fd(char **tmp_file)
 	return (fd);
 }
 
-static int	handle_heredoc_input(int fd, char *delim, t_exec_path *cmd, int quoted)
+static int	handle_input(int fd, char *delim, t_exec_path *cmd, int quoted)
 {
 	char	*line;
 	char	*expanded;
@@ -57,7 +58,7 @@ static int	handle_heredoc_input(int fd, char *delim, t_exec_path *cmd, int quote
 			ft_putendl_fd(line, fd);
 		else
 		{
-			expanded = expand_variables_in_str(cmd, line, cmd->envp);
+			expanded = pre_expand_line(cmd, line); //modify 0818
 			ft_putendl_fd(expanded, fd);
 			if (expanded != line)
 				free(expanded);
@@ -79,7 +80,7 @@ static int	restore_stdin(int saved_stdin)
 	return (1);
 }
 
-char	*creat_heredoc_file(char *delim, int quoted, t_exec_path *cmd) //modify 0816
+char	*creat_heredoc_file(char *delim, int quoted, t_exec_path *cmd)
 {
 	int		fd;
 	char	*tmp_file;
@@ -88,13 +89,12 @@ char	*creat_heredoc_file(char *delim, int quoted, t_exec_path *cmd) //modify 081
 
 	fd = get_tmpfile_fd(&tmp_file);
 	if (fd == -1)
-
 		return (NULL);
 	saved_stdin = dup(STDIN_FILENO);
 	if (saved_stdin < 0)
 		return (cleanup_heredoc(fd, -1, tmp_file, "dup"));
 	signal_heredoc();
-	interrupted = handle_heredoc_input(fd , delim, cmd, quoted); //modify 0816
+	interrupted = handle_input(fd, delim, cmd, quoted);
 	signal_init();
 	if (!restore_stdin(saved_stdin))
 		return (cleanup_heredoc(fd, saved_stdin, tmp_file, "dup2"));

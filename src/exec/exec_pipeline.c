@@ -41,6 +41,8 @@ static void	handle_child_process(t_exec_path *exec_cmd,
 	handle_execve_or_exit_inchild(exec_cmd, cmd);
 }
 
+//in the parent process, fork() returns the PID of the new child process,
+//the pid hold the actual child's PID, so pinfo->last_pid = pid;
 static void	handle_parent_process(t_cmd *cmd, t_pipe_ex *pinfo, pid_t pid)
 {
 	if (pinfo->prev_pipe != -1)
@@ -52,10 +54,11 @@ static void	handle_parent_process(t_cmd *cmd, t_pipe_ex *pinfo, pid_t pid)
 	}
 	else
 		pinfo->prev_pipe = -1;
-	pinfo->last_pid = pid; //in the parent process, fork() returns the PID of the new child process, the pid hold the actual child's PID
+	pinfo->last_pid = pid;
 }
 
-static int	fork_and_exec(t_exec_path *exec_cmd, t_cmd *cmd, t_pipe_ex *pinfo, t_env *env_list)
+static int	fork_and_exec(t_exec_path *exec_cmd, t_cmd *cmd,
+	t_pipe_ex *pinfo, t_env *env_list)
 {
 	pid_t	pid;
 
@@ -80,6 +83,8 @@ static int	fork_and_exec(t_exec_path *exec_cmd, t_cmd *cmd, t_pipe_ex *pinfo, t_
 	return (1);
 }
 
+//wait_exit(last_pid); must be called outside the while loop,
+//after all the pipeline commands have been forked.
 void	execute_pipeline(t_exec_path *exec_cmd, t_env *env_list)
 {
 	t_cmd		*cmd;
@@ -96,6 +101,6 @@ void	execute_pipeline(t_exec_path *exec_cmd, t_env *env_list)
 		cmd = cmd->next;
 	}
 	signal_ignore();
-	wait_exit(exec_cmd, pinfo.last_pid); //wait_exit(last_pid); must be called outside the while loop, after all the pipeline commands have been forked.
+	wait_exit(exec_cmd, pinfo.last_pid);
 	signal_init();
 }

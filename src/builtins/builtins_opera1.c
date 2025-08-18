@@ -64,27 +64,56 @@ int	ft_echo(char **argv)
 // that exit code in the special variable $?.
 // in the terminal, echo $? to check the (unsigned char)status
 // subject requriements: exit with no options, so we only need one lines?
-int	ft_exit(char **argv, t_exec_path *exec_cmd)
+//in the terminal, echo $? to check the (unsigned char)status
+int	ft_exit(char **argv, t_exec_path *exec_cmd, t_env **env_list)
 {
 	long long	status;
 
+	rl_clear_history();
 	if (!argv[1])
+	{
+		free_t_exec_path(exec_cmd);
+		free_env_list(*env_list);
 		exit(exec_cmd->exit_status);
+	}
 	if (ft_is_numeric(argv[1]))
 	{
 		ft_putstr_fd("minishell: exit: ", 2);
 		ft_putstr_fd(argv[1], 2);
 		ft_putstr_fd(": numeric argument required", 2);
+		free_env_list(*env_list);
+		free_t_exec_path(exec_cmd);
 		exit (2);
 	}
 	if (argv[2])
 	{
 		ft_putstr_fd("exit: too many arguments\n", 2);
+		free_env_list(*env_list);
+		free_t_exec_path(exec_cmd);
 		exit (1);
 	}
 	status = ft_atoll(argv[1]);
+	free_env_list(*env_list);
+	free_t_exec_path(exec_cmd);
 	exit((unsigned char)status);
 }
+
+// int	ft_exit(char **argv, t_exec_path *exec_cmd, t_env **env_list)
+// {
+// 	int status;
+
+// 	if (argv[1])
+// 		return (errmsg_return_one("exit with options not
+//					required in minishell"));
+// 	else
+// 	{
+// 		status = exec_cmd->exit_status;
+// 		free_env_list(*env_list);
+// 		free_t_exec_path(exec_cmd);
+// 		exit(status);
+// 		return (0);
+// 	}
+// }
 
 // pwd
 // The getcwd() function copies an absolute pathname

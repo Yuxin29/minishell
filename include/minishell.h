@@ -35,9 +35,7 @@ extern volatile sig_atomic_t	g_signal;
 # define LINE_SIZE 8192
 #endif
 
-#ifndef PATH_MAX
-# define PATH_MAX 4096
-#endif
+# define PATH_MAX 4096 //PATH_MAX is 4096 on Linux by convention and practicality.
 
 //yuxin added for exit, stoll based on long long // probably not needed
 # define LLONG_MAX_STR "9223372036854775807"
@@ -105,11 +103,10 @@ typedef struct s_exec_path
 	t_cmd	*whole_cmd;
 	char	**envp;
 	int		exit_status;
+	int		orig_std[2]; //modify 0818
 }	t_exec_path;
 
 //for inv
-//eg. 	key		USER
-// 		value 	LinLiu
 typedef struct s_env
 {
 	char			*key;
@@ -226,15 +223,9 @@ char		*get_cmd_path(char *cmd, t_env *env_list, t_exec_path *exec_cmd);
 //---------------------------built_in part--------------------------------//
 //7 builtin cmds:
 //builtins_opera1
-int			ft_cd(char **argv, t_env *env); //modify
-int			ft_echo(char **argv);
-int			ft_exit(char **argv, t_exec_path *exec_cmd);
-//builtins_opera2
-int			ft_pwd(void);
-int			ft_env(t_env *env);
-int			ft_unset(char **argv, t_env **env);
-//builtins_opera3
-int			ft_export(char **argv, t_env **env);
+int		ft_cd(char **argv, t_env *env);
+int		ft_echo(char **argv);
+int		ft_exit(char **argv, t_exec_path *exec_cmd, t_env **env_list);//modify 0818
 //builtins_opera2
 int			ft_pwd(void);
 int			ft_env(t_env *env);
@@ -252,6 +243,11 @@ int			ft_export(char **argv, t_env **env);
 // in which we can add or delete env elements more easily than in array,
 // after modifying the env list, we should convert linked list to array
 
+=======
+int		ft_export(char **argv, t_env **env);
+
+//---------------------------env part---------------------------------------------//
+>>>>>>> lin
 //get env list
 t_env		*env_new_node(char *key, char *value);
 t_env		*env_list_init(char **envp);

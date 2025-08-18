@@ -35,7 +35,7 @@ int	run_command(t_exec_path *exec_cmd, t_env **env_list)
 			&& is_builtin(exec_cmd->whole_cmd->argv[0]))
 			run_builtin_with_redir(exec_cmd, env_list);
 		else
-			execute_single_cmd(exec_cmd);
+			execute_single_cmd(exec_cmd, env_list);
 	}
 	else
 		execute_pipeline(exec_cmd, *env_list);

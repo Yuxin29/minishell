@@ -14,6 +14,8 @@ static int	create_pipe_or_exit(t_exec_path *exec_cmd, t_pipe_ex *pinfo)
 static void	handle_child_process(t_exec_path *exec_cmd,
 	t_cmd *cmd, t_env *env_list, t_pipe_ex *pinfo)
 {
+	int	i;
+
 	signal_default();
 	if (pinfo->prev_pipe != -1)
 	{
@@ -37,8 +39,12 @@ static void	handle_child_process(t_exec_path *exec_cmd,
 	if (check_and_apply_redirections(cmd) == -1)
 		exit(EXIT_FAILURE);
 	if (is_builtin(cmd->argv[0]))
-		exit(execute_builtin_cmd(cmd->argv, &env_list, exec_cmd));
-	handle_execve_or_exit_inchild(exec_cmd, cmd);
+	{
+		i = execute_builtin_cmd(cmd->argv, &env_list, exec_cmd);
+		free_two(exec_cmd, &env_list);
+		exit(i);
+	}
+	handle_execve_or_exit_inchild(exec_cmd, cmd, env_list);
 }
 
 //in the parent process, fork() returns the PID of the new child process,

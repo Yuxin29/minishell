@@ -33,7 +33,7 @@ $(NAME): $(OBJS) $(LIBFT)
 	@$(CC) $(CFLAGS) $(OBJS) $(LIBFT) -lreadline -o $(NAME)
 
 $(LIBFT):
-	@$(MAKE) all -C $(LIBFT_PATH)
+	@$(MAKE) all --no-print-directory -C $(LIBFT_PATH)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	@mkdir -p $(dir $@)

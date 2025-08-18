@@ -204,7 +204,8 @@ int			execute_builtin_cmd(char **argv, t_env **env,\
 void		run_builtin_with_redir(t_exec_path *exec_cmd, t_env **env_list);
 
 //single
-void		execute_single_cmd(t_exec_path *cmd);
+//void		execute_single_cmd(t_exec_path *cmd);
+void	execute_single_cmd(t_exec_path *cmd, t_env **env_list);
 void		print_error_and_exit(t_cmd *cmd);
 void		precheck_path_or_exit(char *path);
 
@@ -212,7 +213,8 @@ void		precheck_path_or_exit(char *path);
 void		execute_pipeline(t_exec_path *exec_cmd, t_env *env_list);
 
 //heredoc_pipline_utils
-void		handle_execve_or_exit_inchild(t_exec_path *exec_cmd, t_cmd *cmd);
+//void		handle_execve_or_exit_inchild(t_exec_path *exec_cmd, t_cmd *cmd);
+void	handle_execve_or_exit_inchild(t_exec_path *exec_cmd, t_cmd *cmd, t_env *env_list);
 void		wait_exit(t_exec_path *exec_cmd, pid_t last_pid);
 char		*cleanup_heredoc(int fd, int saved_stdin, char *tmp_file,\
 	char *err_msg);
@@ -233,6 +235,7 @@ char		*get_cmd_path(char *cmd, t_env *env_list, t_exec_path *exec_cmd);
 int			ft_cd(char **argv, t_env *env);
 int			ft_echo(char **argv);
 int			ft_exit(char **argv, t_exec_path *exec_cmd, t_env **env_list);
+void		free_two(t_exec_path *exec_cmd, t_env **env_list);
 
 //builtins_opera2
 int			ft_pwd(void);

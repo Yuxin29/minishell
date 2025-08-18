@@ -36,23 +36,28 @@ void	precheck_path_or_exit(char *path)
 	}
 }
 
+static void	free_all_and_exit(t_exec_path *cmd, t_env **env_list, int exit_code)
+{
+	free_two(cmd, env_list);
+	exit (exit_code);
+}
 //line 44: if redir ok but no argv, still 0
 //line 60:even if we got the path, still check the path
-static void	exec_single_child(t_exec_path *cmd)
+static void	exec_single_child(t_exec_path *cmd, t_env **env_list)
 {
 	t_cmd	*c;
 
 	c = cmd->whole_cmd;
 	if (check_and_apply_redirections(c) == -1)
-		exit(EXIT_FAILURE);
+		return (free_all_and_exit(cmd, env_list, 1));
 	if (!c->argv || !c->argv[0])
-		exit(0);
+		return (free_all_and_exit(cmd, env_list, 0));
 	if (c->argv[0][0] == '\0')
 	{
 		ft_putstr_fd(": command not found\n", 2);
-		exit(127);
+		return (free_all_and_exit(cmd, env_list, 127));
 	}
-	if (!c->cmd_path)
+	if (!c->cmd_path) //should free inside function
 	{
 		if (ft_strchr(c->argv[0], '/'))
 			precheck_path_or_exit(c->argv[0]);
@@ -62,6 +67,7 @@ static void	exec_single_child(t_exec_path *cmd)
 	else
 		precheck_path_or_exit(c->cmd_path);
 	execve(c->cmd_path, c->argv, cmd->envp);
+	free_two(cmd, env_list);
 	if (errno == EACCES)
 		exit(126);
 	exit(127);
@@ -88,7 +94,7 @@ static void	wait_child_and_exit(t_exec_path *cmd, pid_t pid)
 		cmd->exit_status = 1;
 }
 
-void	execute_single_cmd(t_exec_path *cmd)
+void	execute_single_cmd(t_exec_path *cmd, t_env **env_list)
 {
 	pid_t	pid;
 
@@ -96,7 +102,7 @@ void	execute_single_cmd(t_exec_path *cmd)
 	if (pid == 0)
 	{
 		signal_default();
-		exec_single_child(cmd);
+		exec_single_child(cmd, env_list);
 	}
 	else if (pid > 0)
 	{

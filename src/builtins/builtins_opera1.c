@@ -58,7 +58,7 @@ int	ft_echo(char **argv)
 // 	}
 // }
 
-static void	free_two(t_exec_path *exec_cmd, t_env **env_list)
+void	free_two(t_exec_path *exec_cmd, t_env **env_list)
 {
 	free_t_exec_path(exec_cmd);
 	free_env_list(*env_list);

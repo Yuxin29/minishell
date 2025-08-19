@@ -76,6 +76,7 @@ typedef struct s_redir
 	int				type;
 	int				quoted;
 	char			*heredoc_delim;
+	int        		is_ambiguous; //yuxin added, cat <$AA
 	struct s_redir	*next;
 }	t_redir;
 

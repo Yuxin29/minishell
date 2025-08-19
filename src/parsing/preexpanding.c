@@ -64,6 +64,22 @@ int	try_expand_env_var(char *raw_line, int idx[2], char *res, t_exec_path *cmd)
 	return (0);
 }
 
+// yuxin added
+static int	handle_redirect_skip(char *raw_line, int ids[2], char *res)
+{
+	if (!(raw_line[ids[0]] == '<' || raw_line[ids[0]] == '>'))
+		return (0);
+	res[ids[1]++] = raw_line[ids[0]++];
+	if ((res[ids[1] - 1] == '<' && raw_line[ids[0]] == '<')
+		|| (res[ids[1] - 1] == '>' && raw_line[ids[0]] == '>'))
+		res[ids[1]++] = raw_line[ids[0]++];
+	while (raw_line[ids[0]] == ' ' || raw_line[ids[0]] == '\t')
+		res[ids[1]++] = raw_line[ids[0]++];
+	while (raw_line[ids[0]] && !is_empty_or_redirect(raw_line[ids[0]]))
+		res[ids[1]++] = raw_line[ids[0]++];
+	return (1);
+}
+
 void	expand_loop(char *raw_line, char *res, int idx[2], t_exec_path *cmd)
 {
 	int		quotes[2];
@@ -83,6 +99,9 @@ void	expand_loop(char *raw_line, char *res, int idx[2], t_exec_path *cmd)
 			continue ;
 		}
 		if (!quotes[0] && !quotes[1] && handle_heredoc_skip(raw_line, idx, res))
+			continue ;
+		// yuxin added
+		if (!quotes[0] && !quotes[1] && handle_redirect_skip(raw_line, idx, res))
 			continue ;
 		if (handle_exit_status(raw_line, idx, res, cmd))
 			continue ;

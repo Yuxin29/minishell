@@ -1,11 +1,24 @@
 #include "minishell.h"
 
+int	has_multiple_words(const char *s)
+{
+	while (*s == ' ' || *s == '\t')
+		s++;
+	while (*s && *s != ' ' && *s != '\t')
+		s++;
+	while (*s == ' ' || *s == '\t')
+		s++;
+	if (*s)
+		return (1);
+	return (0);
+}
 // creat_heredoc_file should be moved to right before execution
 // (!new->file already perrored in creat_heredoc_file)
 static t_redir	*create_redir_node(t_token *redir_tok, t_token *file_tok,
 	t_exec_path *cmd)
 {
 	t_redir	*new;
+	char	*expanded; //yuxin added
 
 	new = malloc(sizeof(t_redir));
 	if (!new)
@@ -24,10 +37,28 @@ static t_redir	*create_redir_node(t_token *redir_tok, t_token *file_tok,
 	}
 	else
 	{
-		new->file = ft_strdup(file_tok->str);
-		if (!new->file)
-			return (free(new), perror("malloc"), NULL);
 		new->heredoc_delim = NULL;
+    	if (ft_strchr(file_tok->str, '$'))
+		{ 
+			expanded = pre_expand_line(cmd, file_tok->str);
+			new->is_ambiguous = 0;  //bezero
+			if (!expanded)
+				return (free(new), NULL);
+			if (!expanded[0] || has_multiple_words(expanded)) //expanded but !expandedp[0]
+			{
+				new->file = NULL;
+				new->is_ambiguous = 1;   // yuxin added
+				free(expanded);
+				return (new);
+			}
+		}		
+		else
+		{
+			expanded = ft_strdup(file_tok->str);
+			if (!expanded)
+				return (free(new), (t_redir *)free_malloc_fail_null(NULL));
+		}
+		new->file = expanded;
 	}
 	return (new);
 }

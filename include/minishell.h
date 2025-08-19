@@ -33,7 +33,7 @@ extern volatile sig_atomic_t	g_signal;
 //common shell cmd line max length
 # define LINE_SIZE 8192
 //PATH_MAX is 4096 on Linux by convention and practicality.
-# define PATH_MAX 4096 
+# define PATH_MAX 4096
 //yuxin added for exit, stoll based on long long // probably not needed
 # define LLONG_MAX_STR "9223372036854775807"
 # define LLONG_MIN_STR "9223372036854775808"
@@ -204,20 +204,20 @@ int			execute_builtin_cmd(char **argv, t_env **env,\
 void		run_builtin_with_redir(t_exec_path *exec_cmd, t_env **env_list);
 
 //single
-//void		execute_single_cmd(t_exec_path *cmd);
 void	execute_single_cmd(t_exec_path *cmd, t_env **env_list);
-void		print_error_and_exit(t_cmd *cmd);
-void		precheck_path_or_exit(char *path);
+void	print_error_and_exit(t_cmd *cmd, t_exec_path *exec_cmd, t_env **env_list);
+void	precheck_path_or_exit(char *path, t_exec_path *cmd, t_env **env_list);
 
 //pipline
 void		execute_pipeline(t_exec_path *exec_cmd, t_env *env_list);
 
 //heredoc_pipline_utils
-//void		handle_execve_or_exit_inchild(t_exec_path *exec_cmd, t_cmd *cmd);
 void	handle_execve_or_exit_inchild(t_exec_path *exec_cmd, t_cmd *cmd, t_env *env_list);
 void		wait_exit(t_exec_path *exec_cmd, pid_t last_pid);
 char		*cleanup_heredoc(int fd, int saved_stdin, char *tmp_file,\
 	char *err_msg);
+void	free_all_and_exit(t_exec_path *cmd, t_env **env_list, int status);
+void	free_all_and_exit_pipe(t_exec_path *cmd, t_env **env_list, int status, t_pipe_ex *pinfo);
 
 //redir
 int			check_and_apply_redirections(t_cmd *cmd);

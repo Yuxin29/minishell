@@ -11,38 +11,54 @@ static int	create_pipe_or_exit(t_exec_path *exec_cmd, t_pipe_ex *pinfo)
 	return (1);
 }
 
-static void	handle_child_process(t_exec_path *exec_cmd,
-	t_cmd *cmd, t_env *env_list, t_pipe_ex *pinfo)
+static int	set_up_stdin(t_pipe_ex *pinfo, t_exec_path *cmd, t_env *env_list)
 {
-	int	i;
+	if (pinfo->prev_pipe == -1)
+		return (1);
+	if (dup2(pinfo->prev_pipe, STDIN_FILENO) == -1)
+	{
+		perror("dup2 stdin");
+		close(pinfo->prev_pipe);
+		free_all_and_exit_pipe(cmd, &env_list, 1, pinfo);
+	}
+	close (pinfo->prev_pipe);
+	return (1);
+}
+
+static int	set_up_stdout(t_cmd *cmd, t_pipe_ex *pinfo, t_exec_path *exec_cmd, t_env *env_list)
+{
+	if (!cmd->next)
+		return (1);
+	if (dup2(pinfo->pipefd[1], STDOUT_FILENO) == -1)
+	{
+		perror("dup2 stdin");
+		// close(pinfo->pipefd[1]);
+		// close(pinfo->pipefd[0]);
+		free_all_and_exit_pipe(exec_cmd, &env_list, 1, pinfo);
+	}
+	close(pinfo->pipefd[1]);
+	close(pinfo->pipefd[0]);
+	return (1);
+}
+
+static void	handle_child_process(t_exec_path *exec_cmd, t_cmd *cmd,
+	t_env *env_list, t_pipe_ex *pinfo)
+{
+	int status;
 
 	signal_default();
-	if (pinfo->prev_pipe != -1)
-	{
-		if (dup2(pinfo->prev_pipe, STDIN_FILENO) == -1)
-		{
-			perror("dup2 stdin");
-			exit(EXIT_FAILURE);
-		}
-		close(pinfo->prev_pipe);
-	}
-	if (cmd->next)
-	{
-		if (dup2(pinfo->pipefd[1], STDOUT_FILENO) == -1)
-		{
-			perror("dup2 stdout");
-			exit(EXIT_FAILURE);
-		}
-		close(pinfo->pipefd[0]);
-		close(pinfo->pipefd[1]);
-	}
+	if (!cmd || !cmd->argv || !cmd->argv[0])
+		free_all_and_exit_pipe(exec_cmd, &env_list, 0, pinfo);
+	if (!set_up_stdin(pinfo, exec_cmd, env_list))
+		return ;
+	if (!set_up_stdout(cmd, pinfo, exec_cmd, env_list))
+		return ;
 	if (check_and_apply_redirections(cmd) == -1)
-		exit(EXIT_FAILURE);
+		return (free_all_and_exit_pipe(exec_cmd, &env_list, 1, pinfo));
 	if (is_builtin(cmd->argv[0]))
 	{
-		i = execute_builtin_cmd(cmd->argv, &env_list, exec_cmd);
-		free_two(exec_cmd, &env_list);
-		exit(i);
+		status = execute_builtin_cmd(cmd->argv, &env_list, exec_cmd);
+		return (free_all_and_exit_pipe(exec_cmd, &env_list, status, pinfo));
 	}
 	handle_execve_or_exit_inchild(exec_cmd, cmd, env_list);
 }
@@ -59,7 +75,10 @@ static void	handle_parent_process(t_cmd *cmd, t_pipe_ex *pinfo, pid_t pid)
 		close(pinfo->pipefd[1]);
 	}
 	else
+	{
+		close(pinfo->pipefd[0]);
 		pinfo->prev_pipe = -1;
+	}
 	pinfo->last_pid = pid;
 }
 

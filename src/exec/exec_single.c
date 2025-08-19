@@ -75,6 +75,7 @@ static void	exec_single_child(t_exec_path *cmd, t_env **env_list)
 static void	wait_child_and_exit(t_exec_path *cmd, pid_t pid)
 {
 	int	status;
+	int	sig;
 
 	while (waitpid(pid, &status, 0) == -1 && errno == EINTR)
 		continue ;
@@ -82,8 +83,12 @@ static void	wait_child_and_exit(t_exec_path *cmd, pid_t pid)
 		cmd->exit_status = WEXITSTATUS(status);
 	else if (WIFSIGNALED(status))
 	{
-		write(STDOUT_FILENO, "\n", 1);
-		cmd->exit_status = 128 + WTERMSIG(status);
+		sig = WTERMSIG(status);
+		if (sig == SIGQUIT)
+			write(STDERR_FILENO, "Quit (core dumped)\n", 20);
+		else if (sig == SIGINT)
+			write(STDERR_FILENO, "\n", 1);
+		cmd->exit_status = 128 + sig;
 	}
 	else
 		cmd->exit_status = 1;

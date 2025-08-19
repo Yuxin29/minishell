@@ -105,7 +105,7 @@ void	sort_copy_list(t_env **copy_list, int size)
 	while (i < size)
 	{
 		j = i + 1;
-		while (j < size - 1)
+		while (j < size)
 		{
 			if (ft_strcmp(copy_list[i]->key, copy_list[j]->key) > 0)
 			{

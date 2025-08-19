@@ -50,7 +50,12 @@ char	*get_cmd_path(char *cmd, t_env *env_list, t_exec_path *exec_cmd)
 	}
 	path_value = get_env(env_list, "PATH");
 	if (!path_value)
+	{
+		ft_putstr_fd(cmd, 2);
+		ft_putstr_fd(": No such file or directory\n", 2);
+		exec_cmd->exit_status = 127;
 		return (NULL);
+	}
 	paths = ft_split(path_value, ':');
 	if (!paths)
 		return (free_malloc_fail_null_status(NULL, exec_cmd));

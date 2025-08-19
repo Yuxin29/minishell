@@ -4,7 +4,7 @@ static void	handle_sigint(int signal)
 {
 	if (signal == SIGINT)
 	{
-		write(STDOUT_FILENO, "\n", 1);
+		write(STDOUT_FILENO, "^C\n", 3);
 		rl_replace_line("", 0);
 		rl_on_new_line();
 		rl_redisplay();

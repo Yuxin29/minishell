@@ -12,7 +12,7 @@ int	setup_command_paths(t_exec_path *exec_cmd, t_env **env_list)
 		else if (!is_builtin(tmp->argv[0]))
 		{
 			tmp->cmd_path = get_cmd_path(tmp->argv[0], *env_list, exec_cmd);
-			if (exec_cmd->exit_status == 1)
+			if (exec_cmd->exit_status == 1 || exec_cmd->exit_status == 127)
 				return (0);
 		}
 		else
@@ -38,7 +38,7 @@ int	run_command(t_exec_path *exec_cmd, t_env **env_list)
 			execute_single_cmd(exec_cmd, env_list);
 	}
 	else
-		execute_pipeline(exec_cmd, *env_list);
+		execute_pipeline(exec_cmd, env_list);
 	if (exec_cmd->exit_status == 1)
 	{
 		free_t_exec_path(exec_cmd);

@@ -11,7 +11,7 @@ static int	create_pipe_or_exit(t_exec_path *exec_cmd, t_pipe_ex *pinfo)
 	return (1);
 }
 
-static int	set_up_stdin(t_pipe_ex *pinfo, t_exec_path *cmd, t_env *env_list)
+static int	set_up_stdin(t_pipe_ex *pinfo, t_exec_path *cmd, t_env **env_list)
 {
 	if (pinfo->prev_pipe == -1)
 		return (1);
@@ -19,13 +19,13 @@ static int	set_up_stdin(t_pipe_ex *pinfo, t_exec_path *cmd, t_env *env_list)
 	{
 		perror("dup2 stdin");
 		close(pinfo->prev_pipe);
-		free_all_and_exit_pipe(cmd, &env_list, 1, pinfo);
+		free_all_and_exit_pipe(cmd, env_list, 1, pinfo);
 	}
 	close (pinfo->prev_pipe);
 	return (1);
 }
 
-static int	set_up_stdout(t_cmd *cmd, t_pipe_ex *pinfo, t_exec_path *exec_cmd, t_env *env_list)
+static int	set_up_stdout(t_cmd *cmd, t_pipe_ex *pinfo, t_exec_path *exec_cmd, t_env **env_list)
 {
 	if (!cmd->next)
 		return (1);
@@ -34,7 +34,7 @@ static int	set_up_stdout(t_cmd *cmd, t_pipe_ex *pinfo, t_exec_path *exec_cmd, t_
 		perror("dup2 stdin");
 		// close(pinfo->pipefd[1]);
 		// close(pinfo->pipefd[0]);
-		free_all_and_exit_pipe(exec_cmd, &env_list, 1, pinfo);
+		free_all_and_exit_pipe(exec_cmd, env_list, 1, pinfo);
 	}
 	close(pinfo->pipefd[1]);
 	close(pinfo->pipefd[0]);
@@ -42,23 +42,23 @@ static int	set_up_stdout(t_cmd *cmd, t_pipe_ex *pinfo, t_exec_path *exec_cmd, t_
 }
 
 static void	handle_child_process(t_exec_path *exec_cmd, t_cmd *cmd,
-	t_env *env_list, t_pipe_ex *pinfo)
+	t_env **env_list, t_pipe_ex *pinfo)
 {
 	int status;
 
 	signal_default();
 	if (!cmd || !cmd->argv || !cmd->argv[0])
-		free_all_and_exit_pipe(exec_cmd, &env_list, 0, pinfo);
+		free_all_and_exit_pipe(exec_cmd, env_list, 0, pinfo);
 	if (!set_up_stdin(pinfo, exec_cmd, env_list))
 		return ;
 	if (!set_up_stdout(cmd, pinfo, exec_cmd, env_list))
 		return ;
 	if (check_and_apply_redirections(cmd) == -1)
-		return (free_all_and_exit_pipe(exec_cmd, &env_list, 1, pinfo));
+		return (free_all_and_exit_pipe(exec_cmd, env_list, 1, pinfo));
 	if (is_builtin(cmd->argv[0]))
 	{
-		status = execute_builtin_cmd(cmd->argv, &env_list, exec_cmd);
-		return (free_all_and_exit_pipe(exec_cmd, &env_list, status, pinfo));
+		status = execute_builtin_cmd(cmd->argv, env_list, exec_cmd);
+		return (free_all_and_exit_pipe(exec_cmd, env_list, status, pinfo));
 	}
 	handle_execve_or_exit_inchild(exec_cmd, cmd, env_list);
 }
@@ -83,7 +83,7 @@ static void	handle_parent_process(t_cmd *cmd, t_pipe_ex *pinfo, pid_t pid)
 }
 
 static int	fork_and_exec(t_exec_path *exec_cmd, t_cmd *cmd,
-	t_pipe_ex *pinfo, t_env *env_list)
+	t_pipe_ex *pinfo, t_env **env_list)
 {
 	pid_t	pid;
 
@@ -110,7 +110,7 @@ static int	fork_and_exec(t_exec_path *exec_cmd, t_cmd *cmd,
 
 //wait_exit(last_pid); must be called outside the while loop,
 //after all the pipeline commands have been forked.
-void	execute_pipeline(t_exec_path *exec_cmd, t_env *env_list)
+void	execute_pipeline(t_exec_path *exec_cmd, t_env **env_list)
 {
 	t_cmd		*cmd;
 	t_pipe_ex	pinfo;

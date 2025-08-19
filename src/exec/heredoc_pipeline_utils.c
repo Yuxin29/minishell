@@ -1,23 +1,23 @@
 #include "minishell.h"
 
-void	handle_execve_or_exit_inchild(t_exec_path *exec_cmd, t_cmd *cmd, t_env *env_list)
+void	handle_execve_or_exit_inchild(t_exec_path *exec_cmd, t_cmd *cmd, t_env **env_list)
 {
 	if (cmd->argv[0][0] == '\0')
 	{
 		ft_putstr_fd(": command not found\n", 2);
-		return (free_all_and_exit(exec_cmd, &env_list, 127));
+		return (free_all_and_exit(exec_cmd, env_list, 127));
 	}
 	if (!cmd->cmd_path)
 	{
 		if (ft_strchr(cmd->argv[0], '/'))
-			precheck_path_or_exit(cmd->argv[0], exec_cmd, &env_list);
+			precheck_path_or_exit(cmd->argv[0], exec_cmd, env_list);
 		else
-			print_error_and_exit(cmd, exec_cmd, &env_list);
+			print_error_and_exit(cmd, exec_cmd, env_list);
 	}
 	else
-		precheck_path_or_exit(cmd->cmd_path, exec_cmd, &env_list);
+		precheck_path_or_exit(cmd->cmd_path, exec_cmd, env_list);
 	execve(cmd->cmd_path, cmd->argv, exec_cmd->envp);
-	free_two(exec_cmd, &env_list);
+	free_two(exec_cmd, env_list);
 	perror("execve");
 	if (errno == EACCES)
 		exit(126);
@@ -26,12 +26,18 @@ void	handle_execve_or_exit_inchild(t_exec_path *exec_cmd, t_cmd *cmd, t_env *env
 
 static void	wait_diff_status(int status, int *last_exit)
 {
+	int	sig;
+
 	if (WIFEXITED(status))
 		*last_exit = WEXITSTATUS(status);
 	else if (WIFSIGNALED(status))
 	{
-		write(STDOUT_FILENO, "\n", 1);
-		*last_exit = 128 + WTERMSIG(status);
+		sig = WTERMSIG(status);
+		if (sig == SIGQUIT)
+			write(STDERR_FILENO, "Quit (core dumped)\n", 20);
+		if (sig == SIGINT)
+			write(STDERR_FILENO, "\n", 1);
+		*last_exit = 128 + sig;
 	}
 	else
 		*last_exit = 1;

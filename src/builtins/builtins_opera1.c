@@ -47,7 +47,7 @@ int	ft_echo(char **argv)
 // 	int status;
 
 // 	if (argv[1])
-// 		return 
+// 		return
 // 		(errmsg_return_one("exit with options not required in minishell"));
 // 	else
 // 	{
@@ -142,14 +142,3 @@ int	ft_pwd(void)
 	perror("pwd");
 	return (1);
 }
-
-// int	ft_env(t_env *env)
-// {
-// 	while (env)
-// 	{
-// 		if (env->key && env->value != NULL)
-// 			printf("%s=%s\n", env->key, env->value);
-// 		env = env->next;
-// 	}
-// 	return (0);
-// }

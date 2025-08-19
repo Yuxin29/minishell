@@ -1,12 +1,15 @@
 #include "minishell.h"
 
-int	ft_env(t_env *env)
+int	ft_env(t_env **env)
 {
-	while (env)
+	t_env *cur;
+
+	cur = *env;
+	while (cur)
 	{
-		if (env->key && env->value != NULL)
-			printf("%s=%s\n", env->key, env->value);
-		env = env->next;
+		if (cur->key && cur->value != NULL)
+			printf("%s=%s\n", cur->key, cur->value);
+		cur = cur->next;
 	}
 	return (0);
 }
@@ -80,26 +83,35 @@ int	ft_unset(char **argv, t_env **env)
 // 	return (0);
 // }
 // return (errmsg_return_one("cd: too many arguments")); //modify 0818
-int	ft_cd(char **argv, t_env *env)
+
+
+
+int	ft_cd(char **argv, t_env **env)
 {
 	char	oldpwd[4096];
 	char	newpwd[4096];
+	char	*target;
 
 	if (!argv[1])
-		return (errmsg_return_nbr("cd: missing argument", 0, 1));
-	if (argv[2])
-		return (errmsg_return_nbr("cd: too many arguments", 0, 1));
+	{
+		target = get_env(*env, "HOME");
+		if (!target)
+			return (errmsg_return_nbr("cd: HOME not set", 0, 1));
+	}
+	else
+	{
+		if (argv[2])
+			return (errmsg_return_nbr("cd: too many arguments", 0, 1));
+		target = argv[1];
+	}
 	if (!getcwd(oldpwd, sizeof(oldpwd)))
 		oldpwd[0] = '\0';
-	if (chdir(argv[1]) != 0)
-	{
-		perror("cd");
-		return (1);
-	}
+	if (chdir(target) != 0)
+		return (errmsg_return_nbr("cd", 1, 1));
 	if (getcwd(newpwd, sizeof(newpwd)))
 	{
-		set_env(&env, "OLDPWD", oldpwd);
-		set_env(&env, "PWD", newpwd);
+		set_env(env, "OLDPWD", oldpwd);
+		set_env(env, "PWD", newpwd);
 	}
 	return (0);
 }

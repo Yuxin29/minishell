@@ -1,13 +1,33 @@
 #include "minishell.h"
 
-void	handle_execve_or_exit_inchild(t_exec_path *exec_cmd, t_cmd *cmd,\
-	t_env **env_list)
+static int	is_invalid_command(t_exec_path *exec_cmd, t_cmd *cmd, t_env **env_list)
 {
 	if (cmd->argv[0][0] == '\0')
 	{
 		ft_putstr_fd(": command not found\n", 2);
-		return (free_all_and_exit(exec_cmd, env_list, 127));
+		free_all_and_exit(exec_cmd, env_list, 127);
+		return (1);
 	}
+	if (ft_strncmp(cmd->argv[0], "..", 3) == 0)
+	{
+		ft_putendl_fd("..: command not found", 2);
+		free_all_and_exit(exec_cmd, env_list, 127);
+		return (1);
+	}
+	if (ft_strncmp(cmd->argv[0], ".", 2) == 0)
+	{
+		ft_putendl_fd("minishell: .: filename argument required", 2);
+		ft_putendl_fd(".: usage: . filename [arguments]", 2);
+		free_all_and_exit(exec_cmd, env_list, 2);
+		return (1);
+	}
+	return (0);
+}
+
+void	handle_execve_or_exit_inchild(t_exec_path *exec_cmd, t_cmd *cmd, t_env **env_list)
+{
+	if (is_invalid_command(exec_cmd, cmd, env_list))
+		return ;
 	if (!cmd->cmd_path)
 	{
 		if (ft_strchr(cmd->argv[0], '/'))
@@ -19,6 +39,7 @@ void	handle_execve_or_exit_inchild(t_exec_path *exec_cmd, t_cmd *cmd,\
 		precheck_path_or_exit(cmd->cmd_path, exec_cmd, env_list);
 	execve(cmd->cmd_path, cmd->argv, exec_cmd->envp);
 	perror("execve");
+	free_two(exec_cmd, env_list);
 	if (errno == EACCES)
 		exit(126);
 	exit(127);

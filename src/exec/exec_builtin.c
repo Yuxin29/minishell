@@ -37,7 +37,7 @@ int	execute_builtin_cmd(char **argv, t_env **env, t_exec_path *exec_cmd)
 	if (ft_strcmp(argv[0], "cd") == 0)
 		return (ft_cd(argv, env));
 	if (ft_strcmp(argv[0], "pwd") == 0)
-		return (ft_pwd());
+		return (ft_pwd(env));
 	if (ft_strcmp(argv[0], "export") == 0)
 		return (ft_export(argv, env));
 	if (ft_strcmp(argv[0], "unset") == 0)

@@ -343,3 +343,20 @@ get_path, modify status
 pipeline, modify fork failed, dup2 failed
 single, modify fork failed
 builtin, modify restore
+------------------------------
+minishell$ mkdir -p 1/2/3/4
+minishell$ cd 1/2/3/4
+minishell$ pwd /home/linliu/42_github/rank3/minishell/1/2/3/4
+minishell$ rm -rf ../../../../1
+minishell$ pwd pwd: No such file or directory
+minishell$ cd ..
+minishell$ pwd
+pwd: No such file or directory
+minishell$ cd ..
+minishell$ pwd
+pwd: No such file or directory
+minishell$ cd ..
+minishell$ pwd
+pwd: No such file or directory
+minishell$ cd ..
+minishell$ pwd /home/linliu/42_github/rank3/minishell

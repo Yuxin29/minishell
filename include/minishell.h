@@ -29,6 +29,8 @@ extern volatile sig_atomic_t	g_signal;
 	"minishell: syntax error: special characters"
 # define SYNTAX_ERR_QUOTES \
 	"minishell: syntax error: unclosed quotes"
+# define CD_ERR_MSG \
+	"cd: error retrieving current directory: getcwd: cannot access parent directories"
 
 //common shell cmd line max length
 # define LINE_SIZE 8192
@@ -237,7 +239,7 @@ int			ft_echo(char **argv);
 int			ft_exit(char **argv, t_exec_path *exec_cmd, t_env **env_list);
 void		free_two(t_exec_path *exec_cmd, t_env **env_list);
 //builtins_opera2
-int			ft_pwd(void);
+int			ft_pwd(t_env **env);
 int			ft_env(t_env **env);
 int			ft_unset(char **argv, t_env **env);
 //builtins_opera3

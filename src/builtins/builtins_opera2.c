@@ -108,10 +108,17 @@ int	ft_cd(char **argv, t_env **env)
 		oldpwd[0] = '\0';
 	if (chdir(target) != 0)
 		return (errmsg_return_nbr("cd", 1, 1));
+
 	if (getcwd(newpwd, sizeof(newpwd)))
 	{
-		set_env(env, "OLDPWD", oldpwd);
+		if (oldpwd[0])
+			set_env(env, "OLDPWD", oldpwd);
 		set_env(env, "PWD", newpwd);
+	}
+	else
+	{
+		unset_env(env, "PWD");
+		return (errmsg_return_nbr(CD_ERR_MSG, 1, 0));
 	}
 	return (0);
 }

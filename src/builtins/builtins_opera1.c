@@ -130,13 +130,20 @@ int	ft_exit(char **argv, t_exec_path *exec_cmd, t_env **env_list)
 // In the case of getcwd() and getwd() this is the same value as buf.
 // On failure, these functions return NULL, and errno is set.
 // The contents of the  array  pointed to by buf are undefined on error.
-int	ft_pwd(void)
+int	ft_pwd(t_env **env)
 {
 	char	buf[PATH_MAX];
+	char	*pwd;
 
 	if (getcwd(buf, sizeof(buf)))
 	{
 		printf("%s\n", buf);
+		return (0);
+	}
+	pwd = get_env(*env, "PWD");
+	if (pwd)
+	{
+		printf("%s\n", pwd);
 		return (0);
 	}
 	perror("pwd");

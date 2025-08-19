@@ -2,7 +2,7 @@
 
 int	ft_env(t_env **env)
 {
-	t_env *cur;
+	t_env	*cur;
 
 	cur = *env;
 	while (cur)
@@ -84,8 +84,6 @@ int	ft_unset(char **argv, t_env **env)
 // }
 // return (errmsg_return_one("cd: too many arguments")); //modify 0818
 
-
-
 int	ft_cd(char **argv, t_env **env)
 {
 	char	oldpwd[4096];
@@ -108,7 +106,6 @@ int	ft_cd(char **argv, t_env **env)
 		oldpwd[0] = '\0';
 	if (chdir(target) != 0)
 		return (errmsg_return_nbr("cd", 1, 1));
-
 	if (getcwd(newpwd, sizeof(newpwd)))
 	{
 		if (oldpwd[0])

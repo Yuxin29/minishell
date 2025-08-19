@@ -1,6 +1,7 @@
 #include "minishell.h"
 
-void	print_error_and_exit(t_cmd *cmd, t_exec_path *exec_cmd, t_env **env_list)
+void	print_error_and_exit(t_cmd *cmd, t_exec_path *exec_cmd,\
+	t_env **env_list)
 {
 	ft_putstr_fd(cmd->argv[0], 2);
 	ft_putstr_fd(": command not found\n", 2);
@@ -52,7 +53,7 @@ static void	exec_single_child(t_exec_path *cmd, t_env **env_list)
 		ft_putstr_fd(": command not found\n", 2);
 		return (free_all_and_exit(cmd, env_list, 127));
 	}
-	if (!c->cmd_path) //should free inside function
+	if (!c->cmd_path)
 	{
 		if (ft_strchr(c->argv[0], '/'))
 			precheck_path_or_exit(c->argv[0], cmd, env_list);
@@ -62,7 +63,6 @@ static void	exec_single_child(t_exec_path *cmd, t_env **env_list)
 	else
 		precheck_path_or_exit(c->cmd_path, cmd, env_list);
 	execve(c->cmd_path, c->argv, cmd->envp);
-	free_two(cmd, env_list);
 	if (errno == EACCES)
 		exit(126);
 	exit(127);

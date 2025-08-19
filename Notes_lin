@@ -344,19 +344,16 @@ pipeline, modify fork failed, dup2 failed
 single, modify fork failed
 builtin, modify restore
 ------------------------------
-minishell$ mkdir -p 1/2/3/4
-minishell$ cd 1/2/3/4
-minishell$ pwd /home/linliu/42_github/rank3/minishell/1/2/3/4
-minishell$ rm -rf ../../../../1
-minishell$ pwd pwd: No such file or directory
-minishell$ cd ..
-minishell$ pwd
-pwd: No such file or directory
-minishell$ cd ..
-minishell$ pwd
-pwd: No such file or directory
-minishell$ cd ..
-minishell$ pwd
-pwd: No such file or directory
-minishell$ cd ..
-minishell$ pwd /home/linliu/42_github/rank3/minishell
+
+Once execve() succeeds, it never returns. If it fails, you're already in a dying child, so:
+
+✅ You do not need to call free_two(cmd, env_list) in the child, as long as the parent process will clean up everything later.
+
+
+Memory in the child process is automatically cleaned up when it exits (no zombie mallocs). The only reason to free() manually in a child is if:
+
+You're not using execve() and doing more logic.
+
+Or you're looping/forking repeatedly without exiting (e.g., in a shell built-in).
+
+But in your case — you're running execve(), then exiting. So no leak danger, and freeing is redundant.

@@ -24,7 +24,8 @@ static int	set_up_stdin(t_pipe_ex *pinfo, t_exec_path *cmd, t_env **env_list)
 	return (1);
 }
 
-static int	set_up_stdout(t_cmd *cmd, t_pipe_ex *pinfo, t_exec_path *exec_cmd, t_env **env_list)
+static int	set_up_stdout(t_cmd *cmd, t_pipe_ex *pinfo, t_exec_path *exec_cmd,\
+	t_env **env_list)
 {
 	if (!cmd->next)
 		return (1);
@@ -41,7 +42,7 @@ static int	set_up_stdout(t_cmd *cmd, t_pipe_ex *pinfo, t_exec_path *exec_cmd, t_
 static void	handle_child_process(t_exec_path *exec_cmd, t_cmd *cmd,
 	t_env **env_list, t_pipe_ex *pinfo)
 {
-	int status;
+	int	status;
 
 	signal_default();
 	if (!set_up_stdin(pinfo, exec_cmd, env_list))

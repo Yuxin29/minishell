@@ -1,6 +1,7 @@
 #include "minishell.h"
 
-void	handle_execve_or_exit_inchild(t_exec_path *exec_cmd, t_cmd *cmd, t_env **env_list)
+void	handle_execve_or_exit_inchild(t_exec_path *exec_cmd, t_cmd *cmd,\
+	t_env **env_list)
 {
 	if (cmd->argv[0][0] == '\0')
 	{
@@ -17,7 +18,6 @@ void	handle_execve_or_exit_inchild(t_exec_path *exec_cmd, t_cmd *cmd, t_env **en
 	else
 		precheck_path_or_exit(cmd->cmd_path, exec_cmd, env_list);
 	execve(cmd->cmd_path, cmd->argv, exec_cmd->envp);
-	free_two(exec_cmd, env_list);
 	perror("execve");
 	if (errno == EACCES)
 		exit(126);
@@ -97,7 +97,8 @@ void	free_all_and_exit(t_exec_path *cmd, t_env **env_list, int status)
 	exit (status);
 }
 
-void	free_all_and_exit_pipe(t_exec_path *cmd, t_env **env_list, int status, t_pipe_ex *pinfo)
+void	free_all_and_exit_pipe(t_exec_path *cmd, t_env **env_list,\
+	int status, t_pipe_ex *pinfo)
 {
 	free_two(cmd, env_list);
 	if (pinfo)

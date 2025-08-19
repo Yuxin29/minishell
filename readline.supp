@@ -29,3 +29,10 @@
    ...
    obj:*libncurses.so*
 }
+
+{
+   sigpipe_write_cat_linux
+   Memcheck:Leak
+   fun:write
+   obj:/usr/bin/cat
+}

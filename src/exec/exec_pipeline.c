@@ -18,7 +18,6 @@ static int	set_up_stdin(t_pipe_ex *pinfo, t_exec_path *cmd, t_env **env_list)
 	if (dup2(pinfo->prev_pipe, STDIN_FILENO) == -1)
 	{
 		perror("dup2 stdin");
-		close(pinfo->prev_pipe);
 		free_all_and_exit_pipe(cmd, env_list, 1, pinfo);
 	}
 	close (pinfo->prev_pipe);
@@ -32,8 +31,6 @@ static int	set_up_stdout(t_cmd *cmd, t_pipe_ex *pinfo, t_exec_path *exec_cmd, t_
 	if (dup2(pinfo->pipefd[1], STDOUT_FILENO) == -1)
 	{
 		perror("dup2 stdin");
-		// close(pinfo->pipefd[1]);
-		// close(pinfo->pipefd[0]);
 		free_all_and_exit_pipe(exec_cmd, env_list, 1, pinfo);
 	}
 	close(pinfo->pipefd[1]);
@@ -47,14 +44,14 @@ static void	handle_child_process(t_exec_path *exec_cmd, t_cmd *cmd,
 	int status;
 
 	signal_default();
-	if (!cmd || !cmd->argv || !cmd->argv[0])
-		free_all_and_exit_pipe(exec_cmd, env_list, 0, pinfo);
 	if (!set_up_stdin(pinfo, exec_cmd, env_list))
 		return ;
 	if (!set_up_stdout(cmd, pinfo, exec_cmd, env_list))
 		return ;
 	if (check_and_apply_redirections(cmd) == -1)
 		return (free_all_and_exit_pipe(exec_cmd, env_list, 1, pinfo));
+	if (!cmd || !cmd->argv || !cmd->argv[0])
+		free_all_and_exit_pipe(exec_cmd, env_list, 0, pinfo);
 	if (is_builtin(cmd->argv[0]))
 	{
 		status = execute_builtin_cmd(cmd->argv, env_list, exec_cmd);

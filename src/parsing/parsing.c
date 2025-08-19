@@ -2,7 +2,7 @@
 
 // creat_heredoc_file should be moved to right before execution
 // (!new->file already perrored in creat_heredoc_file)
-t_redir	*create_redir_node(t_token *redir_tok, t_token *file_tok,
+static t_redir	*create_redir_node(t_token *redir_tok, t_token *file_tok,
 	t_exec_path *cmd)
 {
 	t_redir	*new;
@@ -33,7 +33,7 @@ t_redir	*create_redir_node(t_token *redir_tok, t_token *file_tok,
 }
 
 // Helper: create and append redirection node
-t_token	*get_one_redirection(t_cmd *cmd, t_token *tokens, t_exec_path *exec_cmd)
+static t_token	*get_one_redir(t_cmd *cmd, t_token *tokens, t_exec_path *exec_cmd)
 {
 	t_redir	*new_redir;
 	t_redir	*last;
@@ -63,7 +63,7 @@ t_token	*parse_redirections(t_cmd *cmd, t_token *tokens, t_exec_path *exec_cmd)
 	{
 		if (tokens->t_type >= 2 && tokens->t_type <= 5)
 		{
-			tokens = get_one_redirection(cmd, tokens, exec_cmd);
+			tokens = get_one_redir(cmd, tokens, exec_cmd);
 			if (!tokens)
 				return (NULL);
 		}
@@ -74,7 +74,7 @@ t_token	*parse_redirections(t_cmd *cmd, t_token *tokens, t_exec_path *exec_cmd)
 }
 
 //used for parse argv
-int	malloc_for_agrv(t_cmd *cmd, t_token *tokens)
+static int	malloc_for_agrv(t_cmd *cmd, t_token *tokens)
 {
 	int	len;
 

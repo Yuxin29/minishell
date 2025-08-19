@@ -46,7 +46,7 @@ int	count_argv(t_token *start)
 }
 
 // used in get_one_new_cmd to skip the word tokens that have been parsed already
-t_token	*loop_to_next(t_token *token_head)
+static t_token	*loop_to_next(t_token *token_head)
 {
 	if (token_head && token_head->t_type == 0)
 	{
@@ -56,7 +56,7 @@ t_token	*loop_to_next(t_token *token_head)
 	return (token_head);
 }
 
-t_token	*parse_if_no_argv(t_cmd *cmd_current, t_token *token_head)
+static t_token	*parse_if_no_argv(t_cmd *cmd_current, t_token *token_head)
 {
 	if (token_head && token_head->t_type == 0 && !cmd_current->argv)
 		parse_argv(cmd_current, token_head);

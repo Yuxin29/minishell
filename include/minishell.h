@@ -131,24 +131,23 @@ void		handle_line(char *line, t_env **env_list, t_exec_path *exec_cmd);
 void		minishell_loop(t_env **env_list);
 
 //---------------------------parsing part----------------------------------//
-//preexpander_utils.c
-int			var_name_len(const char *str);
+//preexpander_utils.c	5/5
+int			skip_copy(char *raw_line, int idx[2], char *res, int quotes[2]);
 int			handle_quotes(char c, int quotes[2], char *res, int *j);
 int			handle_heredoc_skip(char *raw_line, int ids[2], char *res);
 int			handle_dollar_dquote(char *raw_line, int ids[2], char *res);
 int			handle_exit_status(char *raw_line, int ids[2], char *res,\
 	t_exec_path *cmd);
 
-//preexpander.c
-void		append_to_res(char *res, int *res_idx, const char *val);
+//preexpander.c		5/5
 int			try_expand_env_var(char *raw_line, int idx[2], char *res,\
 	t_exec_path *cmd);
-int			skip_copy(char *raw_line, int idx[2], char *res, int quotes[2]);
 void		expand_loop(char *raw_line, char *res, int idx[2],\
 	t_exec_path *cmd);
 char		*pre_expand_line(t_exec_path *cmd, char *raw_line);
 
-// lex_utils.c
+// lex_utils.c	5/5
+// all used outside of the file
 // ATTENTION: empty token list is alloweed. when its leagal, status = 0
 // when it is empty but status == 1, it is from malloc failure
 // when it is empty but status == 2, it is from symtax error
@@ -158,44 +157,29 @@ void		get_token_type(t_token *token);
 char		*get_unquoted_part(char *s, int *i, t_exec_path *cmd);
 char		*get_quoted_part(char *s, int *i, t_exec_path *cmd);
 
-// lexing_w_token.c
-char		*get_part(char *line, int *i, char	*part_quote, t_exec_path *cmd);
-t_token		*malloc_and_set_token(char *temp, int q, t_exec_path *cmd);
-char		*append_next_part(char *temp, char *part, int part_quote, int *q);
-//int			save_last_quote(int new_val, int mode); not used
+// lexing_w_token.c		5/5
 t_token		*build_word_token(char *line, int *i, t_exec_path *cmd);
 
-// lex.c
+// lex.c				4/5
 // get a raw line and change it to a linked list of minimal unit(tokens)
-t_token		*get_token_list(t_exec_path *cmd, char *raw_line);
-t_token		*tokenize_loop(char *raw_line, t_exec_path *cmd);
 t_token		*build_operator_token(char *line, int *i, t_exec_path *cmd);
-t_token		*build_token_from_next_word(char *line, int *i, t_exec_path *cmd);
+t_token		*get_token_list(t_exec_path *cmd, char *raw_line);
 
-// parser_utils.c
+// parser_utils.c	3/5
+// 3 used out of this .c
 // ATTENTION: empty token list is alloweed. when its leagal, status = 0
 // when it is empty but status == 2, it is from symtax error
 void		check_token_syntax(t_token *token_head, t_exec_path *cmd);
 int			count_argv(t_token *start);
-t_token		*parse_if_no_argv(t_cmd *cmd_current, t_token *token_head);
-t_token		*loop_to_next(t_token *token_head);
 t_token		*get_one_new_cmd(t_token *token_head, t_cmd *cmd_current,\
 	t_exec_path *exec_cmd);
 
-// parser.c
-t_redir		*create_redir_node(t_token *redir_tok, t_token *file_tok,\
-	t_exec_path *cmd);
-t_token		*get_one_redirection(t_cmd *cmd, t_token *tokens,\
-	t_exec_path *exec_cmd);
+// parsing.c	5/5
 t_token		*parse_redirections(t_cmd *cmd, t_token *tokens,\
 	t_exec_path *exec_cmd);
-int			malloc_for_agrv(t_cmd *cmd, t_token *tokens);
 t_token		*parse_argv(t_cmd *cmd, t_token *tokens);
 
-// parsing_to_cmd_list.c
-int			check_new_cmd(t_exec_path *cmd, t_token *token, t_cmd *cmd1,\
-	t_cmd *cmd2);
-t_cmd		*malloc_for_new_cmd(t_cmd *cmd_head);
+// parsing_to_cmd_list.c	3/5
 t_cmd		*build_command_list(t_exec_path *cmd, t_token *token_head);
 
 //---------------------------exec part------------------------------------//

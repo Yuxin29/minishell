@@ -1,7 +1,7 @@
 #include "minishell.h"
 
 //called in build cmd list
-int	check_new_cmd(t_exec_path *cmd, t_token *token, t_cmd *cmd1, t_cmd *cmd2)
+static int	check_new_cmd(t_exec_path *cmd, t_token *token, t_cmd *cmd1, t_cmd *cmd2)
 {
 	if (!token)
 	{
@@ -24,7 +24,7 @@ int	check_new_cmd(t_exec_path *cmd, t_token *token, t_cmd *cmd1, t_cmd *cmd2)
 }
 
 // called in build_command_list
-t_cmd	*malloc_for_new_cmd(t_cmd *cmd_head)
+static t_cmd	*malloc_for_new_cmd(t_cmd *cmd_head)
 {
 	t_cmd	*cmd_current;
 

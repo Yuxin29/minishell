@@ -1,20 +1,18 @@
 #include "minishell.h"
 
-// return the length of a valid variable name
-// not malloc involved
-// $ skipped already
-int	var_name_len(const char *str)
+int	skip_copy(char *raw_line, int idx[2], char *res, int quotes[2])
 {
-	int	len;
-
-	len = 0;
-	if (!str[len])
-		return (len);
-	if (!ft_check_valid_var_name(str[len]))
-		return (len);
-	while (ft_check_valid_var_name(str[len]))
-		len++;
-	return (len);
+	if (handle_quotes(raw_line[idx[0]], quotes, res, &idx[1]))
+	{
+		idx[0]++;
+		return (1);
+	}
+	if (quotes[0])
+	{
+		res[idx[1]++] = raw_line[idx[0]++];
+		return (1);
+	}
+	return (0);
 }
 
 // trackign and switch quotes status

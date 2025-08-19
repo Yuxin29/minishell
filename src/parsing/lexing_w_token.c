@@ -6,7 +6,7 @@
 // $"
 // double quote
 // unquoted
-char	*get_part(char *line, int *i, char *part_quote, t_exec_path *cmd)
+static char	*get_part(char *line, int *i, char *part_quote, t_exec_path *cmd)
 {
 	char	*part;
 
@@ -36,7 +36,7 @@ char	*get_part(char *line, int *i, char *part_quote, t_exec_path *cmd)
 
 // after get the content of the token, 
 // I malloc and assing the content to the token->str
-t_token	*malloc_and_set_token(char *temp, int q, t_exec_path *cmd)
+static t_token	*malloc_and_set_token(char *temp, int q, t_exec_path *cmd)
 {
 	t_token	*token;
 
@@ -50,21 +50,8 @@ t_token	*malloc_and_set_token(char *temp, int q, t_exec_path *cmd)
 	return (token);
 }
 
-// NOT USED, TO BE DELETED
-// helper to store/retrieve last quote type
-// mode, bool to update last or not,
-// int	save_last_quote(int new_val, int mode)
-// {
-// 	int	last;
-//
-// 	last = 0;
-// 	if (mode == 1)
-// 		last = new_val;
-// 	return (last);
-// }
-
 // get the content of the world toekn
-char	*append_next_part(char *temp, char *part, int part_quote, int *q)
+static char	*append_next_part(char *temp, char *part, int part_quote, int *q)
 {
 	temp = ft_strjoin_free(temp, part);
 	if (!temp)

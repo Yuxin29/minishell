@@ -49,24 +49,6 @@ static void	exec_single_child(t_exec_path *cmd, t_env **env_list)
 	if (!c->argv || !c->argv[0])
 		return (free_all_and_exit(cmd, env_list, 0));
 	handle_execve_or_exit_inchild(cmd, c, env_list);
-	// if (c->argv[0][0] == '\0')
-	// {
-	// 	ft_putstr_fd(": command not found\n", 2);
-	// 	return (free_all_and_exit(cmd, env_list, 127));
-	// }
-	// if (!c->cmd_path)
-	// {
-	// 	if (ft_strchr(c->argv[0], '/'))
-	// 		precheck_path_or_exit(c->argv[0], cmd, env_list);
-	// 	else
-	// 		print_error_and_exit(c, cmd, env_list);
-	// }
-	// else
-	// 	precheck_path_or_exit(c->cmd_path, cmd, env_list);
-	// execve(c->cmd_path, c->argv, cmd->envp);
-	// if (errno == EACCES)
-	// 	exit(126);
-	// exit(127);
 }
 
 //eintr: Interrupted

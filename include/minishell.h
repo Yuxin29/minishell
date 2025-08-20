@@ -137,7 +137,7 @@ void		minishell_loop(t_env **env_list);
 //---------------------------parsing part----------------------------------//
 
 //pre_syntax_checking.c
-void		check_line_syntax(char *raw_line, t_exec_path *cmd);
+int			check_line_syntax(char *raw_line);
 
 //preexpander_utils.c	5/5
 int			skip_copy(char *raw_line, int idx[2], char *res, int quotes[2]);

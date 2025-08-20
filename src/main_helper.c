@@ -82,18 +82,22 @@ void	handle_line(char *line, t_env **env_list, t_exec_path *exec_cmd)
 	exec_cmd->envp = env_list_to_envp(*env_list);
 	if (!exec_cmd->envp)
 	{
+		free_env_list(*env_list);
 		free(line);
 		free_env_list(*env_list);
 		ft_putstr_fd("Error: env list initialized failed\n", 2);
 		exit(EXIT_FAILURE);
+	}
+	if (!check_line_syntax(line))
+	{
+		exec_cmd->exit_status = 2;
+		return ;
 	}
 	expanded_line = pre_expand_line(exec_cmd, line);
 	free(line);
 	if (!expanded_line)
 	{
 		ft_free_arr(exec_cmd->envp);
-		if (exec_cmd->exit_status == 2) //added
-			return ; //added
 		free_env_list(*env_list);
 		ft_putstr_fd("Error: pre expanding failure\n", 2);
 		exit(EXIT_FAILURE);

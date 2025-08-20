@@ -1,18 +1,18 @@
 #include "minishell.h"
 
-static int	check_pipe_syntax(char *line, int *i, t_exec_path *cmd)
+static int	check_pipe_syntax(char *line, int *i)
 {
 	(*i)++;
 	while (line[*i] == ' ' || line[*i] == '\t')
 		(*i)++;
 	if (line[*i] == '\0')
-		return (errmsg_set_status(SYNTAX_ERR_PIPE, cmd), 0);
+		return (errmsg_return_nbr(SYNTAX_ERR_PIPE, 1, 0));
 	if (line[*i] == '|')
-		return (errmsg_set_status(SYNTAX_ERR_PIPE, cmd), 0);
+		return (errmsg_return_nbr(SYNTAX_ERR_PIPE, 1, 0));
 	return (1);
 }
 
-static int	check_redir_syntax(char *line, int *i, t_exec_path *cmd)
+static int	check_redir_syntax(char *line, int *i)
 {
 	char	c;
 	int		count;
@@ -25,48 +25,48 @@ static int	check_redir_syntax(char *line, int *i, t_exec_path *cmd)
 		(*i)++;
 	}
 	if (count > 2)
-		return (errmsg_set_status(SYNTAX_ERR_REDIR_DOUBLE, cmd), 0);
+		return (errmsg_return_nbr(SYNTAX_ERR_REDIR_DOUBLE, 1, 0));
 	while (line[*i] == ' ' || line[*i] == '\t')
 		(*i)++;
 	if (line[*i] == '\0')
-		return (errmsg_set_status(SYNTAX_ERR_REDIR_FILE_MISSING, cmd), 0);
+		return (errmsg_return_nbr(SYNTAX_ERR_REDIR_FILE_MISSING, 1, 0));
 	if (line[*i] == '|' || line[*i] == '<' || line[*i] == '>')
-		return (errmsg_set_status(SYNTAX_ERR_REDIR_FILE_MISSING, cmd), 0);
+		return (errmsg_return_nbr(SYNTAX_ERR_REDIR_FILE_MISSING, 1, 0));
 	return (1);
 }
 
-static int	handle_operator_syntax(char *line, int *i,\
-	int quote, t_exec_path *cmd)
+static int	handle_operator_syntax(char *line, int *i, int quote)
 {
 	if (quote)
 		return (1);
 	if (line[*i] == '|')
 	{
-		if (!check_pipe_syntax(line, i, cmd))
+		if (!check_pipe_syntax(line, i))
 			return (0);
 		return (2);
 	}
 	else if (line[*i] == '<' || line[*i] == '>')
 	{
-		if (!check_redir_syntax(line, i, cmd))
+		if (!check_redir_syntax(line, i))
 			return (0);
 		return (2);
 	}
 	return (1);
 }
 
-static int	check_start_pipe_syntax(char *line, int *i, t_exec_path *cmd)
+// 1 for perror, 0 for stderr
+static int	check_start_pipe_syntax(char *line, int *i)
 {
 	while (line[*i] == ' ' || line[*i] == '\t')
 		(*i)++;
 	if (line[*i] == '|')
-		return (errmsg_set_status(SYNTAX_ERR_PIPE, cmd), 0);
+		return (errmsg_return_nbr(SYNTAX_ERR_PIPE, 1, 0));
 	return (1);
 }
 
 // syntax check on char level
 // //cmd->exit_status = 0; 
-void	check_line_syntax(char *raw_line, t_exec_path *cmd)
+int	check_line_syntax(char *raw_line)
 {
 	int		i;
 	char	quote;
@@ -74,8 +74,8 @@ void	check_line_syntax(char *raw_line, t_exec_path *cmd)
 
 	i = 0;
 	quote = 0;
-	if (!check_start_pipe_syntax(raw_line, &i, cmd))
-		return ;
+	if (!check_start_pipe_syntax(raw_line, &i))
+		return (0);
 	while (raw_line[i])
 	{
 		c = raw_line[i];
@@ -85,12 +85,12 @@ void	check_line_syntax(char *raw_line, t_exec_path *cmd)
 			quote = 0;
 		if (!quote && (c == '|' || c == '<' || c == '>'))
 		{
-			if (handle_operator_syntax(raw_line, &i, quote, cmd) == 0)
-				return ;
-			if (handle_operator_syntax(raw_line, &i, quote, cmd) == 2)
+			if (handle_operator_syntax(raw_line, &i, quote) == 0)
+				return (0);
+			if (handle_operator_syntax(raw_line, &i, quote) == 2)
 				continue ;
 		}
 		i++;
 	}
-	return ;
+	return (1);
 }

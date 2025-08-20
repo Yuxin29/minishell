@@ -166,11 +166,11 @@ t_token		*build_word_token(char *line, int *i, t_exec_path *cmd);
 t_token		*build_operator_token(char *line, int *i, t_exec_path *cmd);
 t_token		*get_token_list(t_exec_path *cmd, char *raw_line);
 
-// parser_utils.c	3/5
+// parser_utils.c	4/5
 // 3 used out of this .c
 // ATTENTION: empty token list is alloweed. when its leagal, status = 0
 // when it is empty but status == 2, it is from symtax error
-void		check_token_syntax(t_token *token_head, t_exec_path *cmd);
+//void		check_token_syntax(t_token *token_head, t_exec_path *cmd);
 int			count_argv(t_token *start);
 t_token		*get_one_new_cmd(t_token *token_head, t_cmd *cmd_current,\
 	t_exec_path *exec_cmd);

@@ -120,8 +120,7 @@ void	check_line_syntax(char *raw_line, t_exec_path *cmd)
 	char quote = 0;
 
 	//cmd->exit_status = 0;
-	// skip space
-	// while (raw_line[i] == ' ' || raw_line[i] == '\t')
+	while (raw_line[i] == ' ' || raw_line[i] == '\t') // skip space
 		i++;
 	if (raw_line[i] == '|')	// case1: | at start
 		return (errmsg_set_status(SYNTAX_ERR_PIPE, cmd));

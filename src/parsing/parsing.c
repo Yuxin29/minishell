@@ -18,7 +18,7 @@ static t_redir	*create_redir_node(t_token *redir_tok, t_token *file_tok,
 	t_exec_path *cmd)
 {
 	t_redir	*new;
-	char	*expanded; //yuxin added
+	char	*new_line; //yuxin added
 
 	new = malloc(sizeof(t_redir));
 	if (!new)
@@ -26,6 +26,7 @@ static t_redir	*create_redir_node(t_token *redir_tok, t_token *file_tok,
 	new->type = redir_tok->t_type;
 	new->next = NULL;
 	new->quoted = file_tok->quote_type;
+	new->is_ambiguous = 0;
 	if (redir_tok->t_type == 5)
 	{
 		new->heredoc_delim = ft_strdup(file_tok->str);
@@ -38,27 +39,20 @@ static t_redir	*create_redir_node(t_token *redir_tok, t_token *file_tok,
 	else
 	{
 		new->heredoc_delim = NULL;
-    	if (ft_strchr(file_tok->str, '$'))
-		{ 
-			expanded = pre_expand_line(cmd, file_tok->str);
-			new->is_ambiguous = 0;  //bezero
-			if (!expanded)
-				return (free(new), NULL);
-			if (!expanded[0] || has_multiple_words(expanded)) //expanded but !expandedp[0]
-			{
-				new->file = NULL;
-				new->is_ambiguous = 1;   // yuxin added
-				free(expanded);
-				return (new);
-			}
-		}		
+		if (ft_strchr(file_tok->str, '$'))
+			new_line = pre_expand_line(cmd, file_tok->str);	
 		else
+			new_line = ft_strdup(file_tok->str);
+		if (!new_line)
+			return (free(new), (t_redir *)free_malloc_fail_null(NULL));
+		if (!new_line[0] || has_multiple_words(new_line))
 		{
-			expanded = ft_strdup(file_tok->str);
-			if (!expanded)
-				return (free(new), (t_redir *)free_malloc_fail_null(NULL));
+			new->file = NULL;
+			new->is_ambiguous = 1;
+			free(new_line);
+			return (new);
 		}
-		new->file = expanded;
+		new->file = new_line;
 	}
 	return (new);
 }

@@ -16,7 +16,7 @@ static int	is_valid_identifier(char *str)
 	return (1);
 }
 
-void	export_var(t_env **env, char *key)
+static void	export_var(t_env **env, char *key)
 {
 	t_env	*node;
 	t_env	*cur;

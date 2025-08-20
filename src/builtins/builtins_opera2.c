@@ -55,34 +55,30 @@ int	ft_unset(char **argv, t_env **env)
 // NAME		chdir, - change working directory
 // SYNOPSIS	int chdir(const char *path);
 // On success, zero is returned.  On error, -1 is returned
-// no need to free target, from argv[1], mem from minishell argv
-// buf is a local mem, path pointing to it, so need need to free path ever
-// int	ft_cd(char **argv, t_env **env)
-// {
-// 	char	*path;
-// 	char	buf[1024];
-// 	char	*target;
+static char *set_target(char **argv, t_env **env)
+{
+	char	*target;
 
-// 	if (argv[2])
-// 		return (errmsg_return_one("cd: too many arguments"));
-// 	path = getcwd(buf, sizeof(buf));
-// 	if (!path)
-// 		return (perror_return_one("cd: getcwd (old)"));
-// 	target = argv[1];
-// 	if (!target)
-// 		target = get_env(*env, "HOME");
-// 	if (!target)
-// 		return (errmsg_return_one("cd: HOME not set"));
-// 	if (chdir(target) != 0)
-// 		return (perror_return_one("cd"));
-// 	set_env(env, "OLDPWD", path);
-// 	path = getcwd(buf, sizeof(buf));
-// 	if (!path)
-// 		return (perror_return_one("cd: getcwd (new)"));
-// 	set_env(env, "PWD", path);
-// 	return (0);
-// }
-// return (errmsg_return_one("cd: too many arguments")); //modify 0818
+	if (!argv[1])
+	{
+		target = get_env(*env, "HOME");
+		if (!target)
+		{
+			ft_putendl_fd("cd: HOME not set", 2);
+			return (NULL);
+		}
+	}
+	else
+	{
+		if (argv[2])
+		{
+			ft_putendl_fd("cd: too many arguments", 2);
+			return (NULL);
+		}
+		target = argv[1];
+	}
+	return (target);
+}
 
 int	ft_cd(char **argv, t_env **env)
 {
@@ -90,18 +86,9 @@ int	ft_cd(char **argv, t_env **env)
 	char	newpwd[4096];
 	char	*target;
 
-	if (!argv[1])
-	{
-		target = get_env(*env, "HOME");
-		if (!target)
-			return (errmsg_return_nbr("cd: HOME not set", 0, 1));
-	}
-	else
-	{
-		if (argv[2])
-			return (errmsg_return_nbr("cd: too many arguments", 0, 1));
-		target = argv[1];
-	}
+	target = set_target(argv,env);
+	if (!target)
+		return (1);
 	if (!getcwd(oldpwd, sizeof(oldpwd)))
 		oldpwd[0] = '\0';
 	if (chdir(target) != 0)

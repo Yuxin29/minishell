@@ -82,8 +82,7 @@ int	check_and_apply_redirections(t_cmd *cmd)
 	while (cur)
 	{
 		if (cur->is_ambiguous)
-			return (errmsg_return_nbr\
-				("minishell: ambiguous redirect", 0, -1)); //modify 0820
+			return (errmsg_return_nbr(SYNTAX_ERR_AMBIGUOUS, 0, -1));
 		if (!apply_out_or_in(cur, last))
 			return (-1);
 		cur = cur->next;

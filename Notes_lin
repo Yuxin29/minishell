@@ -357,3 +357,101 @@ You're not using execve() and doing more logic.
 Or you're looping/forking repeatedly without exiting (e.g., in a shell built-in).
 
 But in your case — you're running execve(), then exiting. So no leak danger, and freeing is redundant.
+------------------
+
+
+//---------------------------exec part------------------------------------//
+//execute builtins
+int			is_builtin(char *cmd);
+int			execute_builtin_cmd(char **argv, t_env **env,\
+	t_exec_path *exec_cmd);
+void		run_builtin_with_redir(t_exec_path *exec_cmd, t_env **env_list);
+//exec_single
+void		execute_single_cmd(t_exec_path *cmd, t_env **env_list);
+void		print_error_and_exit(t_cmd *cmd, t_exec_path *exec_cmd,\
+	t_env **env_list);
+void		precheck_path_or_exit(char *path, t_exec_path *cmd,\
+	t_env **env_list);
+//exec_pipline
+void		execute_pipeline(t_exec_path *exec_cmd, t_env **env_list);
+//exec_pipeline_utils
+int			create_pipe_or_exit(t_exec_path *exec_cmd, t_pipe_ex *pinfo);
+int			set_up_stdin(t_pipe_ex *pinfo, t_exec_path *cmd, t_env **env_list);
+int			set_up_stdout(t_cmd *cmd, t_pipe_ex *pinfo, t_exec_path *exec_cmd,\
+	t_env **env_list);
+void		wait_exit(t_exec_path *exec_cmd, pid_t last_pid);
+//exec_utils
+void		handle_execve_or_exit_inchild(t_exec_path *exec_cmd,\
+	t_cmd *cmd, t_env **env_list);
+char		*cleanup_heredoc(int fd, int saved_stdin, char *tmp_file,\
+	char *err_msg);
+void		free_all_and_exit(t_exec_path *cmd, t_env **env_list, int status);
+void		free_all_and_exit_pipe(t_exec_path *cmd, t_env **env_list,\
+	int status, t_pipe_ex *pinfo);
+//redirections
+int			check_and_apply_redirections(t_cmd *cmd);
+//heredoc
+char		*creat_heredoc_file(char *delim, int quoted, t_exec_path *cmd);
+//get_path
+char		*get_env(t_env *env, char *key);
+char		*get_cmd_path(char *cmd, t_env *env_list, t_exec_path *exec_cmd);
+//---------------------------built_in part--------------------------------//
+//7 builtin cmds:
+//builtins_opera1
+int			ft_echo(char **argv);
+int			ft_exit(char **argv, t_exec_path *exec_cmd, t_env **env_list);
+void		free_two(t_exec_path *exec_cmd, t_env **env_list);
+int			ft_pwd(t_env **env);
+//builtins_opera2
+int			ft_cd(char **argv, t_env **env);
+int			ft_env(t_env **env);
+int			ft_unset(char **argv, t_env **env);
+//builtins_opera3
+int			ft_export(char **argv, t_env **env);
+//builtins_utils
+void		set_env(t_env **env, char *key, char *value);
+long long	ft_atoll(char *str);
+int			ft_is_numeric(char *str);
+int			env_count(t_env *env);
+void		sort_copy_list(t_env **copy_list, int size);
+//---------------------------env part---------------------------------------//
+// NOTES
+// in minishell,
+// we might change the elements of the original env(impletment unset, export),
+// so we have to copy the oringal env, and change them in copy version
+// first step is converting every envp[i] to a signal node,
+// and connect these nodes to a linked list,
+// in which we can add or delete env elements more easily than in array,
+// after modifying the env list, we should convert linked list to array
+
+//get env list
+t_env		*env_new_node(char *key, char *value);
+t_env		*env_list_init(char **envp);
+void		free_env_list(t_env *head);
+//env list to envp
+// second used in preexpander
+char		**env_list_to_envp(t_env *head);
+char		*get_env_value(char **envp, const char *key);
+//---------------------------signal part-------------------------------------//
+//signals.c
+// 2 + 2 static inside
+void		signal_init(void);
+void		signal_default(void);
+// signal_utils.c
+void		signal_heredoc(void);
+void		signal_ignore(void);
+int			hd_is_interrupted(void);
+-----------------------------------------
+SRCS := \
+	$(SRC_DIR)/main.c $(SRC_DIR)/main_helper.c\
+	$(SRC_DIR)/builtins/builtins_opera1.c $(SRC_DIR)/builtins/get_env_list.c \
+	$(SRC_DIR)/builtins/envlist_to_envp.c $(SRC_DIR)/builtins/builtins_opera2.c \
+	$(SRC_DIR)/builtins/builtins_opera3.c $(SRC_DIR)/builtins/builtins_utils.c \
+	$(SRC_DIR)/exec/exec_single.c $(SRC_DIR)/exec/exec_builtin.c \
+	$(SRC_DIR)/exec/exec_utils.c $(SRC_DIR)/exec/heredoc.c $(SRC_DIR)/exec/exec_pipeline_utils.c\
+	$(SRC_DIR)/exec/exec_pipeline.c $(SRC_DIR)/exec/get_path.c $(SRC_DIR)/exec/redirections.c \
+	$(SRC_DIR)/parsing/preexpanding.c $(SRC_DIR)/parsing/preexpanding_utils.c \
+	$(SRC_DIR)/parsing/lexing.c $(SRC_DIR)/parsing/lexing_w_token.c $(SRC_DIR)/parsing/lexing_utils.c \
+	$(SRC_DIR)/parsing/parsing.c $(SRC_DIR)/parsing/parsing_utils.c $(SRC_DIR)/parsing/parsing_to_cmd_list.c \
+	$(SRC_DIR)/utils/free.c $(SRC_DIR)/utils/str_utils.c $(SRC_DIR)/utils/err_msg.c \
+	$(SRC_DIR)/signals/signals.c $(SRC_DIR)/signals/signal_utils.c

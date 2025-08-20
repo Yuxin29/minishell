@@ -30,7 +30,10 @@ extern volatile sig_atomic_t	g_signal;
 # define SYNTAX_ERR_QUOTES \
 	"minishell: syntax error: unclosed quotes"
 # define CD_ERR_MSG \
-	"cd: error retrieving current directory: getcwd: cannot access parent directories"
+	"cd: error retrieving current directory: getcwd: cannot \
+	access parent directories"
+# define SYNTAX_ERR_AMBIGUOUS \
+	"minishell: ambiguous redirect"
 
 //common shell cmd line max length
 # define LINE_SIZE 8192
@@ -76,7 +79,7 @@ typedef struct s_redir
 	int				type;
 	int				quoted;
 	char			*heredoc_delim;
-	int        		is_ambiguous; //yuxin added, cat <$AA
+	int				is_ambiguous; //yuxin added, cat <$AA
 	struct s_redir	*next;
 }	t_redir;
 
@@ -186,55 +189,60 @@ t_token		*get_one_new_cmd(t_token *token_head, t_cmd *cmd_current,\
 
 // parsing_to_cmd_list.c	3/5
 t_cmd		*build_command_list(t_exec_path *cmd, t_token *token_head);
-
 //---------------------------exec part------------------------------------//
-//execute builtins cmd with redir
+//execute builtins
 int			is_builtin(char *cmd);
 int			execute_builtin_cmd(char **argv, t_env **env,\
 	t_exec_path *exec_cmd);
 void		run_builtin_with_redir(t_exec_path *exec_cmd, t_env **env_list);
-
-//single
-void	execute_single_cmd(t_exec_path *cmd, t_env **env_list);
-void	print_error_and_exit(t_cmd *cmd, t_exec_path *exec_cmd, t_env **env_list);
-void	precheck_path_or_exit(char *path, t_exec_path *cmd, t_env **env_list);
-
-//pipline
+//exec_single
+void		execute_single_cmd(t_exec_path *cmd, t_env **env_list);
+void		print_error_and_exit(t_cmd *cmd, t_exec_path *exec_cmd,\
+	t_env **env_list);
+void		precheck_path_or_exit(char *path, t_exec_path *cmd,\
+	t_env **env_list);
+//exec_pipline
 void		execute_pipeline(t_exec_path *exec_cmd, t_env **env_list);
-
-//heredoc_pipline_utils
-void	handle_execve_or_exit_inchild(t_exec_path *exec_cmd, t_cmd *cmd, t_env **env_list);
+//exec_pipeline_utils
+int			create_pipe_or_exit(t_exec_path *exec_cmd, t_pipe_ex *pinfo);
+int			set_up_stdin(t_pipe_ex *pinfo, t_exec_path *cmd, t_env **env_list);
+int			set_up_stdout(t_cmd *cmd, t_pipe_ex *pinfo, t_exec_path *exec_cmd,\
+	t_env **env_list);
 void		wait_exit(t_exec_path *exec_cmd, pid_t last_pid);
+//exec_utils
+void		handle_execve_or_exit_inchild(t_exec_path *exec_cmd,\
+	t_cmd *cmd, t_env **env_list);
 char		*cleanup_heredoc(int fd, int saved_stdin, char *tmp_file,\
 	char *err_msg);
-void	free_all_and_exit(t_exec_path *cmd, t_env **env_list, int status);
-void	free_all_and_exit_pipe(t_exec_path *cmd, t_env **env_list, int status, t_pipe_ex *pinfo);
-
-//redir
+void		free_all_and_exit(t_exec_path *cmd, t_env **env_list, int status);
+void		free_all_and_exit_pipe(t_exec_path *cmd, t_env **env_list,\
+	int status, t_pipe_ex *pinfo);
+//redirections
 int			check_and_apply_redirections(t_cmd *cmd);
-
 //heredoc
 char		*creat_heredoc_file(char *delim, int quoted, t_exec_path *cmd);
-
 //get_path
 char		*get_env(t_env *env, char *key);
 char		*get_cmd_path(char *cmd, t_env *env_list, t_exec_path *exec_cmd);
-
 //---------------------------built_in part--------------------------------//
 //7 builtin cmds:
 //builtins_opera1
-int			ft_cd(char **argv, t_env **env);
 int			ft_echo(char **argv);
 int			ft_exit(char **argv, t_exec_path *exec_cmd, t_env **env_list);
 void		free_two(t_exec_path *exec_cmd, t_env **env_list);
-//builtins_opera2
 int			ft_pwd(t_env **env);
+//builtins_opera2
+int			ft_cd(char **argv, t_env **env);
 int			ft_env(t_env **env);
 int			ft_unset(char **argv, t_env **env);
 //builtins_opera3
 int			ft_export(char **argv, t_env **env);
-void		export_var(t_env **env, char *key);
-
+//builtins_utils
+void		set_env(t_env **env, char *key, char *value);
+long long	ft_atoll(char *str);
+int			ft_is_numeric(char *str);
+int			env_count(t_env *env);
+void		sort_copy_list(t_env **copy_list, int size);
 //---------------------------env part---------------------------------------//
 // NOTES
 // in minishell,
@@ -254,20 +262,11 @@ void		free_env_list(t_env *head);
 // second used in preexpander
 char		**env_list_to_envp(t_env *head);
 char		*get_env_value(char **envp, const char *key);
-
-//builtins_utils
-void		set_env(t_env **env, char *key, char *value);
-long long	ft_atoll(char *str);
-int			ft_is_numeric(char *str);
-int			env_count(t_env *env);
-void		sort_copy_list(t_env **copy_list, int size);
-
 //---------------------------signal part-------------------------------------//
 //signals.c
 // 2 + 2 static inside
 void		signal_init(void);
 void		signal_default(void);
-
 // signal_utils.c
 void		signal_heredoc(void);
 void		signal_ignore(void);

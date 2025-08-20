@@ -102,12 +102,12 @@ char	*pre_expand_line(t_exec_path *cmd, char *raw_line)
 
 	idx[0] = 0;
 	idx[1] = 0;
-	res = malloc(LINE_SIZE);
-	if (!res)
-		return (free_malloc_fail_null(NULL));
 	check_line_syntax(raw_line, cmd);
 	if (cmd->exit_status == 2)
 		return (NULL);
+	res = malloc(LINE_SIZE);
+	if (!res)
+		return (free_malloc_fail_null(NULL));
 	expand_loop(raw_line, res, idx, cmd);
 	res[idx[1]] = '\0';
 	return (res);

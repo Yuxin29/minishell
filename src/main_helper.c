@@ -92,6 +92,8 @@ void	handle_line(char *line, t_env **env_list, t_exec_path *exec_cmd)
 	if (!expanded_line)
 	{
 		ft_free_arr(exec_cmd->envp);
+		if (exec_cmd->exit_status == 2) //added
+			return ; //added
 		free_env_list(*env_list);
 		ft_putstr_fd("Error: pre expanding failure\n", 2);
 		exit(EXIT_FAILURE);

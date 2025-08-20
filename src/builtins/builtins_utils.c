@@ -23,34 +23,6 @@ void	set_env(t_env **env, char *key, char *value)
 	*env = new_node;
 }
 
-// Bash uses strtol() or strtoll() under the hood to parse the number.
-// That means: long long (the range of a 64-bit signed integer)
-// need for builtin exit
-long long	ft_atoll(char *str)
-{
-	int			i;
-	int			sign;
-	long long	number;
-
-	i = 0;
-	sign = 1;
-	number = 0;
-	while ((str[i] >= '\t' && str[i] <= '\r') || str[i] == ' ')
-		i++;
-	if (str[i] == '-' || str[i] == '+')
-	{
-		if (str[i] == '-')
-			sign *= -1;
-		i++;
-	}
-	while (str[i] && ft_isdigit(str[i]))
-	{
-		number = number * 10 + (str[i] - '0');
-		i++;
-	}
-	return (number * sign);
-}
-
 static int	ft_check_overflow(char *str, int len, int min_len, int max_len)
 {
 	if (str[0] == '-')

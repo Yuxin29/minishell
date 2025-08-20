@@ -66,8 +66,8 @@ int	ft_exit(char **argv, t_exec_path *exec_cmd, t_env **env_list)
 	}
 	if (ft_isnot_numeric(argv[1]))
 	{
-		print_error("minishell: exit: ", argv[1],\
-			": numeric argument required");
+		print_error("minishell: exit: ",
+			argv[1], ": numeric argument required");
 		free_two(exec_cmd, env_list);
 		exit (2);
 	}

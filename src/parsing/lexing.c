@@ -28,7 +28,8 @@ t_token	*build_operator_token(char *line, int *i, t_exec_path *cmd)
 
 // two cases in this one: redirectons token and world token
 // no need for null check. already perrored, just return null
-static t_token	*build_token_from_next_word(char *line, int *i, t_exec_path *cmd)
+static t_token	*build_token_from_next_word(char *line,\
+	int *i, t_exec_path *cmd)
 {
 	if (line[*i] == '<' || line[*i] == '>' || line[*i] == '|')
 		return (build_operator_token(line, i, cmd));

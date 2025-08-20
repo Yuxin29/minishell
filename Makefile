@@ -19,9 +19,11 @@ SRCS := \
 	$(SRC_DIR)/exec/exec_single.c $(SRC_DIR)/exec/exec_builtin.c \
 	$(SRC_DIR)/exec/exec_utils.c $(SRC_DIR)/exec/heredoc.c \
 	$(SRC_DIR)/exec/exec_pipeline.c $(SRC_DIR)/exec/get_path.c $(SRC_DIR)/exec/redirections.c \
+	$(SRC_DIR)/parsing/pre_syntax_checking.c \
 	$(SRC_DIR)/parsing/preexpanding.c $(SRC_DIR)/parsing/preexpanding_utils.c \
 	$(SRC_DIR)/parsing/lexing.c $(SRC_DIR)/parsing/lexing_w_token.c $(SRC_DIR)/parsing/lexing_utils.c \
-	$(SRC_DIR)/parsing/parsing.c $(SRC_DIR)/parsing/parsing_utils.c $(SRC_DIR)/parsing/parsing_to_cmd_list.c \
+	$(SRC_DIR)/parsing/parsing_redir.c $(SRC_DIR)/parsing/parsing_argv.c \
+	$(SRC_DIR)/parsing/parsing_one_cmd.c $(SRC_DIR)/parsing/parsing_to_cmd_list.c \
 	$(SRC_DIR)/utils/free.c $(SRC_DIR)/utils/str_utils.c $(SRC_DIR)/utils/err_msg.c \
 	$(SRC_DIR)/signals/signals.c $(SRC_DIR)/signals/signal_utils.c
 

@@ -81,14 +81,9 @@ int	check_and_apply_redirections(t_cmd *cmd)
 	cur = cmd->redirections;
 	while (cur)
 	{
-		// yuxin added
 		if (cur->is_ambiguous)
-		{
-			ft_putendl_fd("minishell: ambiguous redirect", 2);
-			//cmd->exit_status = 1; this is needed
-			return (-1);
-		}
-		// yuxin added ends
+			return (errmsg_return_nbr\
+				("minishell: ambiguous redirect", 0, -1)); //modify 0820
 		if (!apply_out_or_in(cur, last))
 			return (-1);
 		cur = cur->next;

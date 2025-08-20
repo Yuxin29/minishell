@@ -43,3 +43,20 @@ int	handle_token_build_failure(t_exec_path *exec_cmd, t_env **env_list)
 	ft_putstr_fd("Error: get token list failed from memory failure\n", 2);
 	exit(EXIT_FAILURE);
 }
+
+// return the length of a valid variable name
+// not malloc involved
+// $ skipped already
+int	var_name_len(const char *str)
+{
+	int	len;
+
+	len = 0;
+	if (!str[len])
+		return (len);
+	if (!ft_check_valid_var_name(str[len]))
+		return (len);
+	while (ft_check_valid_var_name(str[len]))
+		len++;
+	return (len);
+}

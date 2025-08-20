@@ -132,6 +132,10 @@ void		handle_line(char *line, t_env **env_list, t_exec_path *exec_cmd);
 void		minishell_loop(t_env **env_list);
 
 //---------------------------parsing part----------------------------------//
+
+//pre_syntax_checking.c
+void	check_line_syntax(char *raw_line, t_exec_path *cmd);
+
 //preexpander_utils.c	5/5
 int			skip_copy(char *raw_line, int idx[2], char *res, int quotes[2]);
 int			handle_quotes(char c, int quotes[2], char *res, int *j);
@@ -166,19 +170,19 @@ t_token		*build_word_token(char *line, int *i, t_exec_path *cmd);
 t_token		*build_operator_token(char *line, int *i, t_exec_path *cmd);
 t_token		*get_token_list(t_exec_path *cmd, char *raw_line);
 
-// parser_utils.c	4/5
+// parsing_redir.c	5/5
+t_token		*parse_redirections(t_cmd *cmd, t_token *tokens,\
+	t_exec_path *exec_cmd);
+
+// parsing_argv.c	5/5
+t_token		*parse_argv(t_cmd *cmd, t_token *tokens);
+
+// parsing_one_cmd.c	4/5
 // 3 used out of this .c
 // ATTENTION: empty token list is alloweed. when its leagal, status = 0
 // when it is empty but status == 2, it is from symtax error
-//void		check_token_syntax(t_token *token_head, t_exec_path *cmd);
-int			count_argv(t_token *start);
 t_token		*get_one_new_cmd(t_token *token_head, t_cmd *cmd_current,\
 	t_exec_path *exec_cmd);
-
-// parsing.c	5/5
-t_token		*parse_redirections(t_cmd *cmd, t_token *tokens,\
-	t_exec_path *exec_cmd);
-t_token		*parse_argv(t_cmd *cmd, t_token *tokens);
 
 // parsing_to_cmd_list.c	3/5
 t_cmd		*build_command_list(t_exec_path *cmd, t_token *token_head);
@@ -292,5 +296,6 @@ void		print_error(const char *arg);
 int			errmsg_return_nbr(char *str, int i, int nbr);
 void		errmsg_set_status(char *msg, t_exec_path *cmd);
 int			handle_token_build_failure(t_exec_path *exec_cmd, t_env **env_list);
+int			var_name_len(const char *str);
 
 #endif

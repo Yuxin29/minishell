@@ -1,24 +1,5 @@
 #include "minishell.h"
 
-/* ************************************************************************** */
-
-// return the length of a valid variable name
-// not malloc involved
-// $ skipped already
-static int	var_name_len(const char *str)
-{
-	int	len;
-
-	len = 0;
-	if (!str[len])
-		return (len);
-	if (!ft_check_valid_var_name(str[len]))
-		return (len);
-	while (ft_check_valid_var_name(str[len]))
-		len++;
-	return (len);
-}
-
 // there might be overflow when char length beyond BUFF_SIZE
 static void	append_to_res(char *res, int *res_idx, const char *val)
 {
@@ -65,7 +46,7 @@ int	try_expand_env_var(char *raw_line, int idx[2], char *res, t_exec_path *cmd)
 }
 
 // yuxin added
-static int	handle_redirect_skip(char *raw_line, int ids[2], char *res)
+static int	handle_redir_skip(char *raw_line, int ids[2], char *res)
 {
 	if (!(raw_line[ids[0]] == '<' || raw_line[ids[0]] == '>'))
 		return (0);
@@ -84,8 +65,7 @@ void	expand_loop(char *raw_line, char *res, int idx[2], t_exec_path *cmd)
 {
 	int		quotes[2];
 
-	quotes[0] = 0;
-	quotes[1] = 0;
+	memset(quotes, 0, sizeof(quotes));
 	while (raw_line[idx[0]])
 	{
 		if (handle_quotes(raw_line[idx[0]], quotes, res, &idx[1]))
@@ -100,8 +80,7 @@ void	expand_loop(char *raw_line, char *res, int idx[2], t_exec_path *cmd)
 		}
 		if (!quotes[0] && !quotes[1] && handle_heredoc_skip(raw_line, idx, res))
 			continue ;
-		// yuxin added
-		if (!quotes[0] && !quotes[1] && handle_redirect_skip(raw_line, idx, res))
+		if (!quotes[0] && !quotes[1] && handle_redir_skip(raw_line, idx, res))
 			continue ;
 		if (handle_exit_status(raw_line, idx, res, cmd))
 			continue ;
@@ -109,60 +88,6 @@ void	expand_loop(char *raw_line, char *res, int idx[2], t_exec_path *cmd)
 			continue ;
 		res[idx[1]++] = raw_line[idx[0]++];
 	}
-}
-
-// syntax check on char level
-void	check_line_syntax(char *raw_line, t_exec_path *cmd)
-{
-	int  i = 0;
-	char c;
-	int  count;
-	char quote = 0;
-
-	//cmd->exit_status = 0;
-	while (raw_line[i] == ' ' || raw_line[i] == '\t') // skip space
-		i++;
-	if (raw_line[i] == '|')	// case1: | at start
-		return (errmsg_set_status(SYNTAX_ERR_PIPE, cmd));
-	while (raw_line[i])
-	{
-		if (!quote && (raw_line[i] == '"' || raw_line[i] == '\''))
-			quote = raw_line[i];  
-		else if (quote && raw_line[i] == quote)
-			quote = 0;            
-		else if (!quote && raw_line[i] == '|') // pipe follower by nothing or pipe after pipe
-		{
-			i++;
-			while (raw_line[i] == ' ' || raw_line[i] == '\t')
-				i++;
-			if (raw_line[i] == '\0')
-				return (errmsg_set_status(SYNTAX_ERR_PIPE, cmd));
-			if (raw_line[i] == '|')
-				return (errmsg_set_status(SYNTAX_ERR_PIPE, cmd));
-			continue;
-		}
-		else if (!quote && (raw_line[i] == '<' || raw_line[i] == '>'))
-		{
-			c = raw_line[i];
-			count = 0;
-			while (raw_line[i] == c)
-			{
-				count++;
-				i++;
-			}
-			if (count > 2) // multiple redirtect
-				return (errmsg_set_status(SYNTAX_ERR_REDIR_DOUBLE, cmd));
-			while (raw_line[i] == ' ' || raw_line[i] == '\t')
-				i++;
-			if (raw_line[i] == '\0') // redirect followed by nothing
-				return (errmsg_set_status(SYNTAX_ERR_REDIR_FILE_MISSING, cmd));
-			if (raw_line[i] == '|' || raw_line[i] == '<' || raw_line[i] == '>') // redirect floowed by pipe or redirect
-				return (errmsg_set_status(SYNTAX_ERR_REDIR_FILE_MISSING, cmd));
-			continue;
-		}
-		i++;
-	}
-	return ; // OK
 }
 
 // used before lexing, to solve presaved cmd like $A = "echo hello"

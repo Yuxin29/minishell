@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-int	has_multiple_words(const char *s)
+static int	has_multiple_words(const char *s)
 {
 	while (*s == ' ' || *s == '\t')
 		s++;
@@ -12,13 +12,42 @@ int	has_multiple_words(const char *s)
 		return (1);
 	return (0);
 }
+
+static int	handle_normal_redir(t_redir *new,\
+	t_token *file_tok, t_exec_path *cmd)
+{
+	char	*new_line;
+
+	new->heredoc_delim = NULL;
+	if (ft_strchr(file_tok->str, '$'))
+	{
+		new_line = pre_expand_line(cmd, file_tok->str);
+		if (!new_line)
+			return (errmsg_return_nbr("malloc", 1, 0));
+		if (!new_line[0] || has_multiple_words(new_line))
+		{
+			new->file = NULL;
+			new->is_ambiguous = 1;
+			free(new_line);
+			return (1);
+		}
+	}
+	else
+	{
+		new_line = ft_strdup(file_tok->str);
+		if (!new_line)
+			return (errmsg_return_nbr("malloc", 1, 0));
+	}
+	new->file = new_line;
+	return (1);
+}
+
 // creat_heredoc_file should be moved to right before execution
 // (!new->file already perrored in creat_heredoc_file)
 static t_redir	*create_redir_node(t_token *redir_tok, t_token *file_tok,
 	t_exec_path *cmd)
 {
 	t_redir	*new;
-	char	*new_line; //yuxin added
 
 	new = malloc(sizeof(t_redir));
 	if (!new)
@@ -38,27 +67,15 @@ static t_redir	*create_redir_node(t_token *redir_tok, t_token *file_tok,
 	}
 	else
 	{
-		new->heredoc_delim = NULL;
-		if (ft_strchr(file_tok->str, '$'))
-			new_line = pre_expand_line(cmd, file_tok->str);	
-		else
-			new_line = ft_strdup(file_tok->str);
-		if (!new_line)
-			return (free(new), (t_redir *)free_malloc_fail_null(NULL));
-		if (!new_line[0] || has_multiple_words(new_line))
-		{
-			new->file = NULL;
-			new->is_ambiguous = 1;
-			free(new_line);
-			return (new);
-		}
-		new->file = new_line;
+		if (!handle_normal_redir(new, file_tok, cmd))
+			return (free(new), NULL);
 	}
 	return (new);
 }
 
 // Helper: create and append redirection node
-static t_token	*get_one_redir(t_cmd *cmd, t_token *tokens, t_exec_path *exec_cmd)
+static t_token	*get_one_redir(t_cmd *cmd,\
+	t_token *tokens, t_exec_path *exec_cmd)
 {
 	t_redir	*new_redir;
 	t_redir	*last;
@@ -95,58 +112,5 @@ t_token	*parse_redirections(t_cmd *cmd, t_token *tokens, t_exec_path *exec_cmd)
 		else
 			break ;
 	}
-	return (tokens);
-}
-
-//used for parse argv
-static int	malloc_for_agrv(t_cmd *cmd, t_token *tokens)
-{
-	int	len;
-
-	len = count_argv(tokens);
-	cmd->argv = malloc(sizeof(char *) * (len + 1));
-	if (!cmd->argv)
-	{
-		perror("malloc");
-		return (-1);
-	}
-	cmd->quote_type = malloc(sizeof(int) * len);
-	if (!cmd->quote_type)
-	{
-		ft_free_arr(cmd->argv);
-		perror("malloc");
-		return (-1);
-	}
-	return (len);
-}
-
-// handle normal word_tokens, string and strings
-// tokens = tokens->next->next; safe becuase syntax already checked
-t_token	*parse_argv(t_cmd *cmd, t_token *tokens)
-{
-	int	i;
-
-	i = 0;
-	if (malloc_for_agrv(cmd, tokens) == -1)
-		return (NULL);
-	while (tokens && tokens->t_type != 1)
-	{
-		if (tokens->t_type == 0)
-		{
-			cmd->argv[i] = ft_strndup(tokens->str, ft_strlen(tokens->str));
-			if (!cmd->argv[i])
-			{
-				ft_free_arr(cmd->argv);
-				free(cmd->quote_type);
-				return ((t_token *)free_malloc_fail_null(NULL));
-			}
-			cmd->quote_type[i] = tokens->quote_type;
-			i++;
-			tokens = tokens->next;
-		}
-		else if (tokens->t_type >= 2 && tokens->t_type <= 5)
-			tokens = tokens->next->next;
-	}
-	cmd->argv[i] = NULL;
 	return (tokens);
 }

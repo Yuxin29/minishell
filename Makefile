@@ -17,7 +17,7 @@ SRCS := \
 	$(SRC_DIR)/builtins/envlist_to_envp.c $(SRC_DIR)/builtins/builtins_opera2.c \
 	$(SRC_DIR)/builtins/builtins_opera3.c $(SRC_DIR)/builtins/builtins_utils.c \
 	$(SRC_DIR)/exec/exec_single.c $(SRC_DIR)/exec/exec_builtin.c \
-	$(SRC_DIR)/exec/exec_utils.c $(SRC_DIR)/exec/heredoc.c \
+	$(SRC_DIR)/exec/exec_utils.c $(SRC_DIR)/exec/heredoc.c $(SRC_DIR)/exec/exec_pipeline_utils.c\
 	$(SRC_DIR)/exec/exec_pipeline.c $(SRC_DIR)/exec/get_path.c $(SRC_DIR)/exec/redirections.c \
 	$(SRC_DIR)/parsing/preexpanding.c $(SRC_DIR)/parsing/preexpanding_utils.c \
 	$(SRC_DIR)/parsing/lexing.c $(SRC_DIR)/parsing/lexing_w_token.c $(SRC_DIR)/parsing/lexing_utils.c \

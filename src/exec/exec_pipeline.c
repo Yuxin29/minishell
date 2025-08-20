@@ -1,44 +1,5 @@
 #include "minishell.h"
 
-static int	create_pipe_or_exit(t_exec_path *exec_cmd, t_pipe_ex *pinfo)
-{
-	if (pipe(pinfo->pipefd) < 0)
-	{
-		perror("pipe failed");
-		exec_cmd->exit_status = 1;
-		return (0);
-	}
-	return (1);
-}
-
-static int	set_up_stdin(t_pipe_ex *pinfo, t_exec_path *cmd, t_env **env_list)
-{
-	if (pinfo->prev_pipe == -1)
-		return (1);
-	if (dup2(pinfo->prev_pipe, STDIN_FILENO) == -1)
-	{
-		perror("dup2 stdin");
-		free_all_and_exit_pipe(cmd, env_list, 1, pinfo);
-	}
-	close (pinfo->prev_pipe);
-	return (1);
-}
-
-static int	set_up_stdout(t_cmd *cmd, t_pipe_ex *pinfo, t_exec_path *exec_cmd,\
-	t_env **env_list)
-{
-	if (!cmd->next)
-		return (1);
-	if (dup2(pinfo->pipefd[1], STDOUT_FILENO) == -1)
-	{
-		perror("dup2 stdin");
-		free_all_and_exit_pipe(exec_cmd, env_list, 1, pinfo);
-	}
-	close(pinfo->pipefd[1]);
-	close(pinfo->pipefd[0]);
-	return (1);
-}
-
 static void	handle_child_process(t_exec_path *exec_cmd, t_cmd *cmd,
 	t_env **env_list, t_pipe_ex *pinfo)
 {

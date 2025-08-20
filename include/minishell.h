@@ -41,7 +41,7 @@ extern volatile sig_atomic_t	g_signal;
 # define PATH_MAX 4096
 //yuxin added for exit, stoll based on long long // probably not needed
 # define LLONG_MAX_STR "9223372036854775807"
-# define LLONG_MIN_STR "9223372036854775808"
+# define LLONG_MIN_STR "-9223372036854775808"
 
 //---------------------------struct part--------------------------------//
 // 	T_WORD,			0			string			a cmd, a arguement
@@ -240,7 +240,7 @@ int			ft_export(char **argv, t_env **env);
 //builtins_utils
 void		set_env(t_env **env, char *key, char *value);
 long long	ft_atoll(char *str);
-int			ft_is_numeric(char *str);
+int			ft_isnot_numeric(char *str);
 int			env_count(t_env *env);
 void		sort_copy_list(t_env **copy_list, int size);
 //---------------------------env part---------------------------------------//
@@ -291,7 +291,7 @@ char		*free_malloc_fail_null_status(char *str, t_exec_path *cmd);
 
 //err_msg.c
 //used in builtin(export and cd), syntax check(stat 2) and main
-void		print_error(const char *arg);
+void		print_error(char *str1, const char *arg, char *str3);
 int			errmsg_return_nbr(char *str, int i, int nbr);
 void		errmsg_set_status(char *msg, t_exec_path *cmd);
 int			handle_token_build_failure(t_exec_path *exec_cmd, t_env **env_list);

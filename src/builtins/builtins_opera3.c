@@ -44,6 +44,7 @@ static void	export_var(t_env **env, char *key)
 	}
 }
 
+
 static int	handle_export_arg(char *argv, t_env **env)
 {
 	char	*tmp;
@@ -57,7 +58,7 @@ static int	handle_export_arg(char *argv, t_env **env)
 		ft_strlcpy(key, argv, sizeof(key));
 	if (!is_valid_identifier(key))
 	{
-		print_error(argv);
+		print_error("export: ", argv, " : not a valid identifier");
 		return (1);
 	}
 	if (tmp)

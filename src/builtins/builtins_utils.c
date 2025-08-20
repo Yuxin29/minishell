@@ -54,12 +54,18 @@ long long	ft_atoll(char *str)
 // need for builtin exit
 // 74:error: too small
 // 78:I compare the string direclyt
-int	ft_is_numeric(char *str)
+int	ft_isnot_numeric(char *str)
 {
 	int	n;
+	int	len;
+	int min_len;
+	int	max_len;
 
 	n = 0;
-	if (str[0] == '-' || str[0] == '+')
+	len = ft_strlen(str);
+	min_len = ft_strlen(LLONG_MIN_STR);
+	max_len = ft_strlen(LLONG_MAX_STR);
+	if (str[n] == '-' || str[n] == '+')
 		n++;
 	if (!str[n])
 		return (1);
@@ -71,12 +77,16 @@ int	ft_is_numeric(char *str)
 	}
 	if (str[0] == '-')
 	{
-		if (ft_strcmp(str, LLONG_MIN_STR) > 0)
+		if (len > min_len)
+			return (1);
+		if (len == min_len && ft_strcmp(str, LLONG_MIN_STR) > 0)
 			return (1);
 	}
-	else
+	else // 正数或带 '+'
 	{
-		if (ft_strcmp(LLONG_MAX_STR, str) < 0)
+		if (len > max_len)
+			return (1);
+		if (len == max_len && ft_strcmp(str, LLONG_MAX_STR) > 0)
 			return (1);
 	}
 	return (0);

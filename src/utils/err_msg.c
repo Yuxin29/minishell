@@ -26,11 +26,11 @@ int	errmsg_return_nbr(char *str, int i, int nbr)
 }
 
 // used for export error msg
-void	print_error(const char *arg)
+void	print_error(char *str1, const char *arg, char *str3)
 {
-	ft_putstr_fd("export: ", 2);
+	ft_putstr_fd(str1, 2);
 	ft_putstr_fd(arg, 2);
-	ft_putstr_fd(" : not a valid identifier\n", 2);
+	ft_putendl_fd(str3, 2);
 }
 
 // used in main

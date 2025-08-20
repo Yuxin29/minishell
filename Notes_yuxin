@@ -527,7 +527,7 @@ cat <
 cat > |
 echo hello > > 
 
-3. exit
+3. exit<<
 exit 2222222222222222222
 echo hi | exit -2 3
 
@@ -535,3 +535,26 @@ echo hi | exit -2 3
     maybe lin
 
 cd //
+
+===========================Yutong test case=====================================================
+1) cat "<infile" 
+2)   infiles or outfiles only
+  <infile 
+  <infile >outfile >outfile | <infile | <infile 
+3) <<eof cat | echo hi | sleep 5
+ctrl + C  exits the sleep and everything I think this might not be a big deal
+3) <<eof <<eof <<eof
+ctrl + C exits all heredocs
+4) syntax errors
+  echo hi |<>| something        leaks
+  >>||
+  >>
+  echo |||| hi
+
+  5) bash-3.2$ $var (<= nothing happens here)
+bash-3.2$ '$var'
+bash: $var: command not found
+6) unset SHLVL  ⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️
+  ./minishell
+7) only a .
+8) ./

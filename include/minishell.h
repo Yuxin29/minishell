@@ -137,7 +137,7 @@ void		minishell_loop(t_env **env_list);
 //---------------------------parsing part----------------------------------//
 
 //pre_syntax_checking.c
-void	check_line_syntax(char *raw_line, t_exec_path *cmd);
+void		check_line_syntax(char *raw_line, t_exec_path *cmd);
 
 //preexpander_utils.c	5/5
 int			skip_copy(char *raw_line, int idx[2], char *res, int quotes[2]);
@@ -239,7 +239,6 @@ int			ft_unset(char **argv, t_env **env);
 int			ft_export(char **argv, t_env **env);
 //builtins_utils
 void		set_env(t_env **env, char *key, char *value);
-long long	ft_atoll(char *str);
 int			ft_isnot_numeric(char *str);
 int			env_count(t_env *env);
 void		sort_copy_list(t_env **copy_list, int size);

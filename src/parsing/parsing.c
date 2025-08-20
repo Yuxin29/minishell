@@ -26,6 +26,7 @@ static t_redir	*create_redir_node(t_token *redir_tok, t_token *file_tok,
 	new->type = redir_tok->t_type;
 	new->next = NULL;
 	new->quoted = file_tok->quote_type;
+	new->is_ambiguous = 0;  //bezero modify 0819
 	if (redir_tok->t_type == 5)
 	{
 		new->heredoc_delim = ft_strdup(file_tok->str);
@@ -38,10 +39,9 @@ static t_redir	*create_redir_node(t_token *redir_tok, t_token *file_tok,
 	else
 	{
 		new->heredoc_delim = NULL;
-    	if (ft_strchr(file_tok->str, '$'))
-		{ 
+		if (ft_strchr(file_tok->str, '$'))
+		{
 			expanded = pre_expand_line(cmd, file_tok->str);
-			new->is_ambiguous = 0;  //bezero
 			if (!expanded)
 				return (free(new), NULL);
 			if (!expanded[0] || has_multiple_words(expanded)) //expanded but !expandedp[0]
@@ -51,7 +51,7 @@ static t_redir	*create_redir_node(t_token *redir_tok, t_token *file_tok,
 				free(expanded);
 				return (new);
 			}
-		}		
+		}
 		else
 		{
 			expanded = ft_strdup(file_tok->str);

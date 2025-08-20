@@ -55,7 +55,7 @@ int	ft_unset(char **argv, t_env **env)
 // NAME		chdir, - change working directory
 // SYNOPSIS	int chdir(const char *path);
 // On success, zero is returned.  On error, -1 is returned
-static char *set_target(char **argv, t_env **env)
+static char	*set_target(char **argv, t_env **env)
 {
 	char	*target;
 
@@ -86,7 +86,7 @@ int	ft_cd(char **argv, t_env **env)
 	char	newpwd[4096];
 	char	*target;
 
-	target = set_target(argv,env);
+	target = set_target(argv, env);
 	if (!target)
 		return (1);
 	if (!getcwd(oldpwd, sizeof(oldpwd)))

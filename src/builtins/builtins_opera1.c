@@ -52,22 +52,22 @@ void	free_two(t_exec_path *exec_cmd, t_env **env_list)
 // and the parent shell (bash/zsh) automatically stores
 // that exit code in the special variable $?.
 // in the terminal, echo $? to check the (unsigned char)status
-// subject requriements: exit with no options, so we only need one lines?
-//in the terminal, echo $? to check the (unsigned char)status
+// yuxin queston exit (1); // return 1
 int	ft_exit(char **argv, t_exec_path *exec_cmd, t_env **env_list)
 {
 	long long	status;
 
 	rl_clear_history();
 	ft_putstr_fd("exit\n", 1);
-	if (!argv[1]  || !argv[1][0])
+	if (!argv[1] || !argv[1][0])
 	{
 		free_two(exec_cmd, env_list);
 		exit(exec_cmd->exit_status);
 	}
 	if (ft_isnot_numeric(argv[1]))
 	{
-		print_error("minishell: exit: ", argv[1], ": numeric argument required");
+		print_error("minishell: exit: ", argv[1],\
+			": numeric argument required");
 		free_two(exec_cmd, env_list);
 		exit (2);
 	}
@@ -75,7 +75,7 @@ int	ft_exit(char **argv, t_exec_path *exec_cmd, t_env **env_list)
 	{
 		ft_putstr_fd("exit: too many arguments\n", 2);
 		free_two(exec_cmd, env_list);
-		exit (1); // return 1
+		exit (1);
 	}
 	status = ft_atoll(argv[1]);
 	free_two(exec_cmd, env_list);

@@ -44,7 +44,6 @@ static void	export_var(t_env **env, char *key)
 	}
 }
 
-
 static int	handle_export_arg(char *argv, t_env **env)
 {
 	char	*tmp;

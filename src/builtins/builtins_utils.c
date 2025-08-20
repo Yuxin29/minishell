@@ -51,6 +51,25 @@ long long	ft_atoll(char *str)
 	return (number * sign);
 }
 
+static int	ft_check_overflow(char *str, int len, int min_len, int max_len)
+{
+	if (str[0] == '-')
+	{
+		if (len > min_len)
+			return (1);
+		if (len == min_len && ft_strcmp(str, LLONG_MIN_STR) > 0)
+			return (1);
+	}
+	else
+	{
+		if (len > max_len)
+			return (1);
+		if (len == max_len && ft_strcmp(str, LLONG_MAX_STR) > 0)
+			return (1);
+	}
+	return (0);
+}
+
 // need for builtin exit
 // 74:error: too small
 // 78:I compare the string direclyt
@@ -58,7 +77,7 @@ int	ft_isnot_numeric(char *str)
 {
 	int	n;
 	int	len;
-	int min_len;
+	int	min_len;
 	int	max_len;
 
 	n = 0;
@@ -75,21 +94,7 @@ int	ft_isnot_numeric(char *str)
 			return (1);
 		n++;
 	}
-	if (str[0] == '-')
-	{
-		if (len > min_len)
-			return (1);
-		if (len == min_len && ft_strcmp(str, LLONG_MIN_STR) > 0)
-			return (1);
-	}
-	else // 正数或带 '+'
-	{
-		if (len > max_len)
-			return (1);
-		if (len == max_len && ft_strcmp(str, LLONG_MAX_STR) > 0)
-			return (1);
-	}
-	return (0);
+	return (ft_check_overflow(str, len, min_len, max_len));
 }
 
 int	env_count(t_env *env)

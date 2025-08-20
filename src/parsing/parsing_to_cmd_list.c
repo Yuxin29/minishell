@@ -50,9 +50,9 @@ t_cmd	*build_command_list(t_exec_path *cmd, t_token *token_head)
 
 	cmd_head = NULL;
 	cmd_last = NULL;
-	check_token_syntax(token_head, cmd);
-	if (cmd->exit_status == 2)
-		return (NULL);
+	//check_token_syntax(token_head, cmd);
+	//if (cmd->exit_status == 2)
+	//	return (NULL);
 	while (token_head)
 	{
 		cmd_current = malloc_for_new_cmd(cmd_head);

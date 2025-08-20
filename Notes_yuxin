@@ -494,6 +494,8 @@ cat << "EOF"	            "EOF"（去掉引号后是 EOF）	       ❌ 不展开 
 cat << '$USER'	            "$USER"（去掉引号后是 $USER）	   ❌ 不展开 $VAR	        输入行等于 $USER 时结束
 cat << "$USER"	            展开一次 → yuwu	                    ❌ 不展开 $VAR	     输入行等于 yuwu 时结束
 
+
+
 ===============================Yuxin needs to fix after mock eval===============
 1. ambiguous redirect       
 export a="ls -l"
@@ -517,6 +519,13 @@ bash: cat < $A  -----> $A: ambiguous redirect
 $A          ->  echo $?         0
 $A | ls     ->  echo $?         0, but in minishell minishell: syntax error near unexpected token `|'
 
+more test case
+| ls
+ls |
+ls || wc
+cat <
+cat > |
+echo hello > > 
 
 3. exit
 exit 2222222222222222222

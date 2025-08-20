@@ -111,6 +111,61 @@ void	expand_loop(char *raw_line, char *res, int idx[2], t_exec_path *cmd)
 	}
 }
 
+// syntax check on char level
+void	check_line_syntax(char *raw_line, t_exec_path *cmd)
+{
+	int  i = 0;
+	char c;
+	int  count;
+	char quote = 0;
+
+	//cmd->exit_status = 0;
+	// skip space
+	// while (raw_line[i] == ' ' || raw_line[i] == '\t')
+		i++;
+	if (raw_line[i] == '|')	// case1: | at start
+		return (errmsg_set_status(SYNTAX_ERR_PIPE, cmd));
+	while (raw_line[i])
+	{
+		if (!quote && (raw_line[i] == '"' || raw_line[i] == '\''))
+			quote = raw_line[i];  
+		else if (quote && raw_line[i] == quote)
+			quote = 0;            
+		else if (!quote && raw_line[i] == '|') // pipe follower by nothing or pipe after pipe
+		{
+			i++;
+			while (raw_line[i] == ' ' || raw_line[i] == '\t')
+				i++;
+			if (raw_line[i] == '\0')
+				return (errmsg_set_status(SYNTAX_ERR_PIPE, cmd));
+			if (raw_line[i] == '|')
+				return (errmsg_set_status(SYNTAX_ERR_PIPE, cmd));
+			continue;
+		}
+		else if (!quote && (raw_line[i] == '<' || raw_line[i] == '>'))
+		{
+			c = raw_line[i];
+			count = 0;
+			while (raw_line[i] == c)
+			{
+				count++;
+				i++;
+			}
+			if (count > 2) // multiple redirtect
+				return (errmsg_set_status(SYNTAX_ERR_REDIR_DOUBLE, cmd));
+			while (raw_line[i] == ' ' || raw_line[i] == '\t')
+				i++;
+			if (raw_line[i] == '\0') // redirect followed by nothing
+				return (errmsg_set_status(SYNTAX_ERR_REDIR_FILE_MISSING, cmd));
+			if (raw_line[i] == '|' || raw_line[i] == '<' || raw_line[i] == '>') // redirect floowed by pipe or redirect
+				return (errmsg_set_status(SYNTAX_ERR_REDIR_FILE_MISSING, cmd));
+			continue;
+		}
+		i++;
+	}
+	return ; // OK
+}
+
 // used before lexing, to solve presaved cmd like $A = "echo hello"
 // can handle $A$B$C as well
 // not doing anything to << heredoc
@@ -126,6 +181,9 @@ char	*pre_expand_line(t_exec_path *cmd, char *raw_line)
 	res = malloc(LINE_SIZE);
 	if (!res)
 		return (free_malloc_fail_null(NULL));
+	check_line_syntax(raw_line, cmd);
+	if (cmd->exit_status == 2)
+		return (NULL);
 	expand_loop(raw_line, res, idx, cmd);
 	res[idx[1]] = '\0';
 	return (res);

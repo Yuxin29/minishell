@@ -20,7 +20,7 @@ int	is_builtin(char *cmd)
 }
 
 //why close? dup can generate a new fd, so i should close it after finishing
-static void	restore_stdio(int stdin_fd, int stdout_fd)
+void	restore_stdio(int stdin_fd, int stdout_fd)
 {
 	if (dup2(stdin_fd, STDIN_FILENO) == -1)
 		perror("dup2 failed");
@@ -45,10 +45,7 @@ int	execute_builtin_cmd(char **argv, t_env **env, t_exec_path *exec_cmd)
 	if (ft_strcmp(argv[0], "env") == 0)
 		return (ft_env(env));
 	if (ft_strcmp(argv[0], "exit") == 0)
-	{
-		restore_stdio(exec_cmd->orig_std[0], exec_cmd->orig_std[1]);
 		return (ft_exit(argv, exec_cmd, env));
-	}
 	return (1);
 }
 

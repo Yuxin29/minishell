@@ -54,9 +54,10 @@ int	var_name_len(const char *str)
 	len = 0;
 	if (!str[len])
 		return (len);
-	if (!ft_check_valid_var_name(str[len]))
+	if (!ft_isalpha(str[0]) && str[0] != '_')
 		return (len);
-	while (ft_check_valid_var_name(str[len]))
+	while ((str[len]) && str[len] != '=')
 		len++;
 	return (len);
 }
+

@@ -38,10 +38,11 @@ int	ft_echo(char **argv)
 	return (0);
 }
 
-void	free_two(t_exec_path *exec_cmd, t_env **env_list)
+void	free_two_restore(t_exec_path *exec_cmd, t_env **env_list)
 {
 	free_t_exec_path(exec_cmd);
 	free_env_list(*env_list);
+	restore_stdio(exec_cmd->orig_std[0], exec_cmd->orig_std[1]);
 	return ;
 }
 
@@ -61,24 +62,24 @@ int	ft_exit(char **argv, t_exec_path *exec_cmd, t_env **env_list)
 	ft_putstr_fd("exit\n", 1);
 	if (!argv[1] || !argv[1][0])
 	{
-		free_two(exec_cmd, env_list);
+		free_two_restore(exec_cmd, env_list);
+		printf("%i\n", exec_cmd->exit_status);
 		exit(exec_cmd->exit_status);
 	}
 	if (ft_isnot_numeric(argv[1]))
 	{
 		print_error("minishell: exit: ",
 			argv[1], ": numeric argument required");
-		free_two(exec_cmd, env_list);
+		free_two_restore(exec_cmd, env_list);
 		exit (2);
 	}
 	if (argv[2])
 	{
 		ft_putstr_fd("exit: too many arguments\n", 2);
-		free_two(exec_cmd, env_list);
-		exit (1);
+		return (1);
 	}
 	status = ft_atoll(argv[1]);
-	free_two(exec_cmd, env_list);
+	free_two_restore(exec_cmd, env_list);
 	exit((unsigned char)status);
 }
 

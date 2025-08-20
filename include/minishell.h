@@ -195,6 +195,7 @@ int			is_builtin(char *cmd);
 int			execute_builtin_cmd(char **argv, t_env **env,\
 	t_exec_path *exec_cmd);
 void		run_builtin_with_redir(t_exec_path *exec_cmd, t_env **env_list);
+void		restore_stdio(int stdin_fd, int stdout_fd);
 //exec_single
 void		execute_single_cmd(t_exec_path *cmd, t_env **env_list);
 void		print_error_and_exit(t_cmd *cmd, t_exec_path *exec_cmd,\
@@ -229,7 +230,6 @@ char		*get_cmd_path(char *cmd, t_env *env_list, t_exec_path *exec_cmd);
 //builtins_opera1
 int			ft_echo(char **argv);
 int			ft_exit(char **argv, t_exec_path *exec_cmd, t_env **env_list);
-void		free_two(t_exec_path *exec_cmd, t_env **env_list);
 int			ft_pwd(t_env **env);
 //builtins_opera2
 int			ft_cd(char **argv, t_env **env);

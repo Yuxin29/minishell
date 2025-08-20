@@ -6,9 +6,9 @@ static int	check_pipe_syntax(char *line, int *i)
 	while (line[*i] == ' ' || line[*i] == '\t')
 		(*i)++;
 	if (line[*i] == '\0')
-		return (errmsg_return_nbr(SYNTAX_ERR_PIPE, 1, 0));
+		return (errmsg_return_nbr(SYNTAX_ERR_PIPE, 0, 0));
 	if (line[*i] == '|')
-		return (errmsg_return_nbr(SYNTAX_ERR_PIPE, 1, 0));
+		return (errmsg_return_nbr(SYNTAX_ERR_PIPE, 0, 0));
 	return (1);
 }
 
@@ -25,13 +25,13 @@ static int	check_redir_syntax(char *line, int *i)
 		(*i)++;
 	}
 	if (count > 2)
-		return (errmsg_return_nbr(SYNTAX_ERR_REDIR_DOUBLE, 1, 0));
+		return (errmsg_return_nbr(SYNTAX_ERR_REDIR_DOUBLE, 0, 0));
 	while (line[*i] == ' ' || line[*i] == '\t')
 		(*i)++;
 	if (line[*i] == '\0')
-		return (errmsg_return_nbr(SYNTAX_ERR_REDIR_FILE_MISSING, 1, 0));
+		return (errmsg_return_nbr(SYNTAX_ERR_REDIR_FILE_MISSING, 0, 0));
 	if (line[*i] == '|' || line[*i] == '<' || line[*i] == '>')
-		return (errmsg_return_nbr(SYNTAX_ERR_REDIR_FILE_MISSING, 1, 0));
+		return (errmsg_return_nbr(SYNTAX_ERR_REDIR_FILE_MISSING, 0, 0));
 	return (1);
 }
 
@@ -60,7 +60,7 @@ static int	check_start_pipe_syntax(char *line, int *i)
 	while (line[*i] == ' ' || line[*i] == '\t')
 		(*i)++;
 	if (line[*i] == '|')
-		return (errmsg_return_nbr(SYNTAX_ERR_PIPE, 1, 0));
+		return (errmsg_return_nbr(SYNTAX_ERR_PIPE, 0, 0));
 	return (1);
 }
 
@@ -71,6 +71,7 @@ int	check_line_syntax(char *raw_line)
 	int		i;
 	char	quote;
 	char	c;
+	int		ret;
 
 	i = 0;
 	quote = 0;
@@ -85,9 +86,10 @@ int	check_line_syntax(char *raw_line)
 			quote = 0;
 		if (!quote && (c == '|' || c == '<' || c == '>'))
 		{
-			if (handle_operator_syntax(raw_line, &i, quote) == 0)
+			ret = handle_operator_syntax(raw_line, &i, quote);
+			if (ret == 0)
 				return (0);
-			if (handle_operator_syntax(raw_line, &i, quote) == 2)
+			if (ret == 2)
 				continue ;
 		}
 		i++;

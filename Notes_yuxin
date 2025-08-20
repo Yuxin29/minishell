@@ -531,10 +531,15 @@ echo hello > >
 exit 2222222222222222222
 echo hi | exit -2 3
 
-4. mkdir and rm -rf and cd and pwd
-    maybe lin
+minishell$ echo hi | exit -2 3
+dup2 failed: Bad file descriptor
+dup2 failed: Bad file descriptor
+exit
 
-cd //
+
+4. mkdir and rm -rf and cd and pwd
+     lin
+
 
 ===========================Yutong test case=====================================================
 1) cat "<infile" 
@@ -554,7 +559,7 @@ ctrl + C exits all heredocs
   5) bash-3.2$ $var (<= nothing happens here)
 bash-3.2$ '$var'
 bash: $var: command not found
-6) unset SHLVL  ⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️
+6) unset SHLVL  
   ./minishell
 7) only a .
 8) ./

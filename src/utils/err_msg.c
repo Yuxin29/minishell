@@ -34,13 +34,14 @@ void	print_error(char *str1, const char *arg, char *str3)
 }
 
 // used in main
-int	handle_token_build_failure(t_exec_path *exec_cmd, t_env **env_list)
+int	handle_failure(t_exec_path *exec_cmd,\
+	t_env **env_list, char *msg)
 {
 	ft_free_arr(exec_cmd->envp);
-	if (exec_cmd->exit_status == 2 || exec_cmd->exit_status == 0)
+	if (exec_cmd->exit_status == 130 || exec_cmd->exit_status == 0)
 		return (0);
 	free_env_list(*env_list);
-	ft_putstr_fd("Error: get token list failed from memory failure\n", 2);
+	ft_putendl_fd(msg, 2);
 	exit(EXIT_FAILURE);
 }
 
@@ -56,8 +57,7 @@ int	var_name_len(const char *str)
 		return (len);
 	if (!ft_isalpha(str[0]) && str[0] != '_')
 		return (len);
-	while ((str[len]) && str[len] != '=')
+	while (ft_check_valid_var_name(str[len]) || ft_isdigit(str[len]))
 		len++;
 	return (len);
 }
-

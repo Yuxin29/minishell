@@ -9,7 +9,7 @@ static int	is_valid_identifier(char *str)
 	i = 1;
 	while (str[i] && str[i] != '=')
 	{
-		if (!ft_isalnum(str[i])  && str[i] != '_')
+		if (!ft_isalnum(str[i]) && str[i] != '_')
 			return (0);
 		i++;
 	}

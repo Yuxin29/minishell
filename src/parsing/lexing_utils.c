@@ -4,7 +4,8 @@
 // !raw_line[i] check unnecessary, for example $EMPTY
 // no memory allocation involved here
 // send error msgs and set up the exit status in cmd
-void	check_raw_line_syntax(char *raw_line, t_exec_path *cmd)
+// 0 for error
+int	check_raw_line_syntax(char *raw_line)
 {
 	int	i;
 
@@ -24,19 +25,17 @@ void	check_raw_line_syntax(char *raw_line, t_exec_path *cmd)
 				i++;
 		}
 		if (!raw_line[i])
-		{
-			errmsg_set_status(SYNTAX_ERR_QUOTES, cmd);
-			return ;
-		}
+			return (errmsg_return_nbr(SYNTAX_ERR_QUOTES, 0, 0));
 		i++;
 	}
+	return (1);
 }
 
 // if it is a word without quotes, it can not contain special character
 // with quotes, all chars are fine
 // no memory allocation involved here
 // send error msgs and set up the exit status in cmd
-void	precheck_special_chars_rawline(char *line, t_exec_path *cmd)
+int	precheck_special_chars_rawline(char *line)
 {
 	int	in_single;
 	int	in_double;
@@ -54,13 +53,11 @@ void	precheck_special_chars_rawline(char *line, t_exec_path *cmd)
 		else if (!in_single && !in_double)
 		{
 			if (line[i] == ';' || line[i] == '\\')
-			{
-				errmsg_set_status(SYNTAX_ERR_SPECIAL_CHARS, cmd);
-				return ;
-			}
+				return (errmsg_return_nbr(SYNTAX_ERR_SPECIAL_CHARS, 0, 0));
 		}
 		i++;
 	}
+	return (1);
 }
 
 // get the type of a redirection token: 1 - 5

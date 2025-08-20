@@ -159,8 +159,10 @@ char		*pre_expand_line(t_exec_path *cmd, char *raw_line);
 // ATTENTION: empty token list is alloweed. when its leagal, status = 0
 // when it is empty but status == 1, it is from malloc failure
 // when it is empty but status == 2, it is from symtax error
-void		precheck_special_chars_rawline(char *line, t_exec_path *cmd);
-void		check_raw_line_syntax(char *raw_line, t_exec_path *cmd);
+//void		precheck_special_chars_rawline(char *line, t_exec_path *cmd);
+//void		check_raw_line_syntax(char *raw_line, t_exec_path *cmd);
+int		precheck_special_chars_rawline(char *line);
+int		check_raw_line_syntax(char *raw_line);
 void		get_token_type(t_token *token);
 char		*get_unquoted_part(char *s, int *i, t_exec_path *cmd);
 char		*get_quoted_part(char *s, int *i, t_exec_path *cmd);
@@ -293,7 +295,7 @@ char		*free_malloc_fail_null_status(char *str, t_exec_path *cmd);
 void		print_error(char *str1, const char *arg, char *str3);
 int			errmsg_return_nbr(char *str, int i, int nbr);
 void		errmsg_set_status(char *msg, t_exec_path *cmd);
-int			handle_token_build_failure(t_exec_path *exec_cmd, t_env **env_list);
+int			handle_failure(t_exec_path *exec_cmd, t_env **env_list, char *msg);
 int			var_name_len(const char *str);
 
 #endif

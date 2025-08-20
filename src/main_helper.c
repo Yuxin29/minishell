@@ -53,23 +53,27 @@ int	parse_and_expand(t_exec_path *exec_cmd, char *expanded_line,
 {
 	t_token	*token_list;
 
+	if (!check_raw_line_syntax(expanded_line)
+		|| !precheck_special_chars_rawline(expanded_line))
+	{
+		exec_cmd->exit_status = 2;
+		free(expanded_line);
+		ft_free_arr(exec_cmd->envp);
+		return (0);
+	}
 	token_list = get_token_list(exec_cmd, expanded_line);
 	free(expanded_line);
 	if (!token_list)
 	{
-		if (!handle_token_build_failure(exec_cmd, env_list))
+		if (!handle_failure(exec_cmd, env_list, "Error: lexing failed"))
 			return (0);
 	}
 	exec_cmd->whole_cmd = build_command_list(exec_cmd, token_list);
 	free_token_list(token_list);
 	if (!exec_cmd->whole_cmd)
 	{
-		ft_free_arr(exec_cmd->envp);
-		if (exec_cmd->exit_status == 2 || exec_cmd->exit_status == 130)
+		if (!handle_failure(exec_cmd, env_list, "Error: parsing failed"))
 			return (0);
-		free_env_list(*env_list);
-		ft_putstr_fd("Error: build command list failed\n", 2);
-		exit(EXIT_FAILURE);
 	}
 	return (1);
 }

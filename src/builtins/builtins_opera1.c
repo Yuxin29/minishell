@@ -63,7 +63,6 @@ int	ft_exit(char **argv, t_exec_path *exec_cmd, t_env **env_list)
 	if (!argv[1] || !argv[1][0])
 	{
 		free_two_restore(exec_cmd, env_list);
-		printf("%i\n", exec_cmd->exit_status);
 		exit(exec_cmd->exit_status);
 	}
 	if (ft_isnot_numeric(argv[1]))

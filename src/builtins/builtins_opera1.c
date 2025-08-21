@@ -40,9 +40,9 @@ int	ft_echo(char **argv)
 
 void	free_two_restore(t_exec_path *exec_cmd, t_env **env_list)
 {
-	free_t_exec_path(exec_cmd);
-	free_env_list(*env_list);
 	restore_stdio(exec_cmd->orig_std[0], exec_cmd->orig_std[1]);
+	free_t_exec_path(exec_cmd);
+	free_env_list(env_list);
 	return ;
 }
 

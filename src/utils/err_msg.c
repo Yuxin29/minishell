@@ -40,7 +40,7 @@ int	handle_failure(t_exec_path *exec_cmd,\
 	ft_free_arr(exec_cmd->envp);
 	if (exec_cmd->exit_status == 130 || exec_cmd->exit_status == 0)
 		return (0);
-	free_env_list(*env_list);
+	free_env_list(env_list);
 	ft_putendl_fd(msg, 2);
 	exit(EXIT_FAILURE);
 }

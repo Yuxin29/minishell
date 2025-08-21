@@ -106,7 +106,7 @@ typedef struct s_exec_path
 	t_cmd	*whole_cmd;
 	char	**envp;
 	int		exit_status;
-	int		orig_std[2]; //modify 0818
+	int		orig_std[3]; //modify 0818
 }	t_exec_path;
 
 //for inv
@@ -161,8 +161,8 @@ char		*pre_expand_line(t_exec_path *cmd, char *raw_line);
 // when it is empty but status == 2, it is from symtax error
 //void		precheck_special_chars_rawline(char *line, t_exec_path *cmd);
 //void		check_raw_line_syntax(char *raw_line, t_exec_path *cmd);
-int		precheck_special_chars_rawline(char *line);
-int		check_raw_line_syntax(char *raw_line);
+int			precheck_special_chars_rawline(char *line);
+int			check_raw_line_syntax(char *raw_line);
 void		get_token_type(t_token *token);
 char		*get_unquoted_part(char *s, int *i, t_exec_path *cmd);
 char		*get_quoted_part(char *s, int *i, t_exec_path *cmd);
@@ -257,7 +257,7 @@ void		sort_copy_list(t_env **copy_list, int size);
 //get env list
 t_env		*env_new_node(char *key, char *value);
 t_env		*env_list_init(char **envp);
-void		free_env_list(t_env *head);
+void		free_env_list(t_env **head);
 
 //env list to envp
 // second used in preexpander

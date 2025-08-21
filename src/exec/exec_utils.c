@@ -42,7 +42,7 @@ void	handle_execve_or_exit_inchild(t_exec_path *exec_cmd, t_cmd *cmd,\
 	execve(cmd->cmd_path, cmd->argv, exec_cmd->envp);
 	perror("execve");
 	free_t_exec_path(exec_cmd);
-	free_env_list(*env_list);
+	free_env_list(env_list);
 	if (errno == EACCES)
 		exit(126);
 	exit(127);
@@ -50,8 +50,10 @@ void	handle_execve_or_exit_inchild(t_exec_path *exec_cmd, t_cmd *cmd,\
 
 void	free_all_and_exit(t_exec_path *cmd, t_env **env_list, int status)
 {
-	free_t_exec_path(cmd);
-	free_env_list(*env_list);
+	if (cmd)
+		free_t_exec_path(cmd);
+	if (env_list)
+		free_env_list(env_list);
 	exit (status);
 }
 
@@ -59,7 +61,7 @@ void	free_all_and_exit_pipe(t_exec_path *cmd, t_env **env_list,\
 	int status, t_pipe_ex *pinfo)
 {
 	free_t_exec_path(cmd);
-	free_env_list(*env_list);
+	free_env_list(env_list);
 	if (pinfo)
 	{
 		if (pinfo->prev_pipe != -1)

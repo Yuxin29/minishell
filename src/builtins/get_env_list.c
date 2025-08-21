@@ -73,7 +73,7 @@ t_env	*env_list_init(char **envp)
 	{
 		new_node = split_envp_create_node(envp[i]);
 		if (!new_node)
-			return (free_env_list(head), NULL);
+			return (free_env_list(&head), NULL);
 		if (!head)
 			head = new_node;
 		else
@@ -84,14 +84,14 @@ t_env	*env_list_init(char **envp)
 	return (head);
 }
 
-void	free_env_list(t_env *head)
+void	free_env_list(t_env **head)
 {
 	t_env	*cur;
 	t_env	*next;
 
-	if (!head)
+	if (!head || !*head)
 		return ;
-	cur = head;
+	cur = *head;
 	while (cur)
 	{
 		next = cur->next;
@@ -100,4 +100,5 @@ void	free_env_list(t_env *head)
 		free(cur);
 		cur = next;
 	}
+	*head = NULL;
 }

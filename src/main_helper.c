@@ -87,7 +87,7 @@ void	handle_line(char *line, t_env **env_list, t_exec_path *exec_cmd)
 	if (!exec_cmd->envp)
 	{
 		free(line);
-		free_env_list(*env_list);
+		free_env_list(env_list);
 		ft_putstr_fd("Error: env list initialized failed\n", 2);
 		exit(EXIT_FAILURE);
 	}
@@ -103,7 +103,7 @@ void	handle_line(char *line, t_env **env_list, t_exec_path *exec_cmd)
 	if (!expanded_line)
 	{
 		ft_free_arr(exec_cmd->envp);
-		free_env_list(*env_list);
+		free_env_list(env_list);
 		ft_putstr_fd("Error: pre expanding failure\n", 2);
 		exit(EXIT_FAILURE);
 	}
@@ -136,5 +136,5 @@ void	minishell_loop(t_env **env_list)
 		}
 	}
 	rl_clear_history();
-	free_env_list(*env_list);
+	free_env_list(env_list);
 }

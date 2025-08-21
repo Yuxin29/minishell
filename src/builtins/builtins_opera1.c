@@ -40,9 +40,9 @@ int	ft_echo(char **argv)
 
 void	free_two_restore(t_exec_path *exec_cmd, t_env **env_list)
 {
-	restore_stdio(exec_cmd->orig_std[0], exec_cmd->orig_std[1]);
 	free_t_exec_path(exec_cmd);
 	free_env_list(env_list);
+	restore_stdio(exec_cmd->orig_std[0], exec_cmd->orig_std[1]);
 	return ;
 }
 
@@ -62,8 +62,9 @@ int	ft_exit(char **argv, t_exec_path *exec_cmd, t_env **env_list)
 	ft_putstr_fd("exit\n", 1);
 	if (!argv[1] || !argv[1][0])
 	{
+		status = exec_cmd->last_status;
 		free_two_restore(exec_cmd, env_list);
-		exit(exec_cmd->exit_status);
+		exit((unsigned char)status);
 	}
 	if (ft_isnot_numeric(argv[1]))
 	{

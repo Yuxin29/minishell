@@ -106,7 +106,8 @@ typedef struct s_exec_path
 	t_cmd	*whole_cmd;
 	char	**envp;
 	int		exit_status;
-	int		orig_std[3]; //modify 0818
+	int		last_status; //
+	int		orig_std[2];
 }	t_exec_path;
 
 //for inv
@@ -126,14 +127,9 @@ typedef struct s_pipe_ex
 	pid_t	last_pid;
 }	t_pipe_ex;
 
-//---------------------------main helper----------------------------------//
-int			setup_command_paths(t_exec_path *exec_cmd, t_env **env_list);
-int			run_command(t_exec_path *exec_cmd, t_env **env_list);
-int			parse_and_expand(t_exec_path *exec_cmd, char *expanded_line,\
-	t_env **env_list);
+//---------------------------main helper----------------------------------/
 void		handle_line(char *line, t_env **env_list, t_exec_path *exec_cmd);
-void		minishell_loop(t_env **env_list);
-
+int			main(int argc, char **argv, char **envp);
 //---------------------------parsing part----------------------------------//
 
 //pre_syntax_checking.c

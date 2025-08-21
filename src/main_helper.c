@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-int	setup_command_paths(t_exec_path *exec_cmd, t_env **env_list)
+static int	setup_command_paths(t_exec_path *exec_cmd, t_env **env_list)
 {
 	t_cmd	*tmp;
 
@@ -22,7 +22,7 @@ int	setup_command_paths(t_exec_path *exec_cmd, t_env **env_list)
 	return (1);
 }
 
-int	run_command(t_exec_path *exec_cmd, t_env **env_list)
+static int	run_command(t_exec_path *exec_cmd, t_env **env_list)
 {
 	if (!setup_command_paths(exec_cmd, env_list))
 	{
@@ -48,7 +48,7 @@ int	run_command(t_exec_path *exec_cmd, t_env **env_list)
 }
 
 // lexing, parsing, and post-expandh eredoc_delim
-int	parse_and_expand(t_exec_path *exec_cmd, char *expanded_line,
+static int	parse_and_expand(t_exec_path *exec_cmd, char *expanded_line,
 	t_env **env_list)
 {
 	t_token	*token_list;
@@ -79,10 +79,11 @@ int	parse_and_expand(t_exec_path *exec_cmd, char *expanded_line,
 }
 
 // initiate envp, pre-expand line, lexing, "parse_and_expand", finally run cmd
-void	handle_line(char *line, t_env **env_list, t_exec_path *exec_cmd)
+static void	init_env_and_status(char *line, t_env **env_list,\
+	t_exec_path *exec_cmd)
 {
-	char	*expanded_line;
-
+	exec_cmd->last_status = exec_cmd->exit_status;
+	exec_cmd->exit_status = 0;
 	exec_cmd->envp = env_list_to_envp(*env_list);
 	if (!exec_cmd->envp)
 	{
@@ -91,6 +92,13 @@ void	handle_line(char *line, t_env **env_list, t_exec_path *exec_cmd)
 		ft_putstr_fd("Error: env list initialized failed\n", 2);
 		exit(EXIT_FAILURE);
 	}
+}
+
+void	handle_line(char *line, t_env **env_list, t_exec_path *exec_cmd)
+{
+	char	*expanded_line;
+
+	init_env_and_status(line, env_list, exec_cmd);
 	if (!check_line_syntax(line))
 	{
 		exec_cmd->exit_status = 2;
@@ -112,29 +120,4 @@ void	handle_line(char *line, t_env **env_list, t_exec_path *exec_cmd)
 	if (!run_command(exec_cmd, env_list))
 		return ;
 	free_t_exec_path(exec_cmd);
-}
-
-//read line, execute cmd loop of minishell
-void	minishell_loop(t_env **env_list)
-{
-	t_exec_path	exec_cmd;
-	char		*line;
-
-	ft_memset(&exec_cmd, 0, sizeof(exec_cmd));
-	while (1)
-	{
-		line = readline("minishell$ ");
-		if (!line)
-		{
-			printf("exit\n");
-			break ;
-		}
-		if (*line)
-		{
-			add_history(line);
-			handle_line(line, env_list, &exec_cmd);
-		}
-	}
-	rl_clear_history();
-	free_env_list(env_list);
 }

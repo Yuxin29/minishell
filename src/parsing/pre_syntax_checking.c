@@ -65,7 +65,7 @@ static int	check_start_pipe_syntax(char *line, int *i)
 }
 
 // syntax check on char level
-// //cmd->exit_status = 0; 
+//cmd->exit_status = 0;
 int	check_line_syntax(char *raw_line)
 {
 	int		i;

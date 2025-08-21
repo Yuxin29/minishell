@@ -29,14 +29,14 @@ int	try_expand_env_var(char *raw_line, int idx[2], char *res, t_exec_path *cmd)
 		len = var_name_len(raw_line + idx[0] + 1);
 		key = ft_substr(raw_line, idx[0] + 1, len);
 		if (!key)
-			errmsg_return_nbr("malloc", 1, 0);
+			return (errmsg_return_nbr("malloc", 1, 0));
 		val = get_env_value(cmd->envp, key);
 		free(key);
 		idx[0] += len + 1;
 		if (!val)
 			val = ft_strdup("");
 		if (!val)
-			errmsg_return_nbr("malloc", 1, 0);
+			return (errmsg_return_nbr("malloc", 1, 0));
 		append_to_res(res, &idx[1], val);
 		if (val)
 			free(val);

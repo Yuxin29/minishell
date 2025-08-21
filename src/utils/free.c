@@ -79,13 +79,14 @@ void	free_cmd_node(t_cmd *c)
 }
 
 //lin used in main
-void	free_t_exec_path(t_exec_path *cmd_and_path)
+void	free_t_exec_path(t_exec_path *exec_cmd)
 {
-	if (cmd_and_path)
-	{
-		if (cmd_and_path->whole_cmd)
-			free_cmd_list(cmd_and_path->whole_cmd);
-		if (cmd_and_path->envp)
-			ft_free_arr(cmd_and_path->envp);
-	}
+	if (!exec_cmd)
+		return ;
+	if (exec_cmd->whole_cmd)
+		free_cmd_list(exec_cmd->whole_cmd);
+	if (exec_cmd->envp)
+		ft_free_arr(exec_cmd->envp);
+	exec_cmd->whole_cmd = NULL;
+	exec_cmd->envp = NULL;
 }

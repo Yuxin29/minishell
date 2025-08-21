@@ -1,17 +1,5 @@
 #include "minishell.h"
 
-static int	check_pipe_syntax(char *line, int *i)
-{
-	(*i)++;
-	while (line[*i] == ' ' || line[*i] == '\t')
-		(*i)++;
-	if (line[*i] == '\0')
-		return (errmsg_return_nbr(SYNTAX_ERR_PIPE, 0, 0));
-	if (line[*i] == '|')
-		return (errmsg_return_nbr(SYNTAX_ERR_PIPE, 0, 0));
-	return (1);
-}
-
 static int	check_redir_syntax(char *line, int *i)
 {
 	char	c;
@@ -35,14 +23,20 @@ static int	check_redir_syntax(char *line, int *i)
 	return (1);
 }
 
+// check pipe wytac and check redir syntax
 static int	handle_operator_syntax(char *line, int *i, int quote)
 {
 	if (quote)
 		return (1);
 	if (line[*i] == '|')
 	{
-		if (!check_pipe_syntax(line, i))
-			return (0);
+		(*i)++;
+		while (line[*i] == ' ' || line[*i] == '\t')
+			(*i)++;
+		if (line[*i] == '\0')
+			return (errmsg_return_nbr(SYNTAX_ERR_PIPE, 0, 0));
+		if (line[*i] == '|')
+			return (errmsg_return_nbr(SYNTAX_ERR_PIPE, 0, 0));
 		return (2);
 	}
 	else if (line[*i] == '<' || line[*i] == '>')
@@ -64,6 +58,15 @@ static int	check_start_pipe_syntax(char *line, int *i)
 	return (1);
 }
 
+//used in check line syntax
+static void	get_quote_status(char *quote, char c)
+{
+	if (!*quote && (c == '"' || c == '\''))
+		*quote = c;
+	else if (*quote && c == *quote)
+		*quote = 0;
+}
+
 // syntax check on char level
 //cmd->exit_status = 0;
 int	check_line_syntax(char *raw_line)
@@ -80,10 +83,7 @@ int	check_line_syntax(char *raw_line)
 	while (raw_line[i])
 	{
 		c = raw_line[i];
-		if (!quote && (c == '"' || c == '\''))
-			quote = c;
-		else if (quote && c == quote)
-			quote = 0;
+		get_quote_status(&quote, c);
 		if (!quote && (c == '|' || c == '<' || c == '>'))
 		{
 			ret = handle_operator_syntax(raw_line, &i, quote);

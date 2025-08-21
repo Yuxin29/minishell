@@ -56,9 +56,9 @@ int	ft_check_valid_var_name(char c)
 // perror included, it can free one string
 char	*free_malloc_fail_null(char	*str)
 {
+	perror("malloc debug 1");
 	if (str)
 		free (str);
-	perror("malloc");
 	return (NULL);
 }
 

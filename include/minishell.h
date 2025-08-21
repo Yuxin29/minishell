@@ -40,6 +40,7 @@ extern volatile sig_atomic_t	g_signal;
 //PATH_MAX is 4096 on Linux by convention and practicality.
 # define PATH_MAX 4096
 //yuxin added for exit, stoll based on long long // probably not needed
+# define LLONG_MAX_STR_PLUS "+9223372036854775807"
 # define LLONG_MAX_STR "9223372036854775807"
 # define LLONG_MIN_STR "-9223372036854775808"
 

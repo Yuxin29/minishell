@@ -33,7 +33,10 @@ static t_cmd	*malloc_for_new_cmd(t_cmd *cmd_head)
 	if (!cmd_current)
 	{
 		free_cmd_list(cmd_head);
-		return ((t_cmd *)free_malloc_fail_null(NULL));
+		{
+			perror("malloc");
+			return (NULL);
+		}
 	}
 	ft_bzero(cmd_current, sizeof(t_cmd));
 	return (cmd_current);

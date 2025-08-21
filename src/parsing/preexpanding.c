@@ -104,7 +104,10 @@ char	*pre_expand_line(t_exec_path *cmd, char *raw_line)
 	idx[1] = 0;
 	res = malloc(LINE_SIZE);
 	if (!res)
-		return (free_malloc_fail_null(NULL));
+	{
+		perror("malloc");
+		return (NULL);
+	}
 	expand_loop(raw_line, res, idx, cmd);
 	res[idx[1]] = '\0';
 	return (res);

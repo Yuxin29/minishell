@@ -51,7 +51,7 @@ static t_redir	*create_redir_node(t_token *redir_tok, t_token *file_tok,
 
 	new = malloc(sizeof(t_redir));
 	if (!new)
-		return ((t_redir *)free_malloc_fail_null(NULL));
+		return (perror("malloc"), NULL);
 	new->type = redir_tok->t_type;
 	new->next = NULL;
 	new->quoted = file_tok->quote_type;

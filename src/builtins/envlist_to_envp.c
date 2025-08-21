@@ -79,13 +79,12 @@ char	*get_env_value(char **envp, const char *key)
 	while (envp[++j])
 	{
 		split = ft_split(envp[j], '=');
-		if (!split || !*split)
-		{
-			ft_free_arr(split);
+		if (!split)
 			return (free_malloc_fail_null(NULL));
-		}
 		if (ft_strcmp(split[0], (char *)key) == 0)
 		{
+			if (!split[1])
+				return (NULL);
 			new_value = ft_strdup(split[1]);
 			ft_free_arr(split);
 			if (!new_value)

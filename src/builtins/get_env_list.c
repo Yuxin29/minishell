@@ -73,7 +73,11 @@ t_env	*env_list_init(char **envp)
 	{
 		new_node = split_envp_create_node(envp[i]);
 		if (!new_node)
-			return (free_env_list(&head), NULL);
+		{
+			free_env_list(&head);
+			perror("malloc");
+			return (NULL);
+		}
 		if (!head)
 			head = new_node;
 		else

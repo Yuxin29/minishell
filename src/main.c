@@ -36,11 +36,6 @@ int	main(int argc, char **argv, char **envp)
 	rl_catch_signals = 0;
 	signal_init();
 	env_list = env_list_init(envp);
-	if (!env_list)
-	{
-		ft_putstr_fd("Error: env list initialized failed\n", 2);
-		exit(EXIT_FAILURE);
-	}
 	minishell_loop(&env_list);
 	return (0);
 }

@@ -23,8 +23,15 @@ void	set_env(t_env **env, char *key, char *value)
 	*env = new_node;
 }
 
-static int	ft_check_overflow(char *str, int len, int min_len, int max_len)
+static int	ft_check_overflow(char *str, int len)
 {
+	int	min_len;
+	int	max_len;
+	int	max_p;
+
+	min_len = ft_strlen(LLONG_MIN_STR);
+	max_len = ft_strlen(LLONG_MAX_STR);
+	max_p = ft_strlen(LLONG_MAX_STR_PLUS);
 	if (str[0] == '-')
 	{
 		if (len > min_len)
@@ -34,9 +41,12 @@ static int	ft_check_overflow(char *str, int len, int min_len, int max_len)
 	}
 	else
 	{
-		if (len > max_len)
+		if ((str[0] == '+' && len > max_p) || (str[0] != '+' && len > max_len))
 			return (1);
-		if (len == max_len && ft_strcmp(str, LLONG_MAX_STR) > 0)
+		if ((str[0] == '+' && len == max_p
+				&& ft_strcmp(str, LLONG_MAX_STR_PLUS) > 0)
+			|| (str[0] != '+' && len == max_len
+				&& ft_strcmp(str, LLONG_MAX_STR) > 0))
 			return (1);
 	}
 	return (0);
@@ -49,13 +59,9 @@ int	ft_isnot_numeric(char *str)
 {
 	int	n;
 	int	len;
-	int	min_len;
-	int	max_len;
 
 	n = 0;
 	len = ft_strlen(str);
-	min_len = ft_strlen(LLONG_MIN_STR);
-	max_len = ft_strlen(LLONG_MAX_STR);
 	if (str[n] == '-' || str[n] == '+')
 		n++;
 	if (!str[n])
@@ -66,7 +72,7 @@ int	ft_isnot_numeric(char *str)
 			return (1);
 		n++;
 	}
-	return (ft_check_overflow(str, len, min_len, max_len));
+	return (ft_check_overflow(str, len));
 }
 
 int	env_count(t_env *env)

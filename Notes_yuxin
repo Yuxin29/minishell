@@ -568,3 +568,39 @@ bash: $var: command not found
   ./minishell
 7) only a .
 8) ./
+
+===========================valgrind cmd and supp file ===================================================
+
+valgrind --leak-check=full --show-leak-kinds=all --track-fds=yes --trace-children=yes --suppressions=readline.supp ./minishell
+
+{
+   readline_reachable_linux
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   obj:*libreadline.so*
+}
+
+{
+   history_reachable_linux
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   obj:*libhistory.so*
+}
+
+{
+   tinfo_reachable_linux
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   obj:*libtinfo.so*
+}
+
+{
+   ncurses_reachable_linux
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   obj:*libncurses.so*
+}

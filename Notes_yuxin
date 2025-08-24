@@ -1,12 +1,42 @@
+=========================================bugs occured during eval, to be fixed==================================
+1. echo hi | ./minishell
+    -----> interactived mode
+2. cat << 2
+> $USER
+> "$USER"
+> '$USER'
+> 2
+    -----> all input need to be expanded, we did not because we used preexpand directly, where single quotes is not expanded
+3. ctrl + C, and just enter, exit code should be updated, even they are not cmd.
+    -----> to be fixed in signal part
+4. a case where err msg and exit code is different
+----->
+mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ ./minishell 
+minishell$ /bin/ls/asd
+/bin/ls/asd: No such file or directory
+minishell$ echo $?
+127
+minishell$ 
+exit
+mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ /bin/ls/asd
+bash: /bin/ls/asd: Not a directory
+mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo $?
+126
 
-====================================================================git collaborations=========================================================================
-//how to work in your branch and push to the main
+=========================================new things learned during eval==================================
+1. expr $? + $?
+    -----> expr: after it, input is treated as int
+2. less | more, cmd
+    -----> Less is not more, less is the opposide of more
+
+====================================about git collaborations==============================================
+//how to work in your branch and
 	- git checkout branch-name
 	- do changes
 	- git add .
 	- git commit -m "changes"
 	- git push origin branch_name
-----------------------------------------
+//how to push to the main
 	- git checkout main
 	- git pull origin main
 	- git merge branch_name
@@ -14,80 +44,70 @@
 	- git commit -m "changes merge to main"
 	- git push origin main
 
+=========== minishell workflows ===============================================
 
-===========================================================minishell workflows=========================================================================
-main.c         --->  +---------------------------------------------+
-👤👤 Shared          | init env from envp                          | -> void init_env(char **envp);
-                     | init signal handlers                        | -> void setup_signals(void);
-                     | shell loop:                                 |
-                     |   - readline prompt                         | -> char *read_input(void);
-                     |   - pass line to parser                     | -> t_cmd *parse_line(char *line);
-                     |   - execute command list                    | -> void execute_commands(t_cmd *cmds, t_env *env);
-                     |   - clean up & wait                         | -> void cleanup_shell(t_cmd *cmds);
-                     | exit: free everything                       | -> void free_everything(t_cmd *cmds, t_env *env);
-                     +---------------------------------------------+
+main.c        --->  +--------------------------------------+
+👤👤 Shared          | init env from envp                  | -> t_env *env_list_init(char **envp);
+                     | init signal handlers                | -> void signal_init(void);
+                     | shell loop                          | -> static void minishell_loop(t_env **env_list);
+                     +-------------------------------------+
                                         |
                                         v
-lexer.c        --->  +---------------------------------------------
-👤 A                 | split line into tokens                      | -> t_token *get_tokens(char *line);
-                     | handle quotes, escapes                      | -> char *extract_quoted(char *line, int *i);
-                     | classify token types                        | -> t_token_type get_token_type(const char *str);
-                     | return token list                           | (same as get_tokens)
-                     +---------------------------------------------+
+minishell_loop  ->  +---------------------------------------+
+👤👤 Shared          | init exec_cmd struct                 | -> ft_memset(&exec_cmd, 0, sizeof(exec_cmd));
+                     | loop:                                |
+                     |   - readline prompt                  | -> char *readline("minishell$ ");
+                     |   - add history if non-empty         | -> add_history(line);
+                     |   - handle line                      | -> handle_line(line, env_list, &exec_cmd);
+                     | exit: free env & history             | -> free_env_list(env_list), rl_clear_history();
+                     +--------------------------------------+
                                         |
                                         v
-parser.c       --->  +---------------------------------------------+
-👤 A                 | syntax check (pipes, etc.)                  | -> int check_syntax(t_token *tokens);
-                     | build command structures                    | -> t_cmd *build_command_list(t_token *tokens);
-                     | handle redirections                         | -> void parse_redirections(t_cmd *cmd, t_token **tokens);
-                     | group commands by pipe                      | -> t_cmd *group_by_pipes(t_token *tokens);
-                     | return exec-ready tree                      | (same as build_command_list)
-                     +---------------------------------------------+
+handle_line.c  ---> +---------------------------------------+
+👤 A                 | init envp + reset statuses           | -> init_env_and_status(line, env_list, exec_cmd);
+                     | syntax check on raw line             | -> int check_line_syntax(char *line);
+                     | pre-expand line (var/heredoc delim)  | -> char *pre_expand_line(exec_cmd, line);
+                     | lexing + parsing                     | -> parse_and_expand(exec_cmd, expanded_line, env_list);
+                     | run command(s)                       | -> run_command(exec_cmd, env_list);
+                     | cleanup exec_cmd                     | -> free_t_exec_path(exec_cmd);
+                     +--------------------------------------+
                                         |
                                         v
-expander.c    --->   +---------------------------------------------+
-👤 A                 | expand $VARIABLEs                           | -> char *expand_variables(char *str, t_env *env);
-                     | handle $? and special vars                  | -> char *expand_special_vars(char *str, int last_exit);
-                     | apply quote rules                           | -> char *remove_quotes(char *str);
-                     +---------------------------------------------+
+parse_and_expand.c ->+--------------------------------------+
+👤 A                 | raw syntax & special char check      | -> check_raw_line_syntax / precheck_special_chars_rawline
+                     | lexing                               | -> t_token *get_token_list(exec_cmd, expanded_line);
+                     | parsing                              | -> t_cmd *build_command_list(exec_cmd, token_list);
+                     | free token list                      | -> free_token_list(token_list);
+                     | return exec-ready cmd list           | (stored in exec_cmd->whole_cmd)
+                     +--------------------------------------+
                                         |
                                         v
-executor.c    --->   +---------------------------------------------+
-👤 B                 | for each command:                           |
-                     |   - fork child                              | -> pid_t fork_and_execute(t_cmd *cmd, t_env *env);
-                     |   - set up redirs & pipes                   | -> void setup_redirections(t_cmd *cmd);
-                     |   - execve or builtin call                  | -> int execute_builtin_or_exec(t_cmd *cmd, t_env *env);
-                     | parent: wait for children                   | -> int wait_for_children(void);
-                     +---------------------------------------------+
+run_command.c   --->+---------------------------------------+
+👤 B                 | resolve command paths                | -> setup_command_paths(exec_cmd, env_list);
+                     | if single command:                   |
+                     |   - builtin with redir               | -> run_builtin_with_redir(exec_cmd, env_list);
+                     |   - external command                 | -> execute_single_cmd(exec_cmd, env_list);
+                     | if multiple commands (pipeline)      | -> execute_pipeline(exec_cmd, env_list);
+                     | update exit status, free exec path   | -> free_t_exec_path(exec_cmd);
+                     +--------------------------------------+
                                         |
-        ----------------------+----------------------
-        |                                              |
+        ----------------------+-----------------------------
+        |                                                  |
 builtins.c    --->  +-------------------------------+     env.c --->  +--------------------------------+
-👤 B                | cd, echo, pwd, etc            |  👤 B                | env list init & update          |
-                    |                               |                 | -> t_env *init_env_list(char **envp);
-                    | -> int builtin_cd(char **args, t_env *env); |   | -> void update_env(t_env **env, const char *key, const char *val);
-                    | -> int builtin_echo(char **args);           |   | export/unset logic             |
-                    | -> int builtin_pwd(void);                   |   | -> int builtin_export(char **args, t_env **env);
-                    | exit (in parent)                            |   | -> int builtin_unset(char **args, t_env **env);
-                    | -> int builtin_exit(char **args);           |   | -> char **env_to_envp_array(t_env *env);
-                    +-------------------------------+             +--------------------------------+
-                                        |
-                                        v
-signals.c     --->   +---------------------------------------------+
-👤👤 Shared          | SIGINT: handle Ctrl+C                       | -> void sigint_handler(int signo);
-                     | SIGQUIT: ignore or handle                   | -> void sigquit_handler(int signo);
-                     | restore terminal state                      | -> void restore_terminal_settings(void);
-                     +---------------------------------------------+
-                                        |
-                                        v
-utils.c       --->   +---------------------------------------------+
-👤👤 Shared                      | error printing                  | -> void print_error(const char *msg);
-                     | memory management helpers                   | -> void *safe_malloc(size_t size);
-                     | free token/cmd/env structs                  | -> void free_tokens(t_token *head);
-                     |                                             | -> void free_commands(t_cmd *cmds);
-                     |                                             | -> void free_env(t_env *env);
-                     +---------------------------------------------+
+👤 B                | cd, echo, pwd, exit, etc       |  👤 B          | env list init & update         |
+                    | -> run_builtin_with_redir()    |                | -> env_list_init(char **envp)  |
+                    | -> builtin_cd, builtin_exit... |                | -> update_env(...)             |
+                    +-------------------------------+                 | -> env_list_to_envp(...)       |
+                                                                      +--------------------------------+
 
+signals.c     --->   +-------------------------------+
+👤 B                 | SIGINT, SIGQUIT handlers      | -> void signal_init(void);
+                     +-------------------------------+
+                                        |
+                                        v
+utils.c       --->   +-------------------------------+
+👤👤 Shared          | error printing, freeing, strs |
+                     +-------------------------------+
 
 ** Error exit codes:
 
@@ -98,7 +118,6 @@ utils.c       --->   +---------------------------------------------+
     - Builtin exit:             user-defined exit code
 
 ==============================================================concept in parsing==================================================================================
-
 -------> prompt: A prompt in a shell is the text displayed to the user that signals it's ready to receive input.
 for example:        -bash       user@hostname:~$
                     -minishell  minishell$
@@ -144,7 +163,6 @@ typedef struct s_cmd
     - all redirections are processed in order, and errors can occur during any redirection (not just the last).
     - in one cmd, redirectin, redirectout, append and heredoc can appear at the same time for multiple times
 
-
 =================================================================PARSEING for example=================================================================
 echo "hello world" > file.txt | cat -e
 [TOKEN: echo]	[TOKEN: "hello world"]	[TOKEN: >]	[TOKEN: file.txt]   [TOKEN: |] 	[TOKEN: cat]  	[TOKEN: -e]
@@ -169,7 +187,6 @@ next:        NULL
 
 ========================================expand raw line vs expand AST/链表=========================================
 
-
 “预展开 raw line（整行扫描预处理）”
 
 ✅  优点
@@ -178,7 +195,7 @@ next:        NULL
 
 ⚠️ 缺点（关键）
 - 会和语法/引号/操作符边界打架，尤其是 << 之后的heredoc 定界符：定界符不能做变量展开，而且是否展开 heredoc 正文是由定界符是否包含引号来决定的（有引号→不展开，无引号→展开）。
-- 拿你的失败用例 << $ABC"" 来说：
+- 拿你的失败用例 << $ABC"" 来说：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
   你当前代码在看到 << 后一遇到空格就结束“跳过展开”状态，导致后面的 $ABC"" 被错误地展开了——这是不允许的。定界符是一个完整的“词”（word），
   必须把这个词按引号感知的规则一次性读完，再恢复正常展开。
 - 还会牵涉 <<<、<<- 等边角（42 一般不要求，但容易踩）。
@@ -197,7 +214,6 @@ next:        NULL
 
 I chose preexpandingh
 
-
 ================================================================PARSEING test case Specail ====================================================
 ❌❌❌ what need  to be fixed
 ⚠️⚠️⚠️ differs, but I dont think it need to be fixed
@@ -215,7 +231,7 @@ I chose preexpandingh
         echo 'Hello $USER'	                    'Hello $USER'
         echo "Path is $PATH/bin"	            "Path is /usr/bin:/bin/bin"
         echo "$"	                            "" (empty string or preserved as literal)
-        echo "$UNDEFINED"	                    ""
+        echo "$UNDEFINED"	                    ""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
         echo "Mix$VAR1and$VAR2"	                "Mixval1andval2" 
         echo "yuxin $USER '$USER' "user" kk,"
 
@@ -273,7 +289,7 @@ I chose preexpandingh
     $$
     mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo "$"$"$"
     $$
-    mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo "$" $ "$"
+    mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo "$" $ "$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"
     $ $ $
     mikko@mikko-desktop-ubuntu:~/yuxin_home/minishell$ echo "$"$ "$"
     $$ $
@@ -291,7 +307,7 @@ I chose preexpandingh
 7. first export our own VAR, and then echo $VAR, with / without -n, with / without quotes
     yuwu@c2r6p13:~/42/Rank3_minishell$ export A="     a       b     "
     yuwu@c2r6p13:~/42/Rank3_minishell$ echo $A
-    a b
+    a b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
     yuwu@c2r6p13:~/42/Rank3_minishell$ echo -n $A
     a b
     yuwu@c2r6p13:~/42/Rank3_minishell$ echo -n "$A"
@@ -411,7 +427,7 @@ nm your_program | grep U
                  U rl_clear_history
                  U rl_on_new_line
                  U rl_redisplay
-                 U rl_replace_line
+                 U rl_replace_line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
                  U signal@GLIBC_2.2.5
                  U stat@GLIBC_2.33 ⚠️                       ok
                  U unlink@GLIBC_2.2.5⚠️                     ok
@@ -452,9 +468,7 @@ exit(127);
 这是合理的，因为：
 
     127 是标准 Unix 规定的 “command not found or not executable” 返回值。
-
     用 errno 更复杂，只适合你要分类处理错误原因的情况，否则没必要。
-
 
 ⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️
 为什么 malloc 或 fork 失败要用状态码 1
@@ -485,16 +499,13 @@ Ctrl-C 中断	                                           $? = 130	              
 命令不存在	                                            $? = 127	            使用 error_127()
 ✅ 
 
-
 📊 heredoc 行为对照表
 写法	                     delimiter 最终值	            输入内容是否展开变量	    结束条件 (delimiter 匹配)
 cat << EOF	                EOF（不展开）	                 ✅ 展开 $VAR	        输入行等于 EOF 时结束
 cat << $USER	            展开一次 → yuwu	                 ✅ 展开 $VAR	        输入行等于 yuwu 时结束
-cat << "EOF"	            "EOF"（去掉引号后是 EOF）	       ❌ 不展开 $VAR	        输入行等于 EOF 时结束
-cat << '$USER'	            "$USER"（去掉引号后是 $USER）	   ❌ 不展开 $VAR	        输入行等于 $USER 时结束
-cat << "$USER"	            展开一次 → yuwu	                    ❌ 不展开 $VAR	     输入行等于 yuwu 时结束
-
-
+cat << "EOF"	            "EOF"（去掉引号后是 EOF）	      ❌ 不展开 $VAR	          输入行等于 EOF 时结束
+cat << '$USER'	            "$USER"（去掉引号后是 $USER）	  ❌ 不展开 $VAR	          输入行等于 $USER 时结束
+cat << "$USER"	            展开一次 → yuwu	                 ❌ 不展开 $VAR	         输入行等于 yuwu 时结束
 
 ===============================Yuxin needs to fix after mock eval===============
 1. ambiguous redirect       
@@ -506,19 +517,16 @@ bash: $a: ambiguous redirect
 minishell:
 ls: No such file or directory
 hi
-
 bash: $A | ls   -----> not syntac error, execute ls
 $A | $B | $C    -----> not syntac error, exit 0
 <$AAA | echo hi -----> not syntac error, execute echo hi
 bash: cat < $A  -----> $A: ambiguous redirect
 
 2. 
-
 "" | ls     ->  echo $?         0
 ""          ->  echo $?         127
 $A          ->  echo $?         0
 $A | ls     ->  echo $?         0, but in minishell minishell: syntax error near unexpected token `|'
-
 more test case
 | ls
 ls |
@@ -530,16 +538,13 @@ echo hello > >
 3. exit<<
 exit 2222222222222222222
 echo hi | exit -2 3
-
 minishell$ echo hi | exit -2 3
 dup2 failed: Bad file descriptor
 dup2 failed: Bad file descriptor
 exit
 
-
 4. mkdir and rm -rf and cd and pwd
-     lin
-
+    lin fiex
 
 ===========================Yutong test case=====================================================
 1) cat "<infile" 

@@ -52,13 +52,13 @@ make re      # Recompile everything from scratch
 ./minishell
 ```
 
-    The shell will start and prompt the user to enter commands.
+The shell will start and prompt the user to enter commands.
 
-    Example:
-
+Example:
+```
 minishell$ ls -l | grep txt > output.txt
-
-    This executes the pipeline with proper redirection and stores the output in output.txt.
+# This executes the pipeline with proper redirection and stores the output in output.txt.
+```
     
 
 ## Notes

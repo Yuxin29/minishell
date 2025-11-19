@@ -32,19 +32,18 @@ cd minishell
 ```
 make
 ```
-
-3. Available make commands:
+Other available commands:
 ```
 make clean   # Remove object files
 make fclean  # Remove object files and executable
 make re      # Recompile everything from scratch
 ```
 
-4. Running the Program
+3. Running the Program
+4. The shell will start and prompt the user to enter commands.
 ```
 ./minishell
 ```
-The shell will start and prompt the user to enter commands.
 Example:
 ```
 minishell$ ls -l | grep txt > output.txt

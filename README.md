@@ -62,12 +62,9 @@ minishell$ ls -l | grep txt > output.txt
     
 
 ## Notes
-
-    The shell handles multiple commands, pipelines, and redirections in a way similar to a real Unix shell.
-
-    Environment variables and built-in commands are fully supported.
-
-    Memory management and error handling are carefully implemented to prevent leaks and crashes.
+- The shell handles multiple commands, pipelines, and redirections in a way similar to a real Unix shell.
+- Environment variables and built-in commands are fully supported.
+- Memory management and error handling are carefully implemented to prevent leaks and crashes.
 
 ## co-developer
 This project was developed in collaboration with Lin-0096 Lin Liu.

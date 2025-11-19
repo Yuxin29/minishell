@@ -1,17 +1,17 @@
-# 🕹️ Minishell
+# Minishell
 
 **Minishell** is a custom Unix shell built in C as part of the 42 curriculum. It supports executing commands with arguments, pipelines, input/output redirection, environment variable handling, and built-in commands such as `cd`, `echo`, `pwd`, `export`, `unset`, and `exit`. The shell manages multiple commands connected with pipes, handles child processes using `fork()` and `execve()`, implements proper signal handling, and ensures robust error management and memory safety, providing a functional minimal shell environment.
 
-📦 Features
+## Features
 
-- 🧱 Parsing and executing multiple commands with arguments
-- ✅ Input and output redirection, including here-documents
-- 💡 Built-in commands: `cd`, `echo`, `pwd`, `export`, `unset`, and `exit`
-- 🎨 Pipelines connecting commands with proper inter-process communication
-- 🖱️ Signal handling for `Ctrl+C`, `Ctrl+D`, and other interrupts
-- 💥 Memory-safe and robust against invalid input or command errors
+- Parsing and executing multiple commands with arguments
+- Input and output redirection, including here-documents
+- Built-in commands: `cd`, `echo`, `pwd`, `export`, `unset`, and `exit`
+- Pipelines connecting commands with proper inter-process communication
+- Signal handling for `Ctrl+C`, `Ctrl+D`, and other interrupts
+- Memory-safe and robust against invalid input or command errors
 
-🗺️ Program Rules
+## Program Rules
 
 - Only valid commands, arguments, and environment variables are accepted
 - Supports multiple commands connected via pipes
@@ -19,36 +19,39 @@
 - Actions and updates are handled in real time through the terminal
 - The shell exits cleanly with the `exit` command
 
-🚀 Build & Run
+## Build & Run
 
-⚙️ Requirements
-
-- `gcc` or `clang`
-- Unix-based system
-
+###  
 🏗️ Compilation
 
-1. Navigate to the project directory:
+1. Clone the Module Directory
 
-```bash
+```
+git clone https://github.com/Yuxin29/minishell.git
 cd minishell
 
-    Compile using the provided Makefile:
+```
 
+2. Compile and Run Your Program
+
+```
 make
+```
 
-    Generates the executable minishell
+3. Available make commands:
 
-    Available make commands:
-
+```
 make clean   # Remove object files
 make fclean  # Remove object files and executable
 make re      # Recompile everything from scratch
 ```
-2 Running the Program
+
+4. Running the Program
+   
 ```
 ./minishell
 ```
+
     The shell will start and prompt the user to enter commands.
 
     Example:
@@ -56,8 +59,9 @@ make re      # Recompile everything from scratch
 minishell$ ls -l | grep txt > output.txt
 
     This executes the pipeline with proper redirection and stores the output in output.txt.
+    
 
-📁 Notes
+## Notes
 
     The shell handles multiple commands, pipelines, and redirections in a way similar to a real Unix shell.
 
@@ -65,5 +69,6 @@ minishell$ ls -l | grep txt > output.txt
 
     Memory management and error handling are carefully implemented to prevent leaks and crashes.
 
+## co-developer
 This project was developed in collaboration with Lin-0096 Lin Liu.
 

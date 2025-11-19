@@ -44,11 +44,11 @@ make
 make clean   # Remove object files
 make fclean  # Remove object files and executable
 make re      # Recompile everything from scratch
-
-💻 Running the Program
-
+```
+2 Running the Program
+```
 ./minishell
-
+```
     The shell will start and prompt the user to enter commands.
 
     Example:
